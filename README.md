@@ -1,2 +1,2 @@
-# fit-anmeldesystem-server
-Anwendung zur Anmeldung für Firmen an den Firmeninformationstag.
+# FIT-Anmelde-Backend
+Dies ist das Backend für den FIT!
