@@ -1,2 +1,3 @@
 # FIT-Anmelde-Backend
-Dies ist das Backend für den FIT!
+## Branchen
+Jeder hat seinen eigenen Branch (Hofmann-Dev, Sakal-Dev) nach jeder größeren Änderung sicherstellen das alles Funktioniert, Code Quality usw erledigen und dann auf den Master Branch pushen!
