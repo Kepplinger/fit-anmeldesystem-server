@@ -7,7 +7,7 @@ namespace Backend.Models
 {
     public class IEntityObject
     {
-        int MyProperty { get; set; }
+        public int Id { get; set; }
 
         byte[] Timestamp { get; set; }
     }
