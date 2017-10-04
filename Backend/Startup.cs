@@ -25,7 +25,7 @@ namespace vega
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddViewLocalization().AddDataAnnotationsLocalization();
-            services.AddDbContext<VegaDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Default   "]));
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Default   "]));
             services.AddMvc();
         }
 

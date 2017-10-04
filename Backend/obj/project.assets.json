@@ -12566,28 +12566,30 @@
     ]
   },
   "packageFolders": {
-    "/Users/andrejsakal/.nuget/packages/": {},
-    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder": {}
+    "C:\\Users\\Felix\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/andrejsakal/Dropbox/Projects/fit-anmeldesystem-server/Backend/vega.csproj",
+      "projectUniqueName": "C:\\Users\\Felix\\Documents\\Schule\\SYP-Projekt\\fit-anmeldesystem-server\\Backend\\vega.csproj",
       "projectName": "vega",
-      "projectPath": "/Users/andrejsakal/Dropbox/Projects/fit-anmeldesystem-server/Backend/vega.csproj",
-      "packagesPath": "/Users/andrejsakal/.nuget/packages/",
-      "outputPath": "/Users/andrejsakal/Dropbox/Projects/fit-anmeldesystem-server/Backend/obj/",
+      "projectPath": "C:\\Users\\Felix\\Documents\\Schule\\SYP-Projekt\\fit-anmeldesystem-server\\Backend\\vega.csproj",
+      "packagesPath": "C:\\Users\\Felix\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Felix\\Documents\\Schule\\SYP-Projekt\\fit-anmeldesystem-server\\Backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "/Users/andrejsakal/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Felix\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
