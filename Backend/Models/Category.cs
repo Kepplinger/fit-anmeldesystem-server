@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-//using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Models
 {
-    public class Categorty : IEntityObject
+    public class Category : IEntityObject
     {
         [Required]
         public string Name { get; set; }
