@@ -17,15 +17,11 @@ namespace vega
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
-
-            return WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(configuration)
-                .UseKestrel()
-                .UseStartup<Startup>()
-                .Build();
-        }
+        public static IWebHost BuildWebHost(string[] args) =>
+ 
+            WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .Build();
+ 
     }
 }
