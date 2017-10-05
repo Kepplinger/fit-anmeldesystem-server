@@ -20,7 +20,7 @@ namespace vega
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
             .UseKestrel()
-            .UseUrls("https://oel-billiger.at:8081")
+            .UseUrls("http://oel-billiger.at:8081")
                 .UseStartup<Startup>()
                 .Build();
     }
