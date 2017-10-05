@@ -20,7 +20,7 @@ namespace vega
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
             .UseKestrel()
-            .UseUrls("http://213.202.233.154:50001")
+            .UseUrls("http://213.202.233.154:8081")
                 .UseStartup<Startup>()
                 .Build();
     }
