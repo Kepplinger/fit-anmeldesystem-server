@@ -19,7 +19,8 @@ namespace vega
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://*/:5000")
+            .UseKestrel()
+            .UseUrls("http://*:50001")
                 .UseStartup<Startup>()
                 .Build();
     }
