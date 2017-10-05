@@ -9,15 +9,16 @@ namespace vega.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        
+        private static string[] Summaries = new[]
         {
-            return View();
-        }
+            "jow","jow","jow","it works great"
+        };
 
-        public IActionResult Error()
+        [HttpGet("[action]")]
+        public string[] WeatherForecasts()
         {
-            ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-            return View();
+            return Summaries;
         }
     }
 }
