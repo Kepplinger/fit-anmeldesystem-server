@@ -5,20 +5,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace vega.Controllers
+namespace bsp.Controllers
 {
     public class HomeController : Controller
     {
-        
-        private static string[] Summaries = new[]
+        public IActionResult Index()
         {
-            "jow","jow","jow","it works great"
-        };
-
-        [HttpGet("[action]")]
-        public string[] WeatherForecasts()
-        {
-            return Summaries;
+            return View();
         }
+
+        [HttpGet("Status", Name = "Status")]
+        public IActionResult Status()
+        {
+            return new ObjectResult("ITS OKAY BRO <3");
+        }
+ 
+        public IActionResult Error() {
+            ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            return View();
+         }
     }
 }
