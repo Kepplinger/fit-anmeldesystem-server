@@ -19,6 +19,7 @@ namespace vega
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+            .UseUrls("http://213.202.233.154:5000")
             .UseStartup<Startup>()
             .Build();
  
