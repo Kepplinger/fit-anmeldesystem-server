@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Backend.Models
 {
-    public class Resource
+    public class Resource : IEntityObject
     {
         [Required]
         [MaxLength(25)]

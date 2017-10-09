@@ -14,6 +14,7 @@ namespace Backend.Models
         public string Designation { get; set; }
         [Required]
         public byte[] Graphic { get; set; }
+        
         [ForeignKey("FK_Event")]
         public Event Event { get; set; }
 

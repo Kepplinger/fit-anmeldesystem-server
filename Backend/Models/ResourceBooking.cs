@@ -7,12 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Backend.Models
 {
-    public class ResourceBooking
+    public class ResourceBooking : IEntityObject
     {
-     [ForeignKey("FK_Booking")]
+        [ForeignKey("FK_Booking")]
         public Booking Booking { get; set; }
 
         public int FK_Booking { get; set; }
+        
         [ForeignKey("FK_Resource")]
         public Resource Resource { get; set; }
         public int FK_Resource { get; set; }

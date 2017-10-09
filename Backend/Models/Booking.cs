@@ -10,15 +10,17 @@ namespace Backend.Models
 {
     public class Booking : IEntityObject
     {
-        [ForeignKey("FK_Event")]
-        public Event Event { get; set; }
 
         public int FK_Event { get; set; }
+        
+        [ForeignKey("FK_Event")]
+        public Event Event { get; set; }
 
         [ForeignKey("FK_Company")]
         public Company Company { get; set; }
 
         public int FK_Company { get; set; }
+
         [ForeignKey("FK_Location")]
         public Location Location { get; set; }
         public int FK_Location { get; set; }
