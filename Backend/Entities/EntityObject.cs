@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Backend.Models
+namespace Backend.Entities
 {
     public class EntityObject : IEntityObject
     {

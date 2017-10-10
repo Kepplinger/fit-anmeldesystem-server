@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Backend.Models.Validation;
 using Newtonsoft.Json;
 
-namespace Backend.Models
+namespace Backend.Entities
 {
     public class Token
     {

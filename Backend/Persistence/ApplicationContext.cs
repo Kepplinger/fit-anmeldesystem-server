@@ -1,5 +1,5 @@
 using System.Linq;
-using Backend.Models;
+using Backend.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 

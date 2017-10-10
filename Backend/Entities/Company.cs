@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Backend.Models.Validation;
 
-namespace Backend.Models
+namespace Backend.Entities
 {
     public class Company : IEntityObject
     {

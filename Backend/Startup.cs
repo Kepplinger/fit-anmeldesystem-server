@@ -28,6 +28,7 @@ namespace Backend
             //services.AddScoped(p => new ApplicationContext(p.GetService<DbContextOptions<ApplicationContext>>()));
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
             services.AddMvc();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +38,9 @@ namespace Backend
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors(builder => {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+            });
             app.UseMvc();
         }
     }

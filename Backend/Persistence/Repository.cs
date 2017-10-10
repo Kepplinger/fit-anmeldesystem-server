@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Backend.Models;
+using Backend.Entities;
 using Backend.Persistence;
 using Backend.Data;
 
@@ -65,7 +65,7 @@ namespace Backend.Data
 
         public void Save()
         {
-            throw new NotImplementedException();
+            context.SaveChanges();
         }
 
         public IQueryable<T> GetAll(string[] includeProperties = null)
