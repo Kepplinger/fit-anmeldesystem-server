@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class initial11 : Migration
+    public partial class newinit6 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

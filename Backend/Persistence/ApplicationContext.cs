@@ -1,3 +1,4 @@
+using System.Linq;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -6,6 +7,7 @@ namespace vega.Persistence
 {
     public class ApplicationContext : DbContext
     {
+        public DbSet<Booking> Bookings { get; set; }
 
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Area> Areas { get; set; }
@@ -15,7 +17,6 @@ namespace vega.Persistence
         public DbSet<Detail> Details { get; set; }
         public DbSet<DetailAllocation> DetailAllocations { get; set; }
         public DbSet<Event> Events { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
         public DbSet<Lecturer> Lecturers { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Person> Persons { get; set; }
@@ -39,15 +40,16 @@ namespace vega.Persistence
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Booking>()
-            .HasOne(b => b.Event)
-            .WithMany(a => a.Bookings)
-            .OnDelete(DeleteBehavior.SetNull);
 
-            modelBuilder.Entity<Event>()
-            .HasMany(b => b.Bookings)
-            .WithOne(a => a.Event)
-            .OnDelete(DeleteBehavior.SetNull);
+        var cascadeFKs = modelBuilder.Model.GetEntityTypes()
+        .SelectMany(t => t.GetForeignKeys())
+        .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+        foreach (var fk in cascadeFKs)
+            fk.DeleteBehavior = DeleteBehavior.Restrict;
+            
+            base.OnModelCreating(modelBuilder);
+
         }
 
         

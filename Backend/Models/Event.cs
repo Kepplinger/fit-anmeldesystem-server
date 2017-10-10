@@ -18,6 +18,5 @@ namespace Backend.Models
         [Required]
         public bool IsLocked { get; set; }
 
-        public ICollection<Booking> Bookings { get; set; }
     }
 }

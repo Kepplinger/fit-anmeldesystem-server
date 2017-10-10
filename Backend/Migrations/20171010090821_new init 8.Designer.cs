@@ -11,8 +11,8 @@ using vega.Persistence;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20171009135625_initial4")]
-    partial class initial4
+    [Migration("20171010090821_new init 8")]
+    partial class newinit8
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -379,7 +379,7 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("FK_Event")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Booking", b =>
@@ -387,27 +387,27 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("FK_Category")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Company", "Company")
                         .WithMany()
                         .HasForeignKey("FK_Company")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Event", "Event")
                         .WithMany()
                         .HasForeignKey("FK_Event")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("FK_Location")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Presentation", "Presentation")
                         .WithMany()
                         .HasForeignKey("FK_Presentation")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Category", b =>
@@ -415,7 +415,7 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("Fk_Location")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Company", b =>
@@ -423,12 +423,12 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("FK_Address")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Contact", "Contact")
                         .WithMany()
                         .HasForeignKey("FK_Contact")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Contact", b =>
@@ -436,7 +436,7 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Person", "Person")
                         .WithMany()
                         .HasForeignKey("FK_Person")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.DetailAllocation", b =>
@@ -444,12 +444,12 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Detail", "Detail")
                         .WithMany()
                         .HasForeignKey("FK_Detail")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Lecturer", b =>
@@ -457,12 +457,12 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Person", "Person")
                         .WithMany()
                         .HasForeignKey("FK_Person")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Presentation", "Presentation")
                         .WithMany()
                         .HasForeignKey("FK_Presentation")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Location", b =>
@@ -470,7 +470,7 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Area", "Area")
                         .WithMany()
                         .HasForeignKey("FK_Area")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.Rerpresentative", b =>
@@ -478,12 +478,12 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Person", "Person")
                         .WithMany()
                         .HasForeignKey("FK_Person")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Models.ResourceBooking", b =>
@@ -491,12 +491,12 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Models.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Models.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("FK_Resource")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }
