@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using vega.Persistence;
 
 namespace Backend
 {
@@ -25,6 +25,7 @@ namespace Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddScoped(p => new ApplicationContext(p.GetService<DbContextOptions<ApplicationContext>>()));
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
             services.AddMvc();
         }
@@ -36,7 +37,6 @@ namespace Backend
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseMvc();
         }
     }

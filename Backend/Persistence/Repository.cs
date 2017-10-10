@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Backend.Models;
-using vega.Persistence;
+using Backend.Persistence;
+using Backend.Data;
 
-namespace GR.Data
+namespace Backend.Data
 {
     public class Repository<T> : IRepository<T> where T : IEntityObject
     {
@@ -14,15 +15,20 @@ namespace GR.Data
         private DbSet<T> entities;
         string errorMessage = string.Empty;
 
+
+        public DbSet<T> Entities() {
+            if(entities!=null) {
+                return entities;
+            }
+            return null;
+        }
+
         public Repository(ApplicationContext context)
         {
             this.context = context;
             entities = context.Set<T>();
         }
-        public IEnumerable<T> GetAll()
-        {
-            return entities.AsEnumerable();
-        }
+
 
         public T Get(long id)
         {
@@ -56,6 +62,43 @@ namespace GR.Data
             entities.Remove(entity);
             context.SaveChanges();
         }
+
+        public void Save()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<T> GetAll(string[] includeProperties = null)
+        {
+            int i = 0;
+            IQueryable<T> queryable = entities;
+            while(includeProperties.Length > 0 && i < includeProperties.Length) {
+                queryable = queryable.Include(includeProperties.ElementAt(i).ToString());
+                i++;
+            }
+            
+            return queryable;
+        }
+
+        /*private bool disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    context.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }*/
 
     }
 }

@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
-using vega.Persistence;
+using Backend.Persistence;
 
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20171010130850_new init 10")]
-    partial class newinit10
+    [Migration(id: "20171010134342_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -217,7 +217,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Date");
+                    b.Property<DateTime>("EventDate");
 
                     b.Property<bool>("IsLocked");
 

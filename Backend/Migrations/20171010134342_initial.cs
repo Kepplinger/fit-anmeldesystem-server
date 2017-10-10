@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class newinit10 : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,7 +44,7 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsLocked = table.Column<bool>(type: "bit", nullable: false),
                     RegistrationEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RegistrationStart = table.Column<DateTime>(type: "datetime2", nullable: false)

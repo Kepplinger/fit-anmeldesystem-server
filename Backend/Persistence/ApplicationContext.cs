@@ -3,7 +3,7 @@ using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace vega.Persistence
+namespace Backend.Persistence
 {
     public class ApplicationContext : DbContext
     {
@@ -23,28 +23,21 @@ namespace vega.Persistence
         public DbSet<Presentation> Presentations { get; set; }
         public DbSet<Rerpresentative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
-
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
-        
 
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options){
+        }
 
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options){}
-
-        public ApplicationContext() : base(){}
+        public ApplicationContext() : base(){
+        }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
 
             base.OnModelCreating(modelBuilder);
-
         }
-
-        
 
     }
 }
