@@ -10,7 +10,7 @@ namespace Backend.Models
     public class Event : IEntityObject
     {
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime EventDate { get; set; }
         [Required]
         public DateTime RegistrationStart { get; set; }
         [Required]

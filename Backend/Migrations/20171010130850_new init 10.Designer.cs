@@ -11,7 +11,7 @@ using vega.Persistence;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20171010093627_new init 10")]
+    [Migration("20171010130850_new init 10")]
     partial class newinit10
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
