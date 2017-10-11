@@ -4,6 +4,8 @@ using Backend.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System;
 
 namespace Backend.Controllers
 {
@@ -37,6 +39,11 @@ namespace Backend.Controllers
 
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+        }
+           public IActionResult GetAll()
+        {
+            var detailAllocations = from st in _detailAllocationRepo.GetAll(new String[]{"Detail","Booking"}) select st;
+            return new ObjectResult(detailAllocations);
         }
     }
 }

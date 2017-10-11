@@ -10,6 +10,7 @@ using Backend.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace bsp.Controllers
 {

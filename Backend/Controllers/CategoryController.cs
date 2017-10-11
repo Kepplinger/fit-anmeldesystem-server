@@ -4,6 +4,8 @@ using Backend.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System;
 
 namespace Backend.Controllers
 {
@@ -37,6 +39,12 @@ namespace Backend.Controllers
 
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+        }
+         [HttpGet("GetAll", Name = "GetAll")]
+        public IActionResult GetAll()
+        {
+            var categories = from st in _categoryRepo.GetAll(new String[]{"Location"}) select st;
+            return new ObjectResult(categories);
         }
     }
 }
