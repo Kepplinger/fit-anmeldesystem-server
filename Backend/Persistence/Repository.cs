@@ -72,7 +72,7 @@ namespace Backend.Data
         {
             int i = 0;
             IQueryable<T> queryable = entities;
-            while(includeProperties.Length > 0 && i < includeProperties.Length) {
+            while(includeProperties != null && includeProperties.Length > 0 && i < includeProperties.Length) {
                 queryable = queryable.Include(includeProperties.ElementAt(i).ToString());
                 i++;
             }
