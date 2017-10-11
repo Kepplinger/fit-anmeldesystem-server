@@ -38,31 +38,5 @@ namespace Backend.Controllers
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }   
-        public PersonController(ApplicationContext cb)
-        {
-            _personRepo = new Repository<Person>(cb);
-        }
-
-        [HttpPut("Create", Name = "Creates")]
-        public  IActionResult Create([FromBody] Person temp)
-        {
-            System.Console.WriteLine(temp.LastName);
-            try
-            {
-                if (temp!=null)
-                {
-                    _personRepo.Insert(temp);
-                    _personRepo.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-                    
-                    return new StatusCodeResult(StatusCodes.Status200OK);
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-
-            }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
-        }
     }
 }

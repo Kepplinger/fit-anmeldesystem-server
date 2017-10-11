@@ -1,7 +1,9 @@
 using Backend.Data;
 using Backend.Entities;
 using Backend.Persistence;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
@@ -9,20 +11,20 @@ namespace Backend.Controllers
     public class RerpresentativeController
     {
         
-        private IRepository<Representative> _rerpresentativeRepo;
+        private IRepository<Rerpresentative> _rerpresentativeRepo;
 
-        public RerpresentativeController(ApplicationContext cb) => _rerpresentativeRepo = new Repository<Repre>(cb);
+        public RerpresentativeController(ApplicationContext cb) => _rerpresentativeRepo = new Repository<Rerpresentative>(cb);
 
         [HttpPut("Create", Name = "Creates")]
-        public  IActionResult Create([FromBody] Presentation temp)
+        public  IActionResult Create([FromBody] Rerpresentative temp)
         {
-            System.Console.WriteLine(temp.Description);
+            System.Console.WriteLine(temp);
             try
             {
                 if (temp!=null)
                 {
-                    _presentationRepo.Insert(temp);
-                    _presentationRepo.Save();
+                    _rerpresentativeRepo.Insert(temp);
+                    _rerpresentativeRepo.Save();
                     //System.Console.WriteLine(temp.Company.Name);
                     
                     return new StatusCodeResult(StatusCodes.Status200OK);
@@ -30,7 +32,6 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }   

@@ -4,6 +4,7 @@ using Backend.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Backend.Controllers
 {
@@ -44,7 +45,7 @@ namespace Backend.Controllers
         public IActionResult GetAll()
         {
             string[] include = new string[] {""};
-            var bookings = from s in _addressRepo.GetAll() select s;
+            var bookings = from st in _addressRepo.GetAll() select st;
             return new ObjectResult(bookings);
         }
     }
