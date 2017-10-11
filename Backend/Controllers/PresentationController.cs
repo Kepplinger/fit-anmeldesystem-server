@@ -4,6 +4,7 @@ using Backend.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Backend.Controllers
 {
@@ -38,6 +39,11 @@ namespace Backend.Controllers
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }   
+           public IActionResult GetAll()
+        {
+            var presentations = from st in _presentationRepo.GetAll() select st;
+            return new ObjectResult(presentations);
+        }
        
     }
 }

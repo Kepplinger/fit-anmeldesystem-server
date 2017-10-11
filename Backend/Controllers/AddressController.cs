@@ -44,9 +44,8 @@ namespace Backend.Controllers
         [HttpGet("GetAll", Name = "GetAll")]
         public IActionResult GetAll()
         {
-            string[] include = new string[] {""};
-            var bookings = from st in _addressRepo.GetAll() select st;
-            return new ObjectResult(bookings);
+            var addresses = from st in _addressRepo.GetAll() select st;
+            return new ObjectResult(addresses);
         }
     }
 }
