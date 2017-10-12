@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Backend.Core.Entities
 {
-    public class Rerpresentative : EntityObject
+    public class Representative : EntityObject
     {
         [ForeignKey("FK_Person")]
         public Person Person { get; set; }
