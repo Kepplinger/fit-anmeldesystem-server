@@ -24,7 +24,7 @@ namespace Backend.Persistence
         public DbSet<Location> Locations { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<Presentation> Presentations { get; set; }
-        public DbSet<Rerpresentative> Rerpresentatives { get; set; }
+        public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
 
@@ -35,7 +35,7 @@ namespace Backend.Persistence
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
             Debug.Write(configuration.ToString());
-            string connectionString = configuration["ConnectionStrings:DefaultConnection"];
+            string connectionString = configuration["ConnectionStrings:Sakal"];
             optionsBuilder.UseSqlServer(connectionString);
         }
 

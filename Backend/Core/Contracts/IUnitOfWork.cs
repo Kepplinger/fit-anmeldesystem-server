@@ -15,7 +15,21 @@ namespace Backend.Core.Contracts
         /// Standard Repositories 
         /// </summary>
         IGenericRepository<Area> AreaRepository { get; }
-
+        
+        IGenericRepository<Booking> BookingRepository { get; }
+        IGenericRepository<Category> CategoryRepository { get; }
+        IGenericRepository<Company> CompanyRepository { get; }
+        IGenericRepository<Contact> ContactRepository { get; }
+        IGenericRepository<Detail> DetailRepository { get; }
+        IGenericRepository<DetailAllocation> DetailAllocationRepository { get; }
+        IGenericRepository<Event> EventRepository { get; }
+        IGenericRepository<Lecturer> LecturerRepository { get; }
+        IGenericRepository<Location> LocationRepository { get; }
+        IGenericRepository<Person> PersonRepository { get; }
+        IGenericRepository<Presentation> PresentationRepository { get; }
+        IGenericRepository<Representative> RepresentativeRepository { get; }
+        IGenericRepository<Resource> ResourceRepository { get; }
+        IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
