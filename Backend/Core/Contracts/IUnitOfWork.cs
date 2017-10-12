@@ -15,6 +15,7 @@ namespace Backend.Core.Contracts
         /// Standard Repositories 
         /// </summary>
         IGenericRepository<Area> AreaRepository { get; }
+        
         IGenericRepository<Booking> BookingRepository { get; }
         IGenericRepository<Category> CategoryRepository { get; }
         IGenericRepository<Company> CompanyRepository { get; }

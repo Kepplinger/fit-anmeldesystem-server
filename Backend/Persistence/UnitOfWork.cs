@@ -52,6 +52,8 @@ namespace StoreService.Persistence
             AreaRepository = new GenericRepository<Area>(_context);
 
             AddressRepository = new AddressRepository(_context);
+
+            BookingRepository = new GenericRepository<Booking>(_context);
         }
 
         /// <summary>

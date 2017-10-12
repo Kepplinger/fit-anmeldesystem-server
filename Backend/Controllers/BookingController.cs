@@ -41,7 +41,7 @@ namespace Backend.Controllers
             {
 
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
         //[HttpGet("Test")]
