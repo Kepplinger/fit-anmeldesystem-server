@@ -718,3 +718,5 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/git,node,linux,macos,csharp,windows,angular,aspnetcore,visualstudio,visualstudiocode
 
 Backend/\.vscode/
+
+\.vscode/
