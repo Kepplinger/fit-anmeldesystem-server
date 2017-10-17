@@ -50,11 +50,11 @@ namespace Backend.Controllers
         public IActionResult Test()
         {
             Address a = new Address() { Street = "Teststraße", City = "Wien", PostalCode = "2322", Number = "55" };
-            _unitOfWork.AddressRepository.Insert(a);
+            /*_unitOfWork.AddressRepository.Insert(a);
             a.PostalCode = "2222";
             _unitOfWork.Save();
             _unitOfWork.AddressRepository.Update(a);
-            _unitOfWork.Save();
+            _unitOfWork.Save();*/
             return new OkObjectResult(a);
         }
 
