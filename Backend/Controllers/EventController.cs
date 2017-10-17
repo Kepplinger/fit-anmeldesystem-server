@@ -28,10 +28,8 @@ namespace Backend.Controllers
             {
                 if (temp != null)
                 {
-
                     _unitOfWork.EventRepository.Insert(temp);
                     _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
 
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
@@ -42,18 +40,6 @@ namespace Backend.Controllers
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
-
-        //[HttpGet("Test")]
-        //public IActionResult Test()
-        //{
-        //    Address a = new Address() { Street = "Teststraße", City = "Wien", PostalCode = "2322", Number = "55" };
-        //    _unitOfWork.AddressRepository.Insert(a);
-        //    a.PostalCode = "2222";
-        //    _unitOfWork.Save();
-        //    _unitOfWork.AddressRepository.Update(a);
-        //    _unitOfWork.Save();
-        //    return new OkObjectResult(a);
-        //}
 
         [HttpGet("GetAll")]
         public IActionResult GetAll()
