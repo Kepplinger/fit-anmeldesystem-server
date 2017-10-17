@@ -13,6 +13,8 @@ using Microsoft.Extensions.Options;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
 using Swashbuckle.AspNetCore.Swagger;
+using System.IO;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Backend
 {

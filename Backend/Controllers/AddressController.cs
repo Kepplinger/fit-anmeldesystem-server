@@ -26,22 +26,22 @@ namespace Backend.Controllers
         /// <response code="101">If the item is null</response>
         [HttpPut("Create")]
         [ProducesResponseType(typeof(Address), 200)]
-        [ProducesResponseType(typeof(Address), 101)]
-        public IActionResult Create([FromBody] Address temp)
+        [ProducesResponseType(typeof(void), 101)]
+        public IActionResult Create([FromBody] Address insertAdress)
         {
-            System.Console.WriteLine(temp.Street);
+            System.Console.WriteLine(insertAdress.Street);
             try
             {
-                if (temp != null)
+                if (insertAdress != null)
                 {
-                    _unitOfWork.AddressRepository.Insert(temp);
+                    _unitOfWork.AddressRepository.Insert(insertAdress);
                     _unitOfWork.Save();
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
             catch (DbUpdateException ex)
             {
-                
+
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
@@ -58,12 +58,13 @@ namespace Backend.Controllers
             return new OkObjectResult(a);
         }
 
-        /// <summary>
-        /// Gets all saved Addresses
-        /// </summary>
+
         /// <response code="200">Returns all available Addresses</response>
+        /// <summary>
+        /// Getting all Addresses from Database
+        /// </summary>
         [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
+        [ProducesResponseType(typeof(Address), 200)]
         public IActionResult GetAll()
         {
             var addresses = _unitOfWork.AddressRepository.Get();
