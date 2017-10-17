@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Backend
 {
@@ -30,9 +31,13 @@ namespace Backend
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             //services.AddTransient<IUnitOfWork, UnitOfWork>(p=>new UnitOfWork(Configuration["ConnectionStrings:Default"]));
             //services.AddScoped(p => new ApplicationContext(p.GetService<DbContextOptions<ApplicationContext>>()));
-           // services.AddDbContext<ApplicationDbContext>( options => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
+            // services.AddDbContext<ApplicationDbContext>( options => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
             services.AddMvc();
-            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,10 +47,18 @@ namespace Backend
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(builder => {
+            app.UseCors(builder =>
+            {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             });
             app.UseMvc();
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
         }
     }
 }
