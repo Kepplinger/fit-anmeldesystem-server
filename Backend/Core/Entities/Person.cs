@@ -11,10 +11,10 @@ namespace Backend.Core.Entities
     public class Person : EntityObject
     {
         [Required]
-        [MaxLength(25)]
+        [MaxLength(35)]
         public string FirstName { get; set; }
         [Required]
-        [MaxLength(25)]
+        [MaxLength(35)]
         public string LastName { get; set; }
         [Required]
         [CustomValidation(typeof(EmailValidation),"EmailRules")]

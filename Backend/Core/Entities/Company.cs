@@ -36,7 +36,7 @@ namespace Backend.Core.Entities
         [CustomValidation(typeof(HomepageValidation),"LinkRules")]
         public string Homepage { get; set; }
         [Required]
-        public byte[] CompanySign { get; set; }
+        public byte[] CompanyLogo { get; set; }
 
         [Required]
         public string SubjectAreas { get; set; }
