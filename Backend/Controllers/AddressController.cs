@@ -8,29 +8,34 @@ using Backend.Core.Contracts;
 
 namespace Backend.Controllers
 {
-     [Route("api/[controller]")]
+    [Produces("application/json")]
+    [Route("api/[controller]")]
     public class AddressController
     {
         private IUnitOfWork _unitOfWork;
-        
-       public AddressController(IUnitOfWork uow)
-       {
-            this._unitOfWork = uow;
-       }
 
-       [HttpPut("Create")]
-        public  IActionResult Create([FromBody] Address temp)
+        public AddressController(IUnitOfWork uow)
         {
-            System.Console.WriteLine(temp.Street);
+            this._unitOfWork = uow;
+        }
+
+        /// <summary>
+        /// Creates a Address Object.
+        /// </summary>
+        /// <response code="200">Returns the newly-created item</response>
+        /// <response code="101">If the item is null</response>
+        [HttpPut("Create")]
+        [ProducesResponseType(typeof(Address), 200)]
+        [ProducesResponseType(typeof(void), 101)]
+        public IActionResult Create([FromBody] Address insertAdress)
+        {
+            System.Console.WriteLine(insertAdress.Street);
             try
             {
-                if (temp!=null)
+                if (insertAdress != null)
                 {
-                    
-                    _unitOfWork.AddressRepository.Insert(temp);
+                    _unitOfWork.AddressRepository.Insert(insertAdress);
                     _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-                    
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
@@ -44,7 +49,7 @@ namespace Backend.Controllers
         [HttpGet("Test")]
         public IActionResult Test()
         {
-            Address a = new Address() { Street = "Teststraﬂe", City = "Wien", PostalCode = "2322", Number="55" };
+            Address a = new Address() { Street = "Teststra√üe", City = "Wien", PostalCode = "2322", Number = "55" };
             _unitOfWork.AddressRepository.Insert(a);
             a.PostalCode = "2222";
             _unitOfWork.Save();
@@ -53,7 +58,13 @@ namespace Backend.Controllers
             return new OkObjectResult(a);
         }
 
+
+        /// <response code="200">Returns all available Addresses</response>
+        /// <summary>
+        /// Getting all Addresses from Database
+        /// </summary>
         [HttpGet("GetAll")]
+        [ProducesResponseType(typeof(Address), 200)]
         public IActionResult GetAll()
         {
             var addresses = _unitOfWork.AddressRepository.Get();
