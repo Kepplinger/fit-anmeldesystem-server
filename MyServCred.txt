@@ -9,3 +9,8 @@ pw: DieTeekanneMachtDenTee2
 
 ben: administrator
 pw: Chicony147
+
+
+jenkins:
+ben: admin
+pw: admin
