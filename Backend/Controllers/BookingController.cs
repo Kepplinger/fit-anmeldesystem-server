@@ -21,7 +21,13 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
+        /// <summary>
+        /// Creates a Booking Object
+        /// </summary>
+        /// <response code="200">Returns the newly-created item</response>
+        /// <response code="101">If the item is null</response>
         [HttpPut("Create")]
+        [ProducesResponseType(typeof(Booking), 200)]
         public IActionResult Create([FromBody] Booking temp)
         {
             System.Console.WriteLine(temp.Company);
@@ -44,7 +50,13 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
+       /// <summary>
+        /// Returns all saved Addresses
+        /// </summary>
+        /// <response code="200">Returns all available Addresses</response>
         [HttpGet("GetAll")]
+        [ProducesResponseType(typeof(IActionResult), 200)]
+
         public IActionResult GetAll()
         {
             var bookings = _unitOfWork.BookingRepository.Get();

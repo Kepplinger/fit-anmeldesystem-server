@@ -21,7 +21,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Creates a Area Object.
+        /// Deletes a specific TodoItem.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
@@ -49,8 +49,8 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
 
-       /// <summary>
-        /// Gets all saved Addresses
+        /// <summary>
+        /// Returns all saved Addresses
         /// </summary>
         /// <response code="200">Returns all available Addresses</response>
         [HttpGet("GetAll")]
