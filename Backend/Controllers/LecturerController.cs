@@ -21,7 +21,14 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
+        /// <summary>
+        /// Creates a Lecturer Object.
+        /// </summary>
+        /// <response code="200">Returns the newly-created item</response>
+        /// <response code="101">If the item is null</response>
         [HttpPut("Create")]
+        [ProducesResponseType(typeof(Lecturer), 200)]
+        [ProducesResponseType(typeof(void), 101)]
         public IActionResult Create([FromBody] Lecturer temp)
         {
             System.Console.WriteLine(temp.Person.LastName);
@@ -44,7 +51,12 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
 
+        /// <response code="200">Returns all available Lecturers</response>
+        /// <summary>
+        /// Getting all Lecturers from Database
+        /// </summary>
         [HttpGet("GetAll")]
+        [ProducesResponseType(typeof(Lecturer), 200)]
         public IActionResult GetAll()
         {
             var lecturers = _unitOfWork.LecturerRepository.Get();

@@ -21,7 +21,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Deletes a specific TodoItem.
+        /// Deletes a specific Area.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
@@ -54,7 +54,7 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns all available Addresses</response>
         [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
+        [ProducesResponseType(typeof(Area), 200)]
         public IActionResult GetAll()
         {
             var areas = _unitOfWork.AreaRepository.Get();

@@ -51,9 +51,9 @@ namespace Backend.Controllers
         }
 
        /// <summary>
-        /// Returns all saved Addresses
+        /// Returns all saved Bookings
         /// </summary>
-        /// <response code="200">Returns all available Addresses</response>
+        /// <response code="200">Returns all available Bookings</response>
         [HttpGet("GetAll")]
         [ProducesResponseType(typeof(IActionResult), 200)]
 

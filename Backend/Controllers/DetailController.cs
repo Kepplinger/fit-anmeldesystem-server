@@ -20,7 +20,14 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
+        /// <summary>
+        /// Creates a Detail Object.
+        /// </summary>
+        /// <response code="200">Returns the newly-created item</response>
+        /// <response code="101">If the item is null</response>
         [HttpPut("Create")]
+        [ProducesResponseType(typeof(Detail), 200)]
+        [ProducesResponseType(typeof(void), 101)]
         public IActionResult Create([FromBody] Detail temp)
         {
             System.Console.WriteLine(temp.Description);
@@ -43,7 +50,12 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
 
+        /// <response code="200">Returns all available Details</response>
+        /// <summary>
+        /// Getting all Details from Database
+        /// </summary>
         [HttpGet("GetAll")]
+        [ProducesResponseType(typeof(Detail), 200)]
         public IActionResult GetAll()
         {
             var details = _unitOfWork.DetailRepository.Get();
