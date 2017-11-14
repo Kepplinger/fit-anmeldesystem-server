@@ -12,32 +12,31 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
 
-    public class LecturerController
+    public class PackageController
     {
         private IUnitOfWork _unitOfWork;
 
-        public LecturerController(IUnitOfWork uow)
+        public PackageController(IUnitOfWork uow)
         {
             this._unitOfWork = uow;
         }
 
         /// <summary>
-        /// Creates a Lecturer Object.
+        /// Creates a Package Object
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
         [HttpPut("Create")]
-        [ProducesResponseType(typeof(Lecturer), 200)]
-        [ProducesResponseType(typeof(void), 101)]
-        public IActionResult Create([FromBody] Lecturer temp)
+        [ProducesResponseType(typeof(Package), 200)]
+        public IActionResult Create([FromBody] Package temp)
         {
-            System.Console.WriteLine(temp.Person.LastName);
+            System.Console.WriteLine(temp.Name);
             try
             {
                 if (temp != null)
                 {
 
-                    _unitOfWork.LecturerRepository.Insert(temp);
+                    _unitOfWork.PackageRepository.Insert(temp);
                     _unitOfWork.Save();
                     //System.Console.WriteLine(temp.Company.Name);
 
@@ -48,19 +47,20 @@ namespace Backend.Controllers
             {
 
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        /// <response code="200">Returns all available Lecturers</response>
         /// <summary>
-        /// Getting all Lecturers from Database
+        /// Returns all saved Bookings
         /// </summary>
+        /// <response code="200">Returns all available Bookings</response>
         [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Lecturer), 200)]
+        [ProducesResponseType(typeof(IActionResult), 200)]
+
         public IActionResult GetAll()
         {
-            var lecturers = _unitOfWork.LecturerRepository.Get();
-            return new ObjectResult(lecturers);
+            var packages = _unitOfWork.PackageRepository.Get();
+            return new ObjectResult(packages);
         }
     }
 }

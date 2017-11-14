@@ -15,6 +15,8 @@ namespace Backend.Core.Entities
         public Area Area { get; set; }
         public int FK_Area { get; set; }
         [Required]
+        public string Category { get; set; }
+        [Required]
         public double XCoordinate { get; set; }
         [Required]
         public double YCoordinate { get; set; }

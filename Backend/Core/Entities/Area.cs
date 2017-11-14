@@ -15,7 +15,7 @@ namespace Backend.Core.Entities
         [Required]
         public string Designation { get; set; }
         [Required]
-        public byte[] Graphic { get; set; }
+        public string GraphicURL { get; set; }
         
         [ForeignKey("FK_Event")]
         public Event Event { get; set; }
