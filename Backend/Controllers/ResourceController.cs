@@ -45,7 +45,7 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-
+                System.Console.WriteLine(ex.Message);
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
