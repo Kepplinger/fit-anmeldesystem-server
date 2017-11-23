@@ -20,7 +20,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Creates a Address Object.
+        /// Creates a Branch Object.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
@@ -29,7 +29,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(void), 101)]
         public IActionResult Create([FromBody] Branch insertBranch)
         {
-            System.Console.WriteLine(insertBranch.Name);
             try
             {
                 if (insertBranch != null)
@@ -45,20 +44,6 @@ namespace Backend.Controllers
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
-
-        [HttpGet("Test")]
-        public IActionResult Test()
-        {
-            Branch b = new Branch() { Name = "Test" };
-            //Address a = new Address() { Street = "Teststraße", City = "Wien", PostalCode = "2322", Number = "55" };
-            /*_unitOfWork.AddressRepository.Insert(a);
-            a.PostalCode = "2222";
-            _unitOfWork.Save();
-            _unitOfWork.AddressRepository.Update(a);
-            _unitOfWork.Save();*/
-            return new OkObjectResult(b);
-        }
-
 
         /// <response code="200">Returns all available Addresses</response>
         /// <summary>

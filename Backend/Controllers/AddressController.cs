@@ -50,11 +50,11 @@ namespace Backend.Controllers
         public IActionResult Test()
         {
             Address a = new Address() { PostalCode = "2222", Street = "Teststraße", City = "Wien", Number = "55" };
-            /*_unitOfWork.AddressRepository.Insert(a);
-            a.PostalCode = "2222";
+            _unitOfWork.AddressRepository.Insert(a);
+            a.PostalCode = "2223";
             _unitOfWork.Save();
             _unitOfWork.AddressRepository.Update(a);
-            _unitOfWork.Save();*/
+            _unitOfWork.Save();
             return new OkObjectResult(a);
         }
 
@@ -63,7 +63,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all Addresses from Database
         /// </summary>
-        [HttpGet("get")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(Address), 200)]
         public IActionResult GetAll()
         {
@@ -75,7 +75,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all Addresses from Database
         /// </summary>
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Address), 200)]
         public IActionResult GetById(int id)
         {

@@ -26,22 +26,16 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
+        [HttpPut("")]
         [ProducesResponseType(typeof(Booking), 200)]
         public IActionResult Create([FromBody] Booking temp)
         {
-            System.Console.WriteLine(temp.Company);
             try
             {
-                if (temp != null)
-                {
-
-                    _unitOfWork.BookingRepository.Insert(temp);
-                    _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-
-                    return new StatusCodeResult(StatusCodes.Status200OK);
-                }
+                Console.WriteLine(temp.isAccepted);
+                _unitOfWork.BookingRepository.Insert(temp);
+                _unitOfWork.Save();
+                return new StatusCodeResult(StatusCodes.Status200OK);
             }
             catch (DbUpdateException ex)
             {
@@ -54,12 +48,24 @@ namespace Backend.Controllers
         /// Returns all saved Bookings
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
-        [HttpGet("GetAll")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(IActionResult), 200)]
 
         public IActionResult GetAll()
         {
             var bookings = _unitOfWork.BookingRepository.Get();
+            return new ObjectResult(bookings);
+        }
+
+        /// <response code="200">Returns the available bookings with the </response>
+        /// <summary>
+        /// Getting all bookings from Database
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Booking), 200)]
+        public IActionResult GetById(int id)
+        {
+            var bookings = _unitOfWork.BookingRepository.GetById(id);
             return new ObjectResult(bookings);
         }
     }
