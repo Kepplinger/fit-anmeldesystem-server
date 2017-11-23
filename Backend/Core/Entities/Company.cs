@@ -17,7 +17,7 @@ namespace Backend.Core.Entities
         public string Name { get; set; }
         [Required]
         [MaxLength(350)]
-        public string ShortDescription { get; set; }
+       // public string ShortDescription { get; set; }
         [ForeignKey("FK_Address")]
         public Address Address { get; set; }
         public int FK_Address { get; set; }
@@ -36,7 +36,7 @@ namespace Backend.Core.Entities
         [CustomValidation(typeof(HomepageValidation),"LinkRules")]
         public string Homepage { get; set; }
         [Required]
-        public byte[] CompanyLogo { get; set; }
+        public string LogoUrl { get; set; }
 
         [Required]
         public string SubjectAreas { get; set; }

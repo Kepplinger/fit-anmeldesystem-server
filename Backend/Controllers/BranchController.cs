@@ -1,44 +1,40 @@
-﻿using Backend.Core.Contracts;
-using Backend.Core.Entities;
+﻿using Backend.Core.Entities;
+using Backend.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Backend.Core.Contracts;
 
 namespace Backend.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
-    public class AreaController
+    public class BranchController
     {
         private IUnitOfWork _unitOfWork;
 
-        public AreaController(IUnitOfWork uow)
+        public BranchController(IUnitOfWork uow)
         {
             this._unitOfWork = uow;
         }
 
         /// <summary>
-        /// Deletes a specific Area.
+        /// Creates a Branch Object.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
         [HttpPut("Create")]
-        [ProducesResponseType(typeof(Area), 200)]
-        public IActionResult Create([FromBody] Area temp)
+        [ProducesResponseType(typeof(Branch), 200)]
+        [ProducesResponseType(typeof(void), 101)]
+        public IActionResult Create([FromBody] Branch insertBranch)
         {
-            System.Console.WriteLine(temp.Designation);
             try
             {
-                if (temp != null)
+                if (insertBranch != null)
                 {
-
-                    _unitOfWork.AreaRepository.Insert(temp);
+                    _unitOfWork.BranchRepository.Insert(insertBranch);
                     _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
@@ -49,16 +45,16 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
 
-        /// <summary>
-        /// Returns all saved Addresses
-        /// </summary>
         /// <response code="200">Returns all available Addresses</response>
+        /// <summary>
+        /// Getting all Addresses from Database
+        /// </summary>
         [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Area), 200)]
+        [ProducesResponseType(typeof(Branch), 200)]
         public IActionResult GetAll()
         {
-            var areas = _unitOfWork.AreaRepository.Get();
-            return new ObjectResult(areas);
+            var branches = _unitOfWork.BranchRepository.Get();
+            return new ObjectResult(branches);
         }
     }
 }

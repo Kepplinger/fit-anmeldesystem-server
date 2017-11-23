@@ -10,7 +10,7 @@ namespace Backend.Persistence.Repositories
 {
     public class AddressRepository : GenericRepository<Address>, IAddressRepository
     {
-        ApplicationDbContext _context; 
+        private ApplicationDbContext _context; 
 
         public List<Address> FindAddressByXYZ()
         {

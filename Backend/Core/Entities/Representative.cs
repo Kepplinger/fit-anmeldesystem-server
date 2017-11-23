@@ -10,9 +10,10 @@ namespace Backend.Core.Entities
 {
     public class Representative : EntityObject
     {
-        [ForeignKey("FK_Person")]
-        public Person Person { get; set; }
-        public int FK_Person { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string PictureUrl { get; set; }
+
         [ForeignKey("FK_Booking")]
         public Booking Booking { get; set; }
 

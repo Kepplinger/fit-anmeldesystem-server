@@ -24,7 +24,7 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
+        [HttpPut("/")]
         [ProducesResponseType(typeof(Address), 200)]
         [ProducesResponseType(typeof(void), 101)]
         public IActionResult Create([FromBody] Address insertAdress)
@@ -41,17 +41,17 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-
+                System.Console.WriteLine(ex.Message);
             }
             return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
         }
 
-        [HttpGet("Test")]
+        [HttpGet("test")]
         public IActionResult Test()
         {
-            Address a = new Address() { Street = "Teststraße", City = "Wien", PostalCode = "2322", Number = "55" };
+            Address a = new Address() { PostalCode = "2222", Street = "Teststraße", City = "Wien", Number = "55" };
             _unitOfWork.AddressRepository.Insert(a);
-            a.PostalCode = "2222";
+            a.PostalCode = "2223";
             _unitOfWork.Save();
             _unitOfWork.AddressRepository.Update(a);
             _unitOfWork.Save();
@@ -63,11 +63,23 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all Addresses from Database
         /// </summary>
-        [HttpGet("GetAll")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(Address), 200)]
         public IActionResult GetAll()
         {
             var addresses = _unitOfWork.AddressRepository.Get();
+            return new ObjectResult(addresses);
+        }
+
+        /// <response code="200">Returns the available Address with the </response>
+        /// <summary>
+        /// Getting all Addresses from Database
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Address), 200)]
+        public IActionResult GetById(int id)
+        {
+            var addresses = _unitOfWork.AddressRepository.GetById(id);
             return new ObjectResult(addresses);
         }
     }

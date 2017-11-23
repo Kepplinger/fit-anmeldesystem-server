@@ -26,15 +26,12 @@ namespace StoreService.Persistence
         /// </summary>
         public IGenericRepository<Area> AreaRepository { get; }
         public IGenericRepository<Booking> BookingRepository { get; }
-        public IGenericRepository<Category> CategoryRepository { get; }
+        public IGenericRepository<Branch> BranchRepository { get; }
         public IGenericRepository<Company> CompanyRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
-        public IGenericRepository<Detail> DetailRepository { get; }
-        public IGenericRepository<DetailAllocation> DetailAllocationRepository { get; }
         public IGenericRepository<Event> EventRepository { get; }
-        public IGenericRepository<Lecturer> LecturerRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
-        public IGenericRepository<Person> PersonRepository { get; }
+        public IGenericRepository<Package> PackageRepository { get; }
         public IGenericRepository<Presentation> PresentationRepository { get; }
         public IGenericRepository<Representative> RepresentativeRepository { get; }
         public IGenericRepository<Resource> ResourceRepository { get; }

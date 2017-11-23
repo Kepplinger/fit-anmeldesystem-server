@@ -62,7 +62,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Event");
 
-                    b.Property<byte[]>("Graphic")
+                    b.Property<string>("GraphicURL")
                         .IsRequired();
 
                     b.Property<byte[]>("Timestamp")
@@ -81,7 +81,13 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("FK_Category");
+                    b.Property<string>("AdditionalInfo");
+
+                    b.Property<string>("CompanyDescription");
+
+                    b.Property<DateTime>("CreationDate");
+
+                    b.Property<int>("FK_Branches");
 
                     b.Property<int>("FK_Company");
 
@@ -89,7 +95,15 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Location");
 
+                    b.Property<int>("FK_Package");
+
                     b.Property<int>("FK_Presentation");
+
+                    b.Property<bool>("ProvidesSummerJob");
+
+                    b.Property<bool>("ProvidesThesis");
+
+                    b.Property<string>("Remarks");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -99,33 +113,29 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Category");
-
                     b.HasIndex("FK_Company");
 
                     b.HasIndex("FK_Event");
 
                     b.HasIndex("FK_Location");
 
+                    b.HasIndex("FK_Package");
+
                     b.HasIndex("FK_Presentation");
 
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Category", b =>
+            modelBuilder.Entity("Backend.Core.Entities.Branch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Description")
-                        .IsRequired();
+                    b.Property<int?>("FK_Branch");
 
-                    b.Property<int>("Fk_Location");
+                    b.Property<int?>("FK_Branches");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<double>("Price");
+                    b.Property<string>("Name");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -133,18 +143,17 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Fk_Location");
+                    b.HasIndex("FK_Branch");
 
-                    b.ToTable("Categorys");
+                    b.HasIndex("FK_Branches");
+
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("CompanySign")
-                        .IsRequired();
 
                     b.Property<string>("Email")
                         .IsRequired();
@@ -156,16 +165,15 @@ namespace Backend.Migrations
                     b.Property<string>("Homepage")
                         .IsRequired();
 
+                    b.Property<string>("LogoUrl")
+                        .IsRequired();
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30);
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired();
-
-                    b.Property<string>("ShortDescription")
-                        .IsRequired()
-                        .HasMaxLength(350);
 
                     b.Property<string>("SubjectAreas")
                         .IsRequired();
@@ -188,61 +196,21 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("FK_Person");
+                    b.Property<string>("Email");
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
+                    b.Property<string>("Phone");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FK_Person");
 
                     b.ToTable("Contacts");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Detail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Details");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.DetailAllocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("FK_Booking");
-
-                    b.Property<int>("FK_Detail");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FK_Booking");
-
-                    b.HasIndex("FK_Detail");
-
-                    b.ToTable("DetailAllocations");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Event", b =>
@@ -267,32 +235,13 @@ namespace Backend.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Lecturer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("FK_Person");
-
-                    b.Property<int>("FK_Presentation");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FK_Person");
-
-                    b.HasIndex("FK_Presentation");
-
-                    b.ToTable("Lecturers");
-                });
-
             modelBuilder.Entity("Backend.Core.Entities.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Category")
+                        .IsRequired();
 
                     b.Property<int>("FK_Area");
 
@@ -313,27 +262,16 @@ namespace Backend.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Person", b =>
+            modelBuilder.Entity("Backend.Core.Entities.Package", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Email")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(25);
+                    b.Property<int>("Number");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(25);
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired();
-
-                    b.Property<byte[]>("Picture")
-                        .IsRequired();
+                    b.Property<string>("Tag");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -341,7 +279,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Persons");
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Presentation", b =>
@@ -352,6 +290,10 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(400);
+
+                    b.Property<int>("FK_Branch");
+
+                    b.Property<string>("FileURL");
 
                     b.Property<bool>("IsAccepted");
 
@@ -376,9 +318,13 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Email");
+
                     b.Property<int>("FK_Booking");
 
-                    b.Property<int>("FK_Person");
+                    b.Property<string>("Name");
+
+                    b.Property<string>("PictureUrl");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -387,8 +333,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FK_Booking");
-
-                    b.HasIndex("FK_Person");
 
                     b.ToTable("Rerpresentatives");
                 });
@@ -449,11 +393,6 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Booking", b =>
                 {
-                    b.HasOne("Backend.Core.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("FK_Category")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Backend.Core.Entities.Company", "Company")
                         .WithMany()
                         .HasForeignKey("FK_Company")
@@ -469,17 +408,27 @@ namespace Backend.Migrations
                         .HasForeignKey("FK_Location")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Backend.Core.Entities.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("FK_Package")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany()
                         .HasForeignKey("FK_Presentation")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Category", b =>
+            modelBuilder.Entity("Backend.Core.Entities.Branch", b =>
                 {
-                    b.HasOne("Backend.Core.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("Fk_Location")
+                    b.HasOne("Backend.Core.Entities.Presentation")
+                        .WithMany("Branches")
+                        .HasForeignKey("FK_Branch")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.Booking")
+                        .WithMany("Branches")
+                        .HasForeignKey("FK_Branches")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -496,40 +445,6 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Contact", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("FK_Person")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.DetailAllocation", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Detail", "Detail")
-                        .WithMany()
-                        .HasForeignKey("FK_Detail")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Lecturer", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("FK_Person")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
-                        .WithMany()
-                        .HasForeignKey("FK_Presentation")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("Backend.Core.Entities.Location", b =>
                 {
                     b.HasOne("Backend.Core.Entities.Area", "Area")
@@ -543,11 +458,6 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("FK_Person")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

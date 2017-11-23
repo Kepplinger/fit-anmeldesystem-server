@@ -1,16 +1,17 @@
-mssql:
-ben: sa
-pw: FITdev123
-
-
-server:
-ben: fit_dev
-pw: DieTeekanneMachtDenTee2
-
-ben: administrator
-pw: Chicony147
-
-
-jenkins:
-ben: admin
-pw: admin
+mssql:                     |
+ben: sa                    |
+pw: FITdev123              |
+                           |
+----------------------------
+server:                    |
+ben: fit_dev               |
+pw: DieTeekanneMachtDenTee2|
+                           |
+ben: administrator         |
+pw: Chicony147             |
+                           |
+----------------------------
+jenkins:                   |
+ben: admin                 |
+pw: admin                  |
+----------------------------

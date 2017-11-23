@@ -13,16 +13,13 @@ namespace Backend.Persistence
 
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Area> Areas { get; set; }
-        public DbSet<Category> Categorys { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<Detail> Details { get; set; }
-        public DbSet<DetailAllocation> DetailAllocations { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Booking> Bookings { get; set; }
-        public DbSet<Lecturer> Lecturers { get; set; }
+        public DbSet<Branch> Branches { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<Person> Persons { get; set; }
+        public DbSet<Package> Packages { get; set; }
         public DbSet<Presentation> Presentations { get; set; }
         public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }

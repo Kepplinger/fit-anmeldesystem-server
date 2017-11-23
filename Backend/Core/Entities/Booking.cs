@@ -31,10 +31,21 @@ namespace Backend.Core.Entities
 
         public int FK_Presentation { get; set; }
 
-        [ForeignKey("FK_Category")]
-        public Category Category { get; set; }
-        public int FK_Category { get; set; }
+        [ForeignKey("FK_Branches")]
+        public List<Branch> Branches { get; set; }
+        public int FK_Branches { get; set; }
         [Required]
         public bool isAccepted { get; set; }
+
+        [ForeignKey("FK_Package")]
+        public Package Package { get; set; }
+        public int FK_Package { get; set; }
+
+        public string CompanyDescription { get; set; }
+        public string AdditionalInfo { get; set; }
+        public string Remarks { get; set; }
+        public bool ProvidesSummerJob { get; set; }
+        public bool ProvidesThesis { get; set; }
+        public DateTime CreationDate { get; set; }
     }
 }
