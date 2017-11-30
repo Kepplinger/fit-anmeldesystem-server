@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Backend.Controllers
 {
@@ -26,14 +27,14 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="101">If the item is null</response>
-        [HttpPut("")]
-        [ProducesResponseType(typeof(Booking), 200)]
+        [HttpPost]
+        [ProducesResponseType(200)]
         public IActionResult Create([FromBody] Booking temp)
         {
             try
             {
-                Console.WriteLine(temp.isAccepted);
-                _unitOfWork.BookingRepository.Insert(temp);
+                Console.WriteLine(temp);
+                //_unitOfWork.BookingRepository.Insert(temp);
                 _unitOfWork.Save();
                 return new StatusCodeResult(StatusCodes.Status200OK);
             }
@@ -53,7 +54,7 @@ namespace Backend.Controllers
 
         public IActionResult GetAll()
         {
-            var bookings = _unitOfWork.BookingRepository.Get();
+            var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
             return new ObjectResult(bookings);
         }
 
@@ -65,6 +66,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Booking), 200)]
         public IActionResult GetById(int id)
         {
+            
             var bookings = _unitOfWork.BookingRepository.GetById(id);
             return new ObjectResult(bookings);
         }

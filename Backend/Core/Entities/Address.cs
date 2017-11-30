@@ -25,7 +25,7 @@ namespace Backend.Core.Entities
 
         [Required]
         [MaxLength(10)]
-        public string  Number { get; set; }
+        public string  StreetNumber { get; set; }
 
         public string AddressAdditional {get; set;}
         

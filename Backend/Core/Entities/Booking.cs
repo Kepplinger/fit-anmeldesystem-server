@@ -34,6 +34,7 @@ namespace Backend.Core.Entities
         [ForeignKey("FK_Branches")]
         public List<Branch> Branches { get; set; }
         public int FK_Branches { get; set; }
+
         [Required]
         public bool isAccepted { get; set; }
 
