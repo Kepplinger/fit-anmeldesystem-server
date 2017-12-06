@@ -2,7 +2,7 @@
 
 ![htlleondinglogo](./images/htlleondinglogo.png)
 <br>
-![absedv_logo](./images\absedv_logo.png)
+![absedv_logo](./images/absedv_logo.png)
 
 ## Developer and Technical advice
 
@@ -43,12 +43,12 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MyComplexPassword!234" -p 14
 
 ## Technologies
 
-![csharp-e7b8fcd4ce](./images\csharp-e7b8fcd4ce.png)
-![docker_twitter_share](./images\docker_twitter_share.png)
-![mssql-server](./images\mssql-server.png)
-![net-core-logo-proposal](./images\net-core-logo-proposal.jpg)
-![restfulapi](./images\restfulapi.jpg)
-![windows-server-2016](./images\windows-server-2016.png)
+![csharp-e7b8fcd4ce](./images/csharp-e7b8fcd4ce.png)
+![docker_twitter_share](./images/docker_twitter_share.png)
+![mssql-server](./images/mssql-server.png)
+![net-core-logo-proposal](./images/net-core-logo-proposal.jpg)
+![restfulapi](./images/restfulapi.jpg)
+![windows-server-2016](./images/windows-server-2016.png)
 
 ## Documents
 
@@ -56,7 +56,7 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MyComplexPassword!234" -p 14
 
 <a href="https://www.dropbox.com/s/dvcypwakozlgwse/FITLOG_Pflichtenheft.docx?dl=0">Duty stapler</a>
 
-![FIT_ERD](./images\FIT_ERD.png)
+![FIT_ERD](./images/FIT_ERD.png)
 
 
 
