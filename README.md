@@ -1,6 +1,6 @@
 # FIT-Anmeldesystem-Backend
 
-![htlleondinglogo](images\htlleondinglogo.png)		![absedv_logo](images\absedv_logo.png)
+![htlleondinglogo](.\images\htlleondinglogo.png)		![absedv_logo](images\absedv_logo.png)
 
 ## Developer and Technical advice
 
