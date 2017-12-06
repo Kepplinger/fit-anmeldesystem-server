@@ -8,13 +8,13 @@
 
 ### Branches and Developer:
 
-- Andrej Sakal: Sakal-Dev
-- Felix Hofmann: Hofmann-Dev
+- <b>Andrej Sakal:</b> Sakal-Dev
+- <b>Felix Hofmann:</b> Hofmann-Dev
 
 ### API and Swagger:
 
-- localhost:8080/api/{controller}
-- localhost:8080/swagger
+- [http://localhost:8080/api/{controller}](http://localhost:8080/api/{controller})
+- [http://localhost:8080/swagger](http://localhost:8080/swagger)
 
 ### Microsoft SQL - Database in Docker
 
@@ -35,7 +35,7 @@ docker run -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=MyComplexPassword!234'  -p 1
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MyComplexPassword!234" -p 1433:1433 -d microsoft/mssql-server-linux
 
 1. Check logs of the run with "docker logs + first 3 numbers of hash""
-2. If finished connect to Database with <br><b>localhost:1433</b> <br><b>User: sa <br>Password: MyComplexPassword!234
+2. If finished connect to Database with <br><b>localhost:1433</b> <br><b>Database: Backend<br><b>User: sa <br>Password: MyComplexPassword!234
 
 <a href="https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker">-> Help</a>
 
@@ -57,6 +57,3 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=MyComplexPassword!234" -p 14
 <a href="https://www.dropbox.com/s/dvcypwakozlgwse/FITLOG_Pflichtenheft.docx?dl=0">Duty stapler</a>
 
 ![FIT_ERD](./images/FIT_ERD.png)
-
-
-
