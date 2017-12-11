@@ -33,9 +33,39 @@ namespace Backend.Controllers
         {
             try
             {
-                Console.WriteLine(temp);
-                //_unitOfWork.BookingRepository.Insert(temp);
-                _unitOfWork.Save();
+                if (temp != null && temp.Company.Id != 0)
+                {
+                    _unitOfWork.CompanyRepository.Get();
+                    /*if (toUpdate.FK_Address != 0 && toUpdate.Address != null)
+                    {
+                        _unitOfWork.AddressRepository.Update(toUpdate.Address);
+                        _unitOfWork.Save();
+                    }
+
+                    else if (toUpdate.FK_Address == 0) 
+                    {
+                        _unitOfWork.AddressRepository.Insert(toUpdate.Address);
+                        _unitOfWork.Save();
+                        toUpdate.FK_Address = toUpdate.Address.Id;
+                    }
+
+                    if (toUpdate.FK_Contact != 0 && toUpdate.Contact != null)
+                    {
+                        _unitOfWork.ContactRepository.Update(toUpdate.Contact);
+                        _unitOfWork.Save();
+                    }
+                    else if (toUpdate.FK_Contact == 0)
+                    {
+                        _unitOfWork.ContactRepository.Insert(toUpdate.Contact);
+                        _unitOfWork.Save();
+                        toUpdate.FK_Contact = toUpdate.Contact.Id;
+                    }*/
+                    _unitOfWork.CompanyRepository.Update(temp.Company);
+                    _unitOfWork.Save();
+                }
+                else if(temp != null && temp.Company.Id == 0) {
+                    
+                }
                 return new StatusCodeResult(StatusCodes.Status200OK);
             }
             catch (DbUpdateException ex)
@@ -66,7 +96,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Booking), 200)]
         public IActionResult GetById(int id)
         {
-            
             var bookings = _unitOfWork.BookingRepository.GetById(id);
             return new ObjectResult(bookings);
         }
