@@ -31,16 +31,7 @@ namespace Backend.Persistence.Repositories
             {
                 query = query.Where(filter);
             }
-            // alle gewünschten abhängigen Entitäten mitladen
-            foreach (string lvlTwoIncl in includeLevelTwoProps.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                string[] inclKeyValue = lvlTwoIncl.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < inclKeyValue.Length; i++)
-                {
-                    query = query.Include(p => p.Company).Include(x => x.Company.Address);
-
-                }
-            }
+            query = query.Include(p => p.Company).Include(p => p.Company.Address).Include(p => p.Company.Contact).Include(p => p.Presentation.Branches).Include(p => p.Location.Area).Include(p => p.Package).Include(p => p.Location.Area.Event);
 
             if (orderBy != null)
             {

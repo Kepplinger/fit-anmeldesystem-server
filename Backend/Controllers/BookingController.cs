@@ -35,8 +35,8 @@ namespace Backend.Controllers
             {
                 if (temp != null && temp.Company.Id != 0)
                 {
-                    _unitOfWork.CompanyRepository.Get();
-                    /*if (toUpdate.FK_Address != 0 && toUpdate.Address != null)
+                    _unitOfWork.CompanyRepository.Get(filter: p => p.Id == temp.Company.Id);
+                    /*if (toUpdate.Address != null && toUpdate.FK_Address != 0)
                     {
                         _unitOfWork.AddressRepository.Update(toUpdate.Address);
                         _unitOfWork.Save();
