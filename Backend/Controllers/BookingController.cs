@@ -68,7 +68,8 @@ namespace Backend.Controllers
                     _unitOfWork.Save();
                 }
                 else if(temp != null && temp.Company.Id == 0) {
-                    
+                    _unitOfWork.BookingRepository.Insert(temp);
+                    _unitOfWork.Save();
                 }
                 return new StatusCodeResult(StatusCodes.Status200OK);
             }
