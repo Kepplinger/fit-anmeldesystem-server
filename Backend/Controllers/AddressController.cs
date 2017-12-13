@@ -49,7 +49,7 @@ namespace Backend.Controllers
         [HttpGet("test")]
         public IActionResult Test()
         {
-            Address a = new Address() { PostalCode = "2222", Street = "Teststraße", City = "Wien", Number = "55" };
+            Address a = new Address() { PostalCode = "2222", Street = "Teststraße", City = "Wien", StreetNumber = "55" };
             _unitOfWork.AddressRepository.Insert(a);
             a.PostalCode = "2223";
             _unitOfWork.Save();

@@ -51,6 +51,12 @@ namespace StoreService.Persistence
             AddressRepository = new AddressRepository(_context);
 
             BookingRepository = new GenericRepository<Booking>(_context);
+
+            CompanyRepository = new GenericRepository<Company>(_context);
+
+            ContactRepository = new GenericRepository<Contact>(_context);
+
+
         }
 
         /// <summary>

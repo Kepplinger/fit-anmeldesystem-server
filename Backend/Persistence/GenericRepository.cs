@@ -121,8 +121,9 @@ namespace FITBackend.Persistence
             {
                 if (Context.Entry(entityToUpdate).State == EntityState.Added)
                     throw new DbUpdateException("Update performed on inserted but not commited dataset",default(Exception));
+                Context.Entry(existingEntity).State = EntityState.Added;
                 _dbSet.Local.Remove(existingEntity);
-                //EntityState state = Context.Entry(existingEntity).State;
+                EntityState state = Context.Entry(existingEntity).State;
                 //if ((state == EntityState.Unchanged) || (state == EntityState.Modified))
                 //{
                 //    _dbSet.Detach
