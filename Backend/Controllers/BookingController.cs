@@ -75,16 +75,17 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
+
+
        /// <summary>
         /// Returns all saved Bookings
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
         [HttpGet("")]
         [ProducesResponseType(typeof(IActionResult), 200)]
-
         public IActionResult GetAll()
         {
-            var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
+            var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation",includeLevelTwoProps: "Company:Address");
             return new ObjectResult(bookings);
         }
 

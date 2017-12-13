@@ -25,7 +25,6 @@ namespace StoreService.Persistence
         ///     Konkrete Standard-Repositories. Keine Ableitung nötig
         /// </summary>
         public IGenericRepository<Area> AreaRepository { get; }
-        public IGenericRepository<Booking> BookingRepository { get; }
         public IGenericRepository<Branch> BranchRepository { get; }
         public IGenericRepository<Company> CompanyRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
@@ -42,6 +41,9 @@ namespace StoreService.Persistence
         /// </summary>
         public IAddressRepository AddressRepository { get; }
 
+        public IBookingRepository BookingRepository { get; }
+
+
         public UnitOfWork() 
         {
             _context = new ApplicationDbContext();
@@ -50,7 +52,7 @@ namespace StoreService.Persistence
 
             AddressRepository = new AddressRepository(_context);
 
-            BookingRepository = new GenericRepository<Booking>(_context);
+            BookingRepository = new BookingRepository(_context);
 
             CompanyRepository = new GenericRepository<Company>(_context);
 
