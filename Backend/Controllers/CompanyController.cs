@@ -31,7 +31,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(void), 101)]
         public IActionResult Create([FromBody] Company temp)
         {
-            System.Console.WriteLine(temp.Name);
+            System.Console.WriteLine(temp.Contact);
             try
             {
                 if (temp != null)

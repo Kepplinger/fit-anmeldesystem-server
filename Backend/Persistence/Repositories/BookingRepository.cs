@@ -11,7 +11,7 @@ namespace Backend.Persistence.Repositories
 {
     public class BookingRepository : GenericRepository<Booking>, IBookingRepository
     {
-        private ApplicationDbContext _context = null;
+        private ApplicationDbContext _context;
 
         public BookingRepository(ApplicationDbContext context) : base(context)
         {
@@ -24,7 +24,7 @@ namespace Backend.Persistence.Repositories
         //    return boookings;
         //}
 
-        public Booking[] Get(Expression<Func<Booking, bool>> filter = null, Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = null, string includeProperties = "", string includeLevelTwoProps = "")
+        public Booking[] Get(Expression<Func<Booking, bool>> filter = null, Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = null, string includeProperties = "")
         {
             IQueryable<Booking> query = _dbSet;
             if (filter != null)
