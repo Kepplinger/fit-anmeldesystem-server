@@ -85,7 +85,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(IActionResult), 200)]
         public IActionResult GetAll()
         {
-            var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation",includeLevelTwoProps: "Company:Address");
+            var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
             return new ObjectResult(bookings);
         }
 

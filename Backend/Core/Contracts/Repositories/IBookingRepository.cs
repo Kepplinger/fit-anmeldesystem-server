@@ -9,7 +9,7 @@ namespace Backend.Persistence.Repositories
 {
     public interface IBookingRepository: IGenericRepository<Booking>
     {
-        Booking[] Get(Expression<Func<Booking, bool>> filter = null, Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = null, string includeProperties = "", string includeLevelTwoProps = "");
+        Booking[] Get(Expression<Func<Booking, bool>> filter = null, Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = null, string includeProperties = "");
 
     }
 }
