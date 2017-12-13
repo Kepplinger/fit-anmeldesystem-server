@@ -11,7 +11,7 @@ namespace Backend.Persistence.Repositories
 {
     public class BookingRepository : GenericRepository<Booking>, IBookingRepository
     {
-        private ApplicationDbContext _context;
+        private ApplicationDbContext _context = null;
 
         public BookingRepository(ApplicationDbContext context) : base(context)
         {

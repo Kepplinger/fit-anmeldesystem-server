@@ -35,7 +35,10 @@ namespace Backend.Controllers
             {
                 if (temp != null && temp.Company.Id != 0)
                 {
+                    // Do things when already is in db the company
                     _unitOfWork.CompanyRepository.Get(filter: p => p.Id == temp.Company.Id);
+
+
                     /*if (toUpdate.Address != null && toUpdate.FK_Address != 0)
                     {
                         _unitOfWork.AddressRepository.Update(toUpdate.Address);
