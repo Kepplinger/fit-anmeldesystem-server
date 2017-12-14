@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class ContactController
+    [Produces("application/json", "application/xml")]
+    public class ContactController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -21,46 +21,28 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
-        /// <summary>
-        /// Creates a Contact Object.
-        /// </summary>
-        /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Contact), 200)]
-        [ProducesResponseType(typeof(void), 101)]
-        public IActionResult Create([FromBody] Contact temp)
-        {
-           // System.Console.WriteLine(temp.Person.LastName);
-            try
-            {
-                if (temp != null)
-                {
-
-                    _unitOfWork.ContactRepository.Insert(temp);
-                    _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-
-                    return new StatusCodeResult(StatusCodes.Status200OK);
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
-        }
-
         /// <response code="200">Returns all available Contacts</response>
         /// <summary>
         /// Getting all Contacts from Database
         /// </summary>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Contact), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(Contact), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var contacts = _unitOfWork.ContactRepository.Get();
             return new ObjectResult(contacts);
+        }
+
+        /// <response code="200">Returns all available Contacts from one company</response>
+        /// <summary>
+        /// Getting all Contacts from Company
+        /// </summary>
+        [HttpGet("{companyId}")]
+        [ProducesResponseType(typeof(List<Contact>), StatusCodes.Status200OK)]
+        public IActionResult GetByCompanyId(int companyId)
+        {
+            Contact contact = _unitOfWork.CompanyRepository.Get(filter: con => con.Id == companyId).FirstOrDefault().Contact;
+            return new ObjectResult(contact);
         }
     }
 }

@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-    public class AreaController
+    [Produces("application/json", "application/xml")]
+    public class AreaController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -21,12 +22,13 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Deletes a specific Area.
+        /// Creates an Area
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Area), 200)]
+        /// <response code="400">If the item is null</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(Area), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Area), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Area temp)
         {
             System.Console.WriteLine(temp.Designation);
@@ -34,26 +36,25 @@ namespace Backend.Controllers
             {
                 if (temp != null)
                 {
-
                     _unitOfWork.AreaRepository.Insert(temp);
                     _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-
-                    return new StatusCodeResult(StatusCodes.Status200OK);
+                    return new ObjectResult(temp);
                 }
             }
             catch (DbUpdateException ex)
             {
-                System.Console.WriteLine(ex.Message);
+                String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
+                System.Console.WriteLine(error);
+                return new BadRequestObjectResult(error);
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
         /// <summary>
         /// Returns all saved Addresses
         /// </summary>
         /// <response code="200">Returns all available Addresses</response>
-        [HttpGet("GetAll")]
+        [HttpGet]
         [ProducesResponseType(typeof(Area), 200)]
         public IActionResult GetAll()
         {
