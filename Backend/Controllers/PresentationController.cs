@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class PresentationController
+    [Produces("application/json", "application/xml")]
+    public class PresentationController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -22,13 +22,13 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Creates a Presentation Object.
+        /// Creates a Presentation
         /// </summary>
-        /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Presentation), 200)]
-        [ProducesResponseType(typeof(void), 101)]
+        /// <response code="200">Returns the newly-created presentation</response>
+        /// <response code="400">If the item is null</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestResult),StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Presentation temp)
         {
             System.Console.WriteLine(temp.Description);
@@ -36,10 +36,8 @@ namespace Backend.Controllers
             {
                 if (temp != null)
                 {
-
                     _unitOfWork.PresentationRepository.Insert(temp);
                     _unitOfWork.Save();
-
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
@@ -47,15 +45,15 @@ namespace Backend.Controllers
             {
                 System.Console.WriteLine(ex.Message);
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
         /// <response code="200">Returns all available Presentations</response>
         /// <summary>
-        /// Getting all Presentations from Database
+        /// Getting all Presentations
         /// </summary>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Presentation), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var presentations = _unitOfWork.PresentationRepository.Get();

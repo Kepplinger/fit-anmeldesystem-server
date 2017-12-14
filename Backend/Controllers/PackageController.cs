@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class PackageController
+    [Produces("application/json", "application/xml")]
+    public class PackageController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -22,45 +22,15 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Creates a Package Object
-        /// </summary>
-        /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Package), 200)]
-        public IActionResult Create([FromBody] Package temp)
-        {
-            System.Console.WriteLine(temp.Name);
-            try
-            {
-                if (temp != null)
-                {
-
-                    _unitOfWork.PackageRepository.Insert(temp);
-                    _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-
-                    return new StatusCodeResult(StatusCodes.Status200OK);
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-        }
-
-        /// <summary>
-        /// Returns all saved Bookings
+        /// Returns all Packages
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
-
+        [HttpGet]
+        [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var packages = _unitOfWork.PackageRepository.Get();
-            return new ObjectResult(packages);
+            return new OkObjectResult(packages);
         }
     }
 }
