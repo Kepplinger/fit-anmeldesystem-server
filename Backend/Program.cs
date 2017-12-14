@@ -27,7 +27,7 @@ namespace Backend
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                   .UseUrls("http://localhost:8080")
+                   .UseUrls("http://absleo.htl-leonding.ac.at:8181")
             .UseStartup<Startup>()
             .Build();
     }

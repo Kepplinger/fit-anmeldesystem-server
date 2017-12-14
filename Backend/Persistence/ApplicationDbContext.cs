@@ -32,7 +32,7 @@ namespace Backend.Persistence
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
             Debug.Write(configuration.ToString());
-            string connectionString = configuration["ConnectionStrings:Sakal"];
+            string connectionString = configuration["ConnectionStrings:DefaultConnection"];
             optionsBuilder.UseSqlServer(connectionString);
         }
 

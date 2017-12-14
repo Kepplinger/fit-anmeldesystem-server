@@ -1,11 +1,15 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Backend.Persistence.Repositories
 {
-    internal interface IBookingRepository: IGenericRepository<Booking>
+    public interface IBookingRepository: IGenericRepository<Booking>
     {
-        List<Booking> getAllBookings();
+        Booking[] Get(Expression<Func<Booking, bool>> filter = null, Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = null, string includeProperties = "");
+
     }
 }

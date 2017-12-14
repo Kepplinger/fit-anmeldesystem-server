@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts.Repositories;
 using Backend.Core.Entities;
+using Backend.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,6 @@ namespace Backend.Core.Contracts
         /// </summary>
         IGenericRepository<Area> AreaRepository { get; }
         
-        IGenericRepository<Booking> BookingRepository { get; }
         IGenericRepository<Branch> BranchRepository { get; }
         IGenericRepository<Company> CompanyRepository { get; }
         IGenericRepository<Contact> ContactRepository { get; }
@@ -31,6 +31,8 @@ namespace Backend.Core.Contracts
         /// Erweiterte Repositories
         /// </summary>
         IAddressRepository AddressRepository { get; }
+        IBookingRepository BookingRepository { get; }
+
 
         void Save();
 

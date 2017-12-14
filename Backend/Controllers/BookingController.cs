@@ -35,7 +35,11 @@ namespace Backend.Controllers
             {
                 if (temp != null && temp.Company.Id != 0)
                 {
+                    // Do things when already is in db the company
                     _unitOfWork.CompanyRepository.Get(filter: p => p.Id == temp.Company.Id);
+
+
+
                     /*if (toUpdate.Address != null && toUpdate.FK_Address != 0)
                     {
                         _unitOfWork.AddressRepository.Update(toUpdate.Address);
@@ -64,7 +68,8 @@ namespace Backend.Controllers
                     _unitOfWork.Save();
                 }
                 else if(temp != null && temp.Company.Id == 0) {
-                    
+                    _unitOfWork.BookingRepository.Insert(temp);
+                    _unitOfWork.Save();
                 }
                 return new StatusCodeResult(StatusCodes.Status200OK);
             }
@@ -75,13 +80,14 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
+
+
        /// <summary>
         /// Returns all saved Bookings
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
         [HttpGet("")]
         [ProducesResponseType(typeof(IActionResult), 200)]
-
         public IActionResult GetAll()
         {
             var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
