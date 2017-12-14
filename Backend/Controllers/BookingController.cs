@@ -12,8 +12,8 @@ using Newtonsoft.Json;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class BookingController
+    [Produces("application/json", "application/xml")]
+    public class BookingController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -26,9 +26,10 @@ namespace Backend.Controllers
         /// Creates a Booking Object
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
+        /// <response code="400">If the item is null</response>
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Booking temp)
         {
             try
@@ -36,16 +37,13 @@ namespace Backend.Controllers
                 if (temp != null && temp.Company.Id != 0)
                 {
                     // Do things when already is in db the company
-                    _unitOfWork.CompanyRepository.Get(filter: p => p.Id == temp.Company.Id);
+                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == temp.Company.Id).FirstOrDefault();
 
-
-
-                    /*if (toUpdate.Address != null && toUpdate.FK_Address != 0)
+                    if (toUpdate.Address != null && toUpdate.FK_Address != 0)
                     {
                         _unitOfWork.AddressRepository.Update(toUpdate.Address);
                         _unitOfWork.Save();
                     }
-
                     else if (toUpdate.FK_Address == 0) 
                     {
                         _unitOfWork.AddressRepository.Insert(toUpdate.Address);
@@ -63,31 +61,37 @@ namespace Backend.Controllers
                         _unitOfWork.ContactRepository.Insert(toUpdate.Contact);
                         _unitOfWork.Save();
                         toUpdate.FK_Contact = toUpdate.Contact.Id;
-                    }*/
+                    }
                     _unitOfWork.CompanyRepository.Update(temp.Company);
                     _unitOfWork.Save();
+                    return new OkObjectResult(temp);
                 }
                 else if(temp != null && temp.Company.Id == 0) {
+                    _unitOfWork.AddressRepository.Insert(temp.Company.Address);
+                    _unitOfWork.ContactRepository.Insert(temp.Company.Contact);
+                    _unitOfWork.CompanyRepository.Insert(temp.Company);
                     _unitOfWork.BookingRepository.Insert(temp);
                     _unitOfWork.Save();
+                    return new OkObjectResult(temp);
                 }
-                return new StatusCodeResult(StatusCodes.Status200OK);
             }
             catch (DbUpdateException ex)
             {
-                System.Console.WriteLine(ex.Message);
+                String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
+                System.Console.WriteLine(error);
+                return new BadRequestObjectResult(error);
             }
-            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            return new BadRequestObjectResult(temp);
         }
 
 
 
-       /// <summary>
+        /// <summary>
         /// Returns all saved Bookings
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
-        [HttpGet("")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
@@ -99,7 +103,7 @@ namespace Backend.Controllers
         /// Getting all bookings from Database
         /// </summary>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Booking), 200)]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetById(int id)
         {
             var bookings = _unitOfWork.BookingRepository.GetById(id);
