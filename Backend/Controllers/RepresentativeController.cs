@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class RepresentativeController
+    [Produces("application/json", "application/xml")]
+    public class RepresentativeController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -22,25 +22,21 @@ namespace Backend.Controllers
         }
 
        /// <summary>
-        /// Creates a Representative Object.
+        /// Creates a Representative
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Representative), 200)]
-        [ProducesResponseType(typeof(void), 101)]
+        /// <response code="400">If the item is null</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(Representative), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequestResult), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Representative temp)
         {
-           // System.Console.WriteLine(temp.Person.LastName);
             try
             {
                 if (temp != null)
                 {
-
                     _unitOfWork.RepresentativeRepository.Insert(temp);
                     _unitOfWork.Save();
-                    //System.Console.WriteLine(temp.Company.Name);
-
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
@@ -48,19 +44,19 @@ namespace Backend.Controllers
             {
                 System.Console.WriteLine(ex.Message);
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
         /// <response code="200">Returns all available Representatives</response>
         /// <summary>
         /// Getting all Representatives from Database
         /// </summary>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Representative), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(Representative), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var representatives = _unitOfWork.RepresentativeRepository.Get();
-            return new ObjectResult(representatives);
+            return new OkObjectResult(representatives);
         }
     }
 }

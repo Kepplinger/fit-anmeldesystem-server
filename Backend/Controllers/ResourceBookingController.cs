@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class ResourceBookingController
+    [Produces("application/json", "application/xml")]
+    public class ResourceBookingController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -25,10 +25,10 @@ namespace Backend.Controllers
         /// Creates a ResourceBooking Object.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(ResourceBooking), 200)]
-        [ProducesResponseType(typeof(void), 101)]
+        /// <response code="400">If the item is null</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(ResourceBooking), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] ResourceBooking temp)
         {
             System.Console.WriteLine(temp.Resource.Description);
@@ -47,19 +47,19 @@ namespace Backend.Controllers
             {
                 System.Console.WriteLine(ex.Message);
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
         /// <response code="200">Returns all available ResourceBookings</response>
         /// <summary>
         /// Getting all ResourceBookings from Database
         /// </summary>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(ResourceBooking), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(ResourceBooking), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var resourceBookings = _unitOfWork.ResourceBookingRepository.Get();
-            return new ObjectResult(resourceBookings);
+            return new OkObjectResult(resourceBookings);
         }
     }
 }
