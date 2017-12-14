@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
-    public class EventController
+    [Produces("application/json", "application/xml")]
+    public class EventController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
@@ -24,10 +24,10 @@ namespace Backend.Controllers
         /// Creates a Event Object.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Core.Entities.Event), 200)]
-        [ProducesResponseType(typeof(void), 101)]
+        /// <response code="400">If the item is null</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Core.Entities.Event temp)
         {
             System.Console.WriteLine(temp.EventDate);
@@ -37,7 +37,6 @@ namespace Backend.Controllers
                 {
                     _unitOfWork.EventRepository.Insert(temp);
                     _unitOfWork.Save();
-
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
@@ -45,15 +44,15 @@ namespace Backend.Controllers
             {
                 System.Console.WriteLine(ex.Message);
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
         /// <response code="200">Returns all available Events</response>
         /// <summary>
         /// Getting all Events from Database
         /// </summary>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Core.Entities.Event), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var events = _unitOfWork.EventRepository.Get();

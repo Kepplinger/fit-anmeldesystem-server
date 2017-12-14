@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
-
+    [Produces("application/json", "application/xml")]
     public class ResourceController
     {
         private IUnitOfWork _unitOfWork;
@@ -25,10 +25,10 @@ namespace Backend.Controllers
         /// Creates a Resource Object.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
-        /// <response code="101">If the item is null</response>
-        [HttpPut("Create")]
-        [ProducesResponseType(typeof(Resource), 200)]
-        [ProducesResponseType(typeof(void), 101)]
+        /// <response code="400">If the item is null</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Resource temp)
         {
             System.Console.WriteLine(temp.Description);
@@ -39,7 +39,6 @@ namespace Backend.Controllers
 
                     _unitOfWork.ResourceRepository.Insert(temp);
                     _unitOfWork.Save();
-
                     return new StatusCodeResult(StatusCodes.Status200OK);
                 }
             }
@@ -47,7 +46,7 @@ namespace Backend.Controllers
             {
                 System.Console.WriteLine(ex.Message);
             }
-            return new StatusCodeResult(StatusCodes.Status101SwitchingProtocols);
+            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
     
@@ -55,12 +54,12 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all Resources from Database
         /// </summary>
-        [HttpGet("GetAll")]
-        [ProducesResponseType(typeof(Resource), 200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
             var resources = _unitOfWork.ResourceRepository.Get();
-            return new ObjectResult(resources);
+            return new OkObjectResult(resources);
         }
     }
 }
