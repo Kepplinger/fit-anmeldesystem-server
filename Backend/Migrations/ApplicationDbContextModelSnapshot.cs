@@ -31,10 +31,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(7);
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(50);
@@ -46,6 +42,9 @@ namespace Backend.Migrations
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Zip")
+                        .IsRequired();
 
                     b.HasKey("Id");
 

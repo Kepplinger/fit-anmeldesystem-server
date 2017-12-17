@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
+
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 
@@ -16,16 +11,16 @@ namespace Backend.Core.Entities
         public string City { get; set; }
 
         [Required]
-        [MaxLength(7)]
-        public string PostalCode { get; set; }
-
-        [Required]
         [MaxLength(50)]
         public string Street { get; set; }
 
         [Required]
         [MaxLength(10)]
-        public string  StreetNumber { get; set; }
+        public string StreetNumber { get; set; }
+
+        [Required]
+        [MaxLength(10)]
+        public string ZipCode { get; set; }
 
         public string AddressAdditional {get; set;}
         

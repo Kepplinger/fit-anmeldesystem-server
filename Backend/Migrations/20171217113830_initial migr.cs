@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class MajorDBupdate : Migration
+    public partial class initialmigr : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,10 +17,10 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AddressAdditional = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
-                    Number = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    PostalCode = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
                     Street = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Timestamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                    StreetNumber = table.Column<int>(type: "int", nullable: false),
+                    Timestamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    Zip = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,7 +62,7 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Package",
+                name: "Packages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -74,7 +74,7 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Package", x => x.Id);
+                    table.PrimaryKey("PK_Packages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -233,9 +233,9 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Bookings_Package_FK_Package",
+                        name: "FK_Bookings_Packages_FK_Package",
                         column: x => x.FK_Package,
-                        principalTable: "Package",
+                        principalTable: "Packages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -247,7 +247,7 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Branch",
+                name: "Branches",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -259,15 +259,15 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Branch", x => x.Id);
+                    table.PrimaryKey("PK_Branches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Branch_Presentations_FK_Branch",
+                        name: "FK_Branches_Presentations_FK_Branch",
                         column: x => x.FK_Branch,
                         principalTable: "Presentations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Branch_Bookings_FK_Branches",
+                        name: "FK_Branches_Bookings_FK_Branches",
                         column: x => x.FK_Branches,
                         principalTable: "Bookings",
                         principalColumn: "Id",
@@ -356,13 +356,13 @@ namespace Backend.Migrations
                 column: "FK_Presentation");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Branch_FK_Branch",
-                table: "Branch",
+                name: "IX_Branches_FK_Branch",
+                table: "Branches",
                 column: "FK_Branch");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Branch_FK_Branches",
-                table: "Branch",
+                name: "IX_Branches_FK_Branches",
+                table: "Branches",
                 column: "FK_Branches");
 
             migrationBuilder.CreateIndex(
@@ -399,7 +399,7 @@ namespace Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Branch");
+                name: "Branches");
 
             migrationBuilder.DropTable(
                 name: "Rerpresentatives");
@@ -420,7 +420,7 @@ namespace Backend.Migrations
                 name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "Package");
+                name: "Packages");
 
             migrationBuilder.DropTable(
                 name: "Presentations");

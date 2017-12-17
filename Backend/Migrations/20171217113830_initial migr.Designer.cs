@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20171114083005_Name update")]
-    partial class Nameupdate
+    [Migration("20171217113830_initial migr")]
+    partial class initialmigr
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,21 +32,18 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(10);
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(7);
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<int>("StreetNumber");
+
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Zip")
+                        .IsRequired();
 
                     b.HasKey("Id");
 

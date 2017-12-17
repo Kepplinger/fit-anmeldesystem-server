@@ -68,10 +68,13 @@ namespace Backend.Controllers
                 }
                 else if(temp != null && temp.Company.Id == 0) {
                     _unitOfWork.AddressRepository.Insert(temp.Company.Address);
-                    _unitOfWork.ContactRepository.Insert(temp.Company.Contact);
-                    _unitOfWork.CompanyRepository.Insert(temp.Company);
-                    _unitOfWork.BookingRepository.Insert(temp);
                     _unitOfWork.Save();
+                    _unitOfWork.ContactRepository.Insert(temp.Company.Contact);
+                    _unitOfWork.Save();
+                    //_unitOfWork.CompanyRepository.Insert(temp.Company);
+
+                    //_unitOfWork.BookingRepository.Insert(temp);
+                    //_unitOfWork.Save();
                     return new OkObjectResult(temp);
                 }
             }

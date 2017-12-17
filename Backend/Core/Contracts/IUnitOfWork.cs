@@ -1,5 +1,4 @@
-﻿using Backend.Core.Contracts.Repositories;
-using Backend.Core.Entities;
+﻿using Backend.Core.Entities;
 using Backend.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
@@ -27,10 +26,11 @@ namespace Backend.Core.Contracts
         IGenericRepository<Representative> RepresentativeRepository { get; }
         IGenericRepository<Resource> ResourceRepository { get; }
         IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
+        IGenericRepository<Address> AddressRepository { get; }
+
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
-        IAddressRepository AddressRepository { get; }
         IBookingRepository BookingRepository { get; }
 
 

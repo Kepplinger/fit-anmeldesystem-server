@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20171114075215_Major DB update")]
-    partial class MajorDBupdate
+    [Migration("20171217114546_added some validation to adress")]
+    partial class addedsomevalidationtoadress
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,21 +32,20 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(10);
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(7);
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<string>("StreetNumber")
+                        .IsRequired()
+                        .HasMaxLength(10);
+
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Zip")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -148,7 +147,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("FK_Branches");
 
-                    b.ToTable("Branch");
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Company", b =>
@@ -280,7 +279,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Package");
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Presentation", b =>

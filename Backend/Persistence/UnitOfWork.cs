@@ -11,7 +11,6 @@ using Backend.Core.Entities;
 using FITBackend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Backend.Persistence.Repositories;
-using Backend.Core.Contracts.Repositories;
 
 namespace StoreService.Persistence
 {
@@ -35,11 +34,12 @@ namespace StoreService.Persistence
         public IGenericRepository<Representative> RepresentativeRepository { get; }
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
+        public IGenericRepository<Address> AddressRepository { get; }
+
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
         /// </summary>
-        public IAddressRepository AddressRepository { get; }
 
         public IBookingRepository BookingRepository { get; }
 
@@ -50,7 +50,7 @@ namespace StoreService.Persistence
 
             AreaRepository = new GenericRepository<Area>(_context);
 
-            AddressRepository = new AddressRepository(_context);
+            AddressRepository = new GenericRepository<Address>(_context);
 
             BookingRepository = new BookingRepository(_context);
 
