@@ -48,5 +48,10 @@ namespace Backend.Core.Entities
         public bool ProvidesSummerJob { get; set; }
         public bool ProvidesThesis { get; set; }
         public DateTime CreationDate { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("[Booking: FK_Event={0}, Event={1}, Company={2}, FK_Company={3}, Location={4}, FK_Location={5}, Presentation={6}, FK_Presentation={7}, Branches={8}, FK_Branches={9}, isAccepted={10}, Package={11}, FK_Package={12}, CompanyDescription={13}, AdditionalInfo={14}, Remarks={15}, ProvidesSummerJob={16}, ProvidesThesis={17}, CreationDate={18}]", FK_Event, Event, Company, FK_Company, Location, FK_Location, Presentation, FK_Presentation, Branches, FK_Branches, isAccepted, Package, FK_Package, CompanyDescription, AdditionalInfo, Remarks, ProvidesSummerJob, ProvidesThesis, CreationDate);
+        }
     }
 }

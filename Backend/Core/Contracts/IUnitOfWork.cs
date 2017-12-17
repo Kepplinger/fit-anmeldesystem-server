@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Backend.Core.Contracts
 {
@@ -39,6 +40,10 @@ namespace Backend.Core.Contracts
         void DeleteDatabase();
 
         void FillDb();
+
+        IDbContextTransaction BeginTransaction();
+
+        void Commit();
 
     }
 }

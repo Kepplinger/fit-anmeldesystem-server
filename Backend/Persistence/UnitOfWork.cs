@@ -11,6 +11,7 @@ using Backend.Core.Entities;
 using FITBackend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Backend.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace StoreService.Persistence
 {
@@ -92,10 +93,18 @@ namespace StoreService.Persistence
             _context.Database.EnsureDeleted();
         }
 
-        public void FillDb()
-        {
-
+        public IDbContextTransaction BeginTransaction() {
+            return _context.Database.BeginTransaction();
         }
 
+        public void Commit()
+        {
+            _context.Database.CommitTransaction();
+        }
+
+        public void FillDb()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
