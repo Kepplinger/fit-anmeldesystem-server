@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171217221149_repre change")]
+    partial class reprechange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,8 +99,6 @@ namespace Backend.Migrations
                     b.Property<int>("FK_Package");
 
                     b.Property<int>("FK_Presentation");
-
-                    b.Property<int>("FK_Representatives");
 
                     b.Property<bool>("ProvidesSummerJob");
 
@@ -188,6 +187,8 @@ namespace Backend.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired();
+
+                    b.Property<string>("SubjectAreas");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -333,8 +334,6 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Booking");
 
-                    b.Property<int?>("FK_Representatives");
-
                     b.Property<string>("ImageUrl");
 
                     b.Property<string>("Name");
@@ -346,8 +345,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FK_Booking");
-
-                    b.HasIndex("FK_Representatives");
 
                     b.ToTable("Rerpresentatives");
                 });
@@ -473,11 +470,6 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Booking", "Booking")
                         .WithMany()
                         .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Booking")
-                        .WithMany("Representatives")
-                        .HasForeignKey("FK_Representatives")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

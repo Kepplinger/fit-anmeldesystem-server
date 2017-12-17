@@ -12,11 +12,7 @@ namespace Backend.Core.Entities
     {
         public string Name { get; set; }
         public string Email { get; set; }
-        public string PictureUrl { get; set; }
+        public string ImageUrl { get; set; }
 
-        [ForeignKey("FK_Booking")]
-        public Booking Booking { get; set; }
-
-        public int FK_Booking { get; set; }
     }
 }

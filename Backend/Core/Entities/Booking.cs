@@ -35,6 +35,11 @@ namespace Backend.Core.Entities
         public List<Branch> Branches { get; set; }
         public int FK_Branches { get; set; }
 
+
+        [ForeignKey("FK_Representatives")]
+        public List<Representative> Representatives { get; set; }
+        public int FK_Representatives { get; set; }
+
         [Required]
         public bool isAccepted { get; set; }
 

@@ -79,8 +79,8 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                         _unitOfWork.CompanyRepository.Insert(temp.Company);
                         _unitOfWork.Save();
-
-
+                        _unitOfWork.RepresentativeRepository.InsertMany(temp.Representatives);
+                        _unitOfWork.Save();
 
                         transaction.Commit();
                         return new OkObjectResult(temp);

@@ -59,7 +59,9 @@ namespace StoreService.Persistence
 
             ContactRepository = new GenericRepository<Contact>(_context);
 
+            RepresentativeRepository = new GenericRepository<Representative>(_context);
 
+            BranchRepository = new GenericRepository<Branch>(_context);
         }
 
         /// <summary>

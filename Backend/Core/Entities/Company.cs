@@ -35,8 +35,6 @@ namespace Backend.Core.Entities
         [Required]
         public string Branch { get; set; }
 
-        public string SubjectAreas { get; set; }
-
         public int EstablishmentsCountInt { get; set; }
 
         public string EstablishmentsInt { get; set; }
