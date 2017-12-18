@@ -38,7 +38,7 @@ INSERT INTO Areas (Designation, GraphicURL)
 VALUES ('2 Stkock', 'www.stock2.com')
 
 INSERT INTO Events (EventDate, RegistrationStart, RegistrationEnd, IsLocked, FK_Areas)
-VALUES ('2017-11-30 00:00:00', '2017-11-01 00:00:00','2018-11-30 00:00:00', 1, 1);
+VALUES ('2017-11-30 00:00:00', '2017-11-01 00:00:00','2018-11-30 00:00:00', 0, 1);
 
 INSERT INTO Branches (Name)
 VALUES ('Informatik/Medientechnik');
@@ -57,3 +57,6 @@ VALUES ('Presentationsbeschreibung', 'www.fileurl.com', 1, 0, '252', 'Presentati
 
 INSERT Into Bookings (FK_Branches, FK_Company, FK_Event, FK_Location, FK_FitPackage, FK_Presentation, AdditionalInfo, CreationDate, isAccepted, ProvidesSummerJob, ProvidesThesis, Remarks)
 VALUES (1,1,1,1,1,1,'additional info', '2017-11-05 00:00:00', 0, 1, 1,'Bemerkungen')
+
+
+select * from Events;

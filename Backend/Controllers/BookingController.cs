@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections.Generic;
 
 namespace Backend.Controllers
 {
@@ -92,26 +93,30 @@ namespace Backend.Controllers
                         temp.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == temp.FitPackage.Id).FirstOrDefault();
                         _unitOfWork.Save();
 
+
+                        List<Branch> branchTemp = new List<Branch>();
                         for (int i = 0; i < temp.Branches.Count(); i++)
                         {
-                            temp.Branches = new System.Collections.Generic.List<Branch>();
-                            temp.Branches.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == temp.Branches.ElementAt(i).Id).FirstOrDefault());
+                            branchTemp.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == temp.Branches.ElementAt(i).Id).FirstOrDefault());
                             _unitOfWork.Save();
                         }
+                        temp.Branches = branchTemp;
 
+                        List<Resource> resourceTemp = new List<Resource>();
                         for (int i = 0; i < temp.Resources.Count(); i++)
                         {
-                            temp.Resources = new System.Collections.Generic.List<Resource>();
-                            temp.Resources.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == temp.Resources.ElementAt(i).Id).FirstOrDefault());
+                            resourceTemp.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == temp.Resources.ElementAt(i).Id).FirstOrDefault());
                             _unitOfWork.Save();
                         }
+                        temp.Resources = resourceTemp;
 
-                        if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == false).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault() != null)
+                        if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == true).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault() != null)
                         {
                             temp.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault();
                             _unitOfWork.Save();
                         }
-
+                        _unitOfWork.BookingRepository.Insert(temp);
+                        _unitOfWork.Save();
                         transaction.Commit();
                         return new OkObjectResult(temp);
                     }

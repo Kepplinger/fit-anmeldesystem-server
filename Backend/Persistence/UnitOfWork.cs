@@ -72,6 +72,7 @@ namespace StoreService.Persistence
 
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
 
+            EventRepository = new GenericRepository<Event>(_context);
 
         }
 
