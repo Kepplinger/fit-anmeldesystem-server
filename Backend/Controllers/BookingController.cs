@@ -86,6 +86,7 @@ namespace Backend.Controllers
                         _unitOfWork.RepresentativeRepository.InsertMany(temp.Representatives);
                         _unitOfWork.Save();
 
+                        // Get the entity from the DB and give reference to it
                         temp.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == temp.Location.Area.Id).FirstOrDefault();
                         _unitOfWork.LocationRepository.Insert(temp.Location);
                         _unitOfWork.Save();
@@ -94,6 +95,7 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
 
 
+                        // Fill up the list
                         List<Branch> branchTemp = new List<Branch>();
                         for (int i = 0; i < temp.Branches.Count(); i++)
                         {
@@ -110,18 +112,23 @@ namespace Backend.Controllers
                         }
                         temp.Resources = resourceTemp;
 
+
+                        // Get the current active Event (nimmt an das es nur 1 gibt)
                         if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == false).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault() != null)
                         {
                             temp.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault();
                             _unitOfWork.Save();
                         }
                         else {
+                            //falls es kein aktives gibt transaction rollbackn
                             transaction.Rollback();
                         }
 
+                        // Finales Inserten des Booking Repositorys
                         _unitOfWork.BookingRepository.Insert(temp);
                         _unitOfWork.Save();
                         transaction.Commit();
+
                         return new OkObjectResult(temp);
                     }
 
@@ -142,7 +149,6 @@ namespace Backend.Controllers
         }
 
 
-
         /// <summary>
         /// Returns all saved Bookings
         /// </summary>
@@ -155,15 +161,27 @@ namespace Backend.Controllers
             return new ObjectResult(bookings);
         }
 
-        /// <response code="200">Returns the available bookings with the </response>
+        /// <response code="200">Returning Booking by id</response>
         /// <summary>
-        /// Getting all bookings from Database
+        /// Getting a booking by the id
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetById(int id)
         {
             var bookings = _unitOfWork.BookingRepository.GetById(id);
+            return new ObjectResult(bookings);
+        }
+
+        /// <response code="200">Returns the available bookings by company id</response>
+        /// <summary>
+        /// Getting all bookings by company id
+        /// </summary>
+        [HttpGet("getBookingByCompanyId/{id}")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
+        public IActionResult GetbookingByCompanyId(int id)
+        {
+            var bookings = _unitOfWork.BookingRepository.Get(p => p.Company.Id == id);
             return new ObjectResult(bookings);
         }
     }
