@@ -25,8 +25,8 @@ namespace Backend.Core.Entities
         public int FK_Location { get; set; }
 
         [ForeignKey("FK_Presentation")]
-        public Presentation Presentation { get; set; }
-        public int FK_Presentation { get; set; }
+        public virtual Presentation Presentation { get; set; }
+        public int? FK_Presentation { get; set; }
 
         [ForeignKey("FK_Branches")]
         public List<Branch> Branches { get; set; }

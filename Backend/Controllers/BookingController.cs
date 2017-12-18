@@ -110,11 +110,15 @@ namespace Backend.Controllers
                         }
                         temp.Resources = resourceTemp;
 
-                        if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == true).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault() != null)
+                        if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == false).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault() != null)
                         {
                             temp.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault();
                             _unitOfWork.Save();
                         }
+                        else {
+                            transaction.Rollback();
+                        }
+
                         _unitOfWork.BookingRepository.Insert(temp);
                         _unitOfWork.Save();
                         transaction.Commit();

@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Backend.Core.Entities
 {
-    []
     public class Presentation : EntityObject
     {
         [ForeignKey("FK_Branch")]
