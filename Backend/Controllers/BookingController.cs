@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace Backend.Controllers
 {

@@ -1,9 +1,6 @@
 ﻿using Backend.Core.Entities;
-using Backend.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using Backend.Core.Contracts;
 
 namespace Backend.Controllers
