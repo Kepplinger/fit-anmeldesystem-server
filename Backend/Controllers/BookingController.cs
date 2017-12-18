@@ -28,7 +28,8 @@ namespace Backend.Controllers
         /// <response code="400">If the item is null</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+        [Consumes("application/json")]
         public IActionResult Create([FromBody] Booking temp)
         {
 
@@ -41,7 +42,7 @@ namespace Backend.Controllers
             return new BadRequestObjectResult(temp);
         }
 
-
+        [NonAction]
         public IActionResult Update(Booking temp) {
 
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
@@ -94,6 +95,7 @@ namespace Backend.Controllers
             }
         }
 
+        [NonAction]
         public IActionResult Insert(Booking temp) {
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {

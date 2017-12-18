@@ -23,7 +23,7 @@ namespace Backend
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "FIT-Anmelde System - Server Swagger", Version = "V1.1" });
+                c.SwaggerDoc("v2", new Info { Title = "FIT Anmelde System - V2.0", Version = "v2" });
             });
 
         }
@@ -43,7 +43,7 @@ namespace Backend
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FIT-Anmelde System V1.1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "FITAS2.0");
             });
 
 
