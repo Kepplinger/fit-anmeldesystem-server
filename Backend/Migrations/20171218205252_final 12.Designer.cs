@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171218205252_final 12")]
+    partial class final12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,6 +83,8 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("AdditionalInfo");
+
+                    b.Property<string>("CompanyDescription");
 
                     b.Property<DateTime>("CreationDate");
 

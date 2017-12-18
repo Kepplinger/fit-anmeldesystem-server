@@ -27,6 +27,7 @@ namespace StoreService.Persistence
         public IGenericRepository<Area> AreaRepository { get; }
         public IGenericRepository<Branch> BranchRepository { get; }
         public IGenericRepository<Company> CompanyRepository { get; }
+        public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
         public IGenericRepository<Event> EventRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
@@ -68,6 +69,8 @@ namespace StoreService.Persistence
             PackageRepository = new GenericRepository<FitPackage>(_context);
 
             ResourceRepository = new GenericRepository<Resource>(_context);
+
+            ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
 
 
         }

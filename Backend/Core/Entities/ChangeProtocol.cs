@@ -1,18 +1,20 @@
 ﻿using System;
+using Backend.Core.Contracts;
+
 namespace Backend.Core.Entities
 {
-    public class ChangeProtocol
+    public class ChangeProtocol : EntityObject
     {
         public ChangeProtocol(){}
 
-        public string tableName { get; set; }
+        public string TableName { get; set; }
 
-        public string columName { get; set; }
+        public string ColumName { get; set; }
 
-        public DateTime changeDate { get; set; }
+        public DateTime ChangeDate { get; set; }
 
-        public string newValue { get; set; }
+        public string NewValue { get; set; }
 
-        public string oldValue { get; set; }
+        public string OldValue { get; set; }
     }
 }

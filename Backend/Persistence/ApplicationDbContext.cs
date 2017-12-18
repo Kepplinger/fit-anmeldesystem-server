@@ -16,6 +16,7 @@ namespace Backend.Persistence
         public DbSet<Company> Companies { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<ChangeProtocol> ChangeProtocols { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Location> Locations { get; set; }
