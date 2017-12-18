@@ -11,12 +11,15 @@ namespace Backend.Core.Entities
 
         [Required]
         public string RoomNumber { get; set; }
+
         [Required]
         [MaxLength(30)]
         public string Title { get; set; }
+
         [Required]
-        [MaxLength(400)]
+        [MaxLength(500)]
         public string Description { get; set; }
+
         [Required]
         public bool IsAccepted { get; set; }
 

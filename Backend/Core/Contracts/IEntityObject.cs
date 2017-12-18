@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Backend.Core.Contracts
+﻿namespace Backend.Core.Contracts
 {
     /// <summary>
     /// Jede Entität muss eine Id und ein Concurrency-Feld haben

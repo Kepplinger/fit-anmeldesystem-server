@@ -16,7 +16,7 @@ namespace Backend.Core.Entities
         [Required]
         public bool IsLocked { get; set; }
 
-        [ForeignKey("FK_Areas")]
+        [ForeignKey("FK_Areas"),Required]
         public List<Area> Areas { get; set; }
         public int FK_Areas { get; set; }
 
