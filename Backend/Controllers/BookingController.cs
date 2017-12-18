@@ -70,7 +70,7 @@ namespace Backend.Controllers
 
                         return new OkObjectResult(temp);
                     }
-                    else if (temp != null && temp.Company.Id == 0)
+                    else if ((temp.Location.Area != null) && (temp != null && temp.Company.Id == 0))
                     {
                         // Insert new Company and Booking ----------------------
                         _unitOfWork.AddressRepository.Insert(temp.Company.Address);
@@ -81,6 +81,7 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                         _unitOfWork.RepresentativeRepository.InsertMany(temp.Representatives);
                         _unitOfWork.Save();
+                        temp.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == temp.Location.Area.Id).FirstOrDefault();
                         _unitOfWork.LocationRepository.Insert(temp.Location);
                         _unitOfWork.Save();
 

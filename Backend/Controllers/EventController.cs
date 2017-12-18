@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Core.Entities;
 
 namespace Backend.Controllers
 {
@@ -47,16 +48,20 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
-        /// <response code="200">Returns all available Events</response>
+        /// <response code="200">Return current Event</response>
         /// <summary>
         /// Getting all Events from Database
         /// </summary>
-        [HttpGet]
+        [HttpGet("current")]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        public IActionResult GetAll()
+        public IActionResult GetCurrentEvent()
         {
-            var events = _unitOfWork.EventRepository.Get();
-            return new ObjectResult(events);
+            Event e = new Event();
+            e.IsLocked = false;
+            e.RegistrationEnd = DateTime.Now.AddDays(30);
+            e.RegistrationStart = DateTime.Now.AddDays(-1);
+            e.Areas.AddRange(_unitOfWork.AreaRepository.Get().ToList());
+            return new ObjectResult(e);
         }
     }
 }

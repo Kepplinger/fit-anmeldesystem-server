@@ -10,17 +10,26 @@ VALUES ('Felix', 'Hofmann', 'andi.sakal15@gmail.com', '+4369917209297')
 INSERT INTO Companies (FK_Address, FK_Contact, Name, Homepage, LogoUrl, PhoneNumber, Email, EstablishmentsAut, EstablishmentsCountAut) 
 VALUES (1,1,'Sakal IT', 'www.sakal-it.at', 'www.sakal-it.at/logo', '+4369917202927', 'andi.sakal15@gmail.com', 'Linz', 1)
 
-INSERT INTO Packages (Name, Discriminator, Price) 
-VALUES ('Grundpaket', 1, 200)
+INSERT INTO Packages (Name, Discriminator, Price, Description) 
+VALUES ('Grundpaket', 1, 200, 'Beim Grundpaket ist enthalten...')
 
-INSERT INTO Packages (Name, Discriminator, Price) 
-VALUES ('Sponsorpaket', 2, 400)
+INSERT INTO Packages (Name, Discriminator, Price, Description) 
+VALUES ('Sponsorpaket', 2, 400, 'Beim Sponsorpaket ist enthalten...')
 
-INSERT INTO Packages (Name, Discriminator, Price) 
-VALUES ('Vortragspaket', 3, 600)
+INSERT INTO Packages (Name, Discriminator, Price, Description) 
+VALUES ('Vortragspaket', 3, 600, 'Beim Vortragspaket ist enthalten...')
 
 INSERT INTO Resources (Name, [Description])
 VALUES ('Wlan','Es wird Ihnen ein Wlan Modul zur Verfügung gestellt')
+
+INSERT INTO Resources (Name, [Description])
+VALUES ('Stehtisch','Ein Stehtisch')
+
+INSERT INTO Resources (Name, [Description])
+VALUES ('Sessel','Ein Sessel')
+
+INSERT INTO Resources (Name, [Description])
+VALUES ('Strom','Strom')
 
 INSERT INTO Areas (Designation, GraphicURL) 
 VALUES ('Erdgeschoss', 'www.linktourlofstandplatzwahl')
