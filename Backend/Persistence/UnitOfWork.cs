@@ -30,7 +30,7 @@ namespace StoreService.Persistence
         public IGenericRepository<Contact> ContactRepository { get; }
         public IGenericRepository<Event> EventRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
-        public IGenericRepository<Package> PackageRepository { get; }
+        public IGenericRepository<FitPackage> PackageRepository { get; }
         public IGenericRepository<Presentation> PresentationRepository { get; }
         public IGenericRepository<Representative> RepresentativeRepository { get; }
         public IGenericRepository<Resource> ResourceRepository { get; }
@@ -62,6 +62,14 @@ namespace StoreService.Persistence
             RepresentativeRepository = new GenericRepository<Representative>(_context);
 
             BranchRepository = new GenericRepository<Branch>(_context);
+
+            LocationRepository = new GenericRepository<Location>(_context);
+
+            PackageRepository = new GenericRepository<FitPackage>(_context);
+
+            ResourceRepository = new GenericRepository<Resource>(_context);
+
+
         }
 
         /// <summary>

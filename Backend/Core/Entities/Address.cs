@@ -22,7 +22,7 @@ namespace Backend.Core.Entities
         [MaxLength(10)]
         public string ZipCode { get; set; }
 
-        public string AddressAdditional {get; set;}
+        public string Addition {get; set;}
         
     }
 }

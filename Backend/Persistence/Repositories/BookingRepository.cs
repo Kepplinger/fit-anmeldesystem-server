@@ -31,7 +31,7 @@ namespace Backend.Persistence.Repositories
             {
                 query = query.Where(filter);
             }
-            query = query.Include(p => p.Company).Include(p => p.Company.Address).Include(p => p.Company.Contact).Include(p => p.Presentation.Branches).Include(p => p.Location.Area).Include(p => p.Package).Include(p => p.Location.Area.Event);
+            query = query.Include(p => p.Company).Include(p => p.Company.Address).Include(p => p.Company.Contact).Include(p => p.Presentation.Branches).Include(p => p.Location.Area).Include(p => p.Package).Include(p => p.Branches);
 
             if (orderBy != null)
             {

@@ -19,7 +19,7 @@ namespace Backend.Persistence
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<Package> Packages { get; set; }
+        public DbSet<FitPackage> Packages { get; set; }
         public DbSet<Presentation> Presentations { get; set; }
         public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }

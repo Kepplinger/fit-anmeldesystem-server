@@ -44,7 +44,7 @@ namespace Backend.Core.Entities
         public bool isAccepted { get; set; }
 
         [ForeignKey("FK_Package")]
-        public Package Package { get; set; }
+        public FitPackage Package { get; set; }
         public int FK_Package { get; set; }
 
         public string CompanyDescription { get; set; }

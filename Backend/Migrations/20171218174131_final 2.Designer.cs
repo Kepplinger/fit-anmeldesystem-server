@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171218174131_final 2")]
+    partial class final2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,6 +63,8 @@ namespace Backend.Migrations
 
                     b.Property<int?>("FK_Areas");
 
+                    b.Property<int>("FK_Event");
+
                     b.Property<string>("GraphicURL")
                         .IsRequired();
 
@@ -72,6 +75,8 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FK_Areas");
+
+                    b.HasIndex("FK_Event");
 
                     b.ToTable("Areas");
                 });
@@ -248,27 +253,6 @@ namespace Backend.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.FitPackage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Discriminator");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int>("Price");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Packages");
-                });
-
             modelBuilder.Entity("Backend.Core.Entities.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -294,6 +278,26 @@ namespace Backend.Migrations
                     b.HasIndex("FK_Area");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.Package", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Number");
+
+                    b.Property<string>("Tag");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Presentation", b =>
@@ -364,8 +368,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<int>("Price");
-
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
@@ -405,6 +407,11 @@ namespace Backend.Migrations
                         .WithMany("Areas")
                         .HasForeignKey("FK_Areas")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("FK_Event")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Booking", b =>
@@ -424,7 +431,7 @@ namespace Backend.Migrations
                         .HasForeignKey("FK_Location")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Backend.Core.Entities.FitPackage", "Package")
+                    b.HasOne("Backend.Core.Entities.Package", "Package")
                         .WithMany()
                         .HasForeignKey("FK_Package")
                         .OnDelete(DeleteBehavior.Restrict);

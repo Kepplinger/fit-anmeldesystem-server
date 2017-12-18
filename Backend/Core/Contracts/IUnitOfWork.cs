@@ -22,7 +22,7 @@ namespace Backend.Core.Contracts
         IGenericRepository<Contact> ContactRepository { get; }
         IGenericRepository<Event> EventRepository { get; }
         IGenericRepository<Location> LocationRepository { get; }
-        IGenericRepository<Package> PackageRepository { get; }
+        IGenericRepository<FitPackage> PackageRepository { get; }
         IGenericRepository<Presentation> PresentationRepository { get; }
         IGenericRepository<Representative> RepresentativeRepository { get; }
         IGenericRepository<Resource> ResourceRepository { get; }

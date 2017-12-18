@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171218175916_final 3")]
+    partial class final3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,10 +256,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("Discriminator");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int>("Price");
+                    b.Property<string>("Name");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -363,8 +361,6 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(25);
-
-                    b.Property<int>("Price");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
