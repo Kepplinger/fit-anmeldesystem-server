@@ -55,5 +55,5 @@ VALUES (1, 'Iagenda Category', 100, 50, 50)
 INSERT Into Presentations ([Description],FileURL, FK_Branch, IsAccepted, RoomNumber, Title)
 VALUES ('Presentationsbeschreibung', 'www.fileurl.com', 1, 0, '252', 'Presentations Title')
 
-INSERT Into Bookings (FK_Branches, FK_Company, FK_Event, FK_Location, FK_Package, FK_Presentation, AdditionalInfo, CompanyDescription, CreationDate, isAccepted, ProvidesSummerJob, ProvidesThesis, Remarks)
-VALUES (1,1,1,1,1,1,'additional info','HTL Leonding Company', '2017-11-05 00:00:00', 0, 1, 1,'Bemerkungen')
+INSERT Into Bookings (FK_Branches, FK_Company, FK_Event, FK_Location, FK_FitPackage, FK_Presentation, AdditionalInfo, CreationDate, isAccepted, ProvidesSummerJob, ProvidesThesis, Remarks)
+VALUES (1,1,1,1,1,1,'additional info', '2017-11-05 00:00:00', 0, 1, 1,'Bemerkungen')

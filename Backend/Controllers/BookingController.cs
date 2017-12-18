@@ -89,7 +89,7 @@ namespace Backend.Controllers
                         _unitOfWork.LocationRepository.Insert(temp.Location);
                         _unitOfWork.Save();
 
-                        temp.Package = _unitOfWork.PackageRepository.Get(filter: p => p.Id == temp.Package.Id).FirstOrDefault();
+                        temp.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == temp.FitPackage.Id).FirstOrDefault();
                         _unitOfWork.Save();
 
                         for (int i = 0; i < temp.Branches.Count(); i++)
