@@ -11,7 +11,7 @@ using Backend.Core.Entities;
 using FITBackend.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Backend.Persistence.Repositories;
-using Backend.Core.Contracts.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace StoreService.Persistence
 {
@@ -27,19 +27,21 @@ namespace StoreService.Persistence
         public IGenericRepository<Area> AreaRepository { get; }
         public IGenericRepository<Branch> BranchRepository { get; }
         public IGenericRepository<Company> CompanyRepository { get; }
+        public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
         public IGenericRepository<Event> EventRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
-        public IGenericRepository<Package> PackageRepository { get; }
+        public IGenericRepository<FitPackage> PackageRepository { get; }
         public IGenericRepository<Presentation> PresentationRepository { get; }
         public IGenericRepository<Representative> RepresentativeRepository { get; }
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
+        public IGenericRepository<Address> AddressRepository { get; }
+
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
         /// </summary>
-        public IAddressRepository AddressRepository { get; }
 
         public IBookingRepository BookingRepository { get; }
 
@@ -50,7 +52,7 @@ namespace StoreService.Persistence
 
             AreaRepository = new GenericRepository<Area>(_context);
 
-            AddressRepository = new AddressRepository(_context);
+            AddressRepository = new GenericRepository<Address>(_context);
 
             BookingRepository = new BookingRepository(_context);
 
@@ -58,6 +60,19 @@ namespace StoreService.Persistence
 
             ContactRepository = new GenericRepository<Contact>(_context);
 
+            RepresentativeRepository = new GenericRepository<Representative>(_context);
+
+            BranchRepository = new GenericRepository<Branch>(_context);
+
+            LocationRepository = new GenericRepository<Location>(_context);
+
+            PackageRepository = new GenericRepository<FitPackage>(_context);
+
+            ResourceRepository = new GenericRepository<Resource>(_context);
+
+            ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
+
+            EventRepository = new GenericRepository<Event>(_context);
 
         }
 
@@ -92,10 +107,18 @@ namespace StoreService.Persistence
             _context.Database.EnsureDeleted();
         }
 
-        public void FillDb()
-        {
-
+        public IDbContextTransaction BeginTransaction() {
+            return _context.Database.BeginTransaction();
         }
 
+        public void Commit()
+        {
+            _context.Database.CommitTransaction();
+        }
+
+        public void FillDb()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

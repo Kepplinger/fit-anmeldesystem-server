@@ -16,10 +16,11 @@ namespace Backend.Persistence
         public DbSet<Company> Companies { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<ChangeProtocol> ChangeProtocols { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<Package> Packages { get; set; }
+        public DbSet<FitPackage> Packages { get; set; }
         public DbSet<Presentation> Presentations { get; set; }
         public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
@@ -32,7 +33,7 @@ namespace Backend.Persistence
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
             Debug.Write(configuration.ToString());
-            string connectionString = configuration["ConnectionStrings:DefaultConnection"];
+            string connectionString = configuration["ConnectionStrings:Sakal"];
             optionsBuilder.UseSqlServer(connectionString);
         }
 

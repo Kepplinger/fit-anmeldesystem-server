@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Backend.Core.Entities;
 
 namespace Backend.Controllers
 {
@@ -28,35 +29,45 @@ namespace Backend.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
-        public IActionResult Create([FromBody] Core.Entities.Event temp)
+        public IActionResult Create([FromBody] Event temp)
         {
-            System.Console.WriteLine(temp.EventDate);
             try
             {
-                if (temp != null)
+                if (temp != null && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault()==null)
                 {
                     _unitOfWork.EventRepository.Insert(temp);
                     _unitOfWork.Save();
-                    return new StatusCodeResult(StatusCodes.Status200OK);
+                    return new OkObjectResult(temp);
                 }
+                return new BadRequestObjectResult(temp);
             }
             catch (DbUpdateException ex)
             {
-                System.Console.WriteLine(ex.Message);
+                String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
+                System.Console.WriteLine(error);
+
+                return new BadRequestObjectResult(error);
             }
-            return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
-        /// <response code="200">Returns all available Events</response>
+        /// <response code="200">Return current Event</response>
         /// <summary>
         /// Getting all Events from Database
         /// </summary>
-        [HttpGet]
+        [HttpGet("current")]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        public IActionResult GetAll()
+        public IActionResult GetCurrentEvent()
         {
-            var events = _unitOfWork.EventRepository.Get();
-            return new ObjectResult(events);
+            /*
+              return ner OkObjectResult(_unitOfWork.EventRepository.Get(p => p.IsLocked == false).FirstOrDefault());
+            */
+
+            Event e = new Event();
+            e.IsLocked = false;
+            e.RegistrationEnd = DateTime.Now.AddDays(30);
+            e.RegistrationStart = DateTime.Now.AddDays(-1);
+            e.Areas.AddRange(_unitOfWork.AreaRepository.Get().ToList());
+            return new ObjectResult(e);
         }
     }
 }

@@ -4,35 +4,28 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class rename : Migration
+    public partial class addedsomevalidationtoadress : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Number",
-                table: "Addresses");
-
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AlterColumn<string>(
                 name: "StreetNumber",
                 table: "Addresses",
                 type: "nvarchar(10)",
                 maxLength: 10,
                 nullable: false,
-                defaultValue: "");
+                oldClrType: typeof(int));
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            migrationBuilder.AlterColumn<int>(
                 name: "StreetNumber",
-                table: "Addresses");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Number",
                 table: "Addresses",
-                maxLength: 10,
                 nullable: false,
-                defaultValue: "");
+                oldClrType: typeof(string),
+                oldType: "nvarchar(10)",
+                oldMaxLength: 10);
         }
     }
 }

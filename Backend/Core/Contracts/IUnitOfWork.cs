@@ -1,11 +1,11 @@
-﻿using Backend.Core.Contracts.Repositories;
-using Backend.Core.Entities;
+﻿using Backend.Core.Entities;
 using Backend.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Backend.Core.Contracts
 {
@@ -22,15 +22,16 @@ namespace Backend.Core.Contracts
         IGenericRepository<Contact> ContactRepository { get; }
         IGenericRepository<Event> EventRepository { get; }
         IGenericRepository<Location> LocationRepository { get; }
-        IGenericRepository<Package> PackageRepository { get; }
+        IGenericRepository<FitPackage> PackageRepository { get; }
         IGenericRepository<Presentation> PresentationRepository { get; }
         IGenericRepository<Representative> RepresentativeRepository { get; }
         IGenericRepository<Resource> ResourceRepository { get; }
         IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
+        IGenericRepository<Address> AddressRepository { get; }
+
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
-        IAddressRepository AddressRepository { get; }
         IBookingRepository BookingRepository { get; }
 
 
@@ -39,6 +40,10 @@ namespace Backend.Core.Contracts
         void DeleteDatabase();
 
         void FillDb();
+
+        IDbContextTransaction BeginTransaction();
+
+        void Commit();
 
     }
 }

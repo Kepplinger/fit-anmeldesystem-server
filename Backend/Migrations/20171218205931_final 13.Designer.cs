@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171218205931_final 13")]
+    partial class final13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,11 +92,11 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Event");
 
-                    b.Property<int>("FK_FitPackage");
-
                     b.Property<int>("FK_Location");
 
-                    b.Property<int?>("FK_Presentation");
+                    b.Property<int>("FK_Package");
+
+                    b.Property<int>("FK_Presentation");
 
                     b.Property<int>("FK_Representatives");
 
@@ -119,9 +120,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("FK_Event");
 
-                    b.HasIndex("FK_FitPackage");
-
                     b.HasIndex("FK_Location");
+
+                    b.HasIndex("FK_Package");
 
                     b.HasIndex("FK_Presentation");
 
@@ -150,30 +151,6 @@ namespace Backend.Migrations
                     b.HasIndex("FK_Branches");
 
                     b.ToTable("Branches");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.ChangeProtocol", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("ChangeDate");
-
-                    b.Property<string>("ColumName");
-
-                    b.Property<string>("NewValue");
-
-                    b.Property<string>("OldValue");
-
-                    b.Property<string>("TableName");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ChangeProtocols");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Company", b =>
@@ -447,14 +424,14 @@ namespace Backend.Migrations
                         .HasForeignKey("FK_Event")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Backend.Core.Entities.FitPackage", "FitPackage")
-                        .WithMany()
-                        .HasForeignKey("FK_FitPackage")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Backend.Core.Entities.Location", "Location")
                         .WithMany()
                         .HasForeignKey("FK_Location")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.FitPackage", "Package")
+                        .WithMany()
+                        .HasForeignKey("FK_Package")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")

@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171218211315_final 14")]
+    partial class final14
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,7 +96,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Location");
 
-                    b.Property<int?>("FK_Presentation");
+                    b.Property<int>("FK_Presentation");
 
                     b.Property<int>("FK_Representatives");
 
