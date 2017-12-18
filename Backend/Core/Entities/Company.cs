@@ -9,39 +9,38 @@ namespace Backend.Core.Entities
         [MaxLength(30)]
         public string Name { get; set; }
 
-        [ForeignKey("FK_Address")]
+        [ForeignKey("FK_Address"),Required]
         public Address Address { get; set; }
         public int FK_Address { get; set; }
 
-        [ForeignKey("FK_Contact")]
+        [ForeignKey("FK_Contact"),Required]
         public Contact Contact { get; set; }
         public int FK_Contact { get; set; }
 
-        [Required]
-        [Phone]
+        [Phone, Required]
         public string PhoneNumber { get; set; }
 
-        [Required]
-        [EmailAddress]
+        [EmailAddress,Required]
         public string Email { get; set; }
 
-        [Required]
+        [Required, Url]
         public string Homepage { get; set; }
 
         [Required]
         public string LogoUrl { get; set; }
 
-        [Required]
+        [Required, MaxLength(20)]
         public string Branch { get; set; }
 
         public int EstablishmentsCountInt { get; set; }
 
+        [MaxLength(30)]
         public string EstablishmentsInt { get; set; }
 
         [Required]
         public int EstablishmentsCountAut { get; set; }
 
-        [Required]
+        [Required, MaxLength(30)]
         public string EstablishmentsAut { get; set; }
     }
 }

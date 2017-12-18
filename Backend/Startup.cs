@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Backend.Persistence;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
 using Swashbuckle.AspNetCore.Swagger;
-using System.IO;
-using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Backend
 {
@@ -27,22 +17,17 @@ namespace Backend
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            //services.AddTransient<IUnitOfWork, UnitOfWork>(p=>new UnitOfWork(Configuration["ConnectionStrings:Default"]));
-            //services.AddScoped(p => new ApplicationContext(p.GetService<DbContextOptions<ApplicationContext>>()));
-            // services.AddDbContext<ApplicationDbContext>( options => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v2", new Info { Title = "FIT Anmelde System - V2.0", Version = "v2" });
             });
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -58,7 +43,7 @@ namespace Backend
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "FITAS2.0");
             });
 
 

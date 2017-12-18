@@ -7,20 +7,16 @@ namespace Backend.Core.Entities
 {
     public class Booking : EntityObject
     {
-
-        public int FK_Event { get; set; }
         
-        [ForeignKey("FK_Event")]
-        [Required]
+        [ForeignKey("FK_Event"),Required]
         public Event Event { get; set; }
+        public int FK_Event { get; set; }
 
-        [ForeignKey("FK_Company")]
-        [Required]
+        [ForeignKey("FK_Company"),Required]
         public Company Company { get; set; }
         public int FK_Company { get; set; }
 
-        [ForeignKey("FK_Location")]
-        [Required]
+        [ForeignKey("FK_Location"),Required]
         public Location Location { get; set; }
         public int FK_Location { get; set; }
 
@@ -29,28 +25,28 @@ namespace Backend.Core.Entities
         public int? FK_Presentation { get; set; }
 
         [ForeignKey("FK_Branches")]
-        public List<Branch> Branches { get; set; }
-        public int FK_Branches { get; set; }
+        public virtual List<Branch> Branches { get; set; }
+        public int? FK_Branches { get; set; }
 
-
-        [ForeignKey("FK_Representatives")]
-        [Required]
+        [ForeignKey("FK_Representatives"),Required]
         public List<Representative> Representatives { get; set; }
         public int FK_Representatives { get; set; }
 
         [ForeignKey("FK_Resources")]
-        public List<Resource> Resources { get; set; }
-        public int FK_Resources { get; set; }
+        public virtual List<Resource> Resources { get; set; }
+        public int? FK_Resources { get; set; }
 
         [Required]
         public bool isAccepted { get; set; }
 
-        [ForeignKey("FK_FitPackage")]
+        [ForeignKey("FK_FitPackage"),Required]
         public FitPackage FitPackage { get; set; }
         public int FK_FitPackage { get; set; }
 
+        [MaxLength(500)]
         public string AdditionalInfo { get; set; }
 
+        [MaxLength(500)]
         public string Remarks { get; set; }
 
         public bool ProvidesSummerJob { get; set; }

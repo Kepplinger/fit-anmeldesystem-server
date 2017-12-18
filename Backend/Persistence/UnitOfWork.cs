@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Newtonsoft.Json.Linq;
 using Backend.Core.Contracts;
 using Backend.Persistence;
 using Backend.Core.Entities;
 using FITBackend.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Backend.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 

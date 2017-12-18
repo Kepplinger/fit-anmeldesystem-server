@@ -22,6 +22,5 @@ namespace Backend.Core.Entities
         public string ZipCode { get; set; }
 
         public string Addition {get; set;}
-        
     }
 }

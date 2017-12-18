@@ -1,10 +1,6 @@
 ﻿using Backend.Core.Entities;
 using Backend.Persistence.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Backend.Core.Contracts

@@ -8,7 +8,5 @@ namespace Backend.Core.Entities
         public string Designation { get; set; }
         [Required]
         public string GraphicURL { get; set; }
-        
-
     }
 }
