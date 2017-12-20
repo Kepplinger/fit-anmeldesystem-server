@@ -25,7 +25,7 @@ namespace Backend.Controllers
         public IActionResult GetAll()
         {
             var companies = _unitOfWork.CompanyRepository.Get();
-            return new ObjectResult(companies);
+            return new OkObjectResult(companies);
         }
     }
 }
