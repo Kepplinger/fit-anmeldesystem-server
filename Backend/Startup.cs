@@ -24,10 +24,10 @@ namespace Backend
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddSingleton<IRazorLightEngine>(f =>
-        {
-            return (new EngineFactory())
+            {
+                return (new EngineFactory())
                     .ForFileSystem($"{Environment.CurrentDirectory}\\Views");
-        });
+            });
 
             services.AddMvc();
             services.AddSwaggerGen(c =>
@@ -40,21 +40,19 @@ namespace Backend
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
+
             app.UseCors(builder =>
             {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             });
+
             app.UseMvc();
             app.UseSwagger();
-
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "FITAS2.0");
             });
-
 
         }
     }
