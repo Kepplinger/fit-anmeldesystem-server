@@ -125,20 +125,27 @@ namespace Backend.Controllers
 
                     // Fill up the list
                     List<Branch> branchTemp = new List<Branch>();
+                    List<int> branchFkList = new List<int>();
+
                     for (int i = 0; i < temp.Branches.Count(); i++)
                     {
                         branchTemp.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == temp.Branches.ElementAt(i).Id).FirstOrDefault());
-                        _unitOfWork.Save();
+                        branchFkList.Add(temp.Branches.ElementAt(i).Id);
                     }
                     temp.Branches = branchTemp;
+                    //temp.FK_Branches = branchFkList;
+                    _unitOfWork.Save();
 
                     List<Resource> resourceTemp = new List<Resource>();
+                    List<int> resourceFkList = new List<int>();
                     for (int i = 0; i < temp.Resources.Count(); i++)
                     {
                         resourceTemp.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == temp.Resources.ElementAt(i).Id).FirstOrDefault());
-                        _unitOfWork.Save();
+                        resourceFkList.Add(temp.Resources.ElementAt(i).Id);
                     }
                     temp.Resources = resourceTemp;
+                    //temp.FK_Resources = resourceFkList;
+                    _unitOfWork.Save();
 
 
                     // Get the current active Event (nimmt an das es nur 1 gibt)

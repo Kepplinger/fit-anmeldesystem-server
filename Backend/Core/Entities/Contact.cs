@@ -13,7 +13,7 @@ namespace Backend.Core.Entities
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required, Phone]
+        [Required]
         public string PhoneNumber { get; set; }
     }
 }

@@ -1,11 +1,12 @@
 Insert into Addresses (Addition, City, StreetNumber, ZipCode, Street) 
 VALUES ('Adresszusatz', 'Leonding', 12, 4050, 'Limesstraße')
 
-INSERT INTO Contacts (FirstName,LastName, Email, PhoneNumber)
-VALUES ('ExampleFirstName', 'ExampleLastName', 'andi.sakal15@gmail.com', '+4369917209297')
 
-INSERT INTO Companies (FK_Address, FK_Contact, Name, Homepage, LogoUrl, PhoneNumber, Email, EstablishmentsAut, EstablishmentsCountAut) 
-VALUES (1,1,'HTL Leonding', 'www.htl-leonding.at', 'www.htl-leonding.at', '+4369917202927', 'andi.sakal15@gmail.com', 'Leonding', 1)
+INSERT INTO Contacts (FirstName, LastName, Email, PhoneNumber)
+VALUES ('FirstName', 'LastName', 'andi.sakal15@gmail.com', '0699172092')
+
+INSERT INTO Companies (FK_Address, FK_Contact, Name, Homepage, LogoUrl, PhoneNumber, Email, EstablishmentsAut, EstablishmentsCountAut, Branch) 
+VALUES (1,1,'HTL Leonding', 'www.htl-leonding.at', 'www.htl-leonding.at', '+4369917202927', 'andi.sakal15@gmail.com', 'Leonding', 1, 'Branche')
 
 INSERT INTO Packages (Name, Discriminator, Price, Description) 
 VALUES ('Grundpaket', 1, 200, 'Das Grundpaket bietet Ihnen einen Standplatz am FIT')
@@ -55,7 +56,5 @@ VALUES (1, 'Iagenda Category', 100, 50, 50)
 INSERT Into Presentations ([Description],FileURL, FK_Branch, IsAccepted, RoomNumber, Title)
 VALUES ('Presentationsbeschreibung', 'www.fileurl.com', 1, 0, '252', 'Presentations Title')
 
-INSERT Into Bookings (FK_Branches, FK_Company, FK_Event, FK_Location, FK_FitPackage, FK_Presentation, AdditionalInfo, CreationDate, isAccepted, ProvidesSummerJob, ProvidesThesis, Remarks)
-VALUES (1,1,1,1,1,1,'additional info', '2017-11-05 00:00:00', 0, 1, 1,'Bemerkungen')
-
-select * from Events;
+/*INSERT Into Bookings (FK_Company, FK_Event, FK_Location, FK_FitPackage, FK_Presentation, AdditionalInfo, CreationDate, isAccepted, ProvidesSummerJob, ProvidesThesis, Remarks)
+VALUES (1,1,1,1,1,'additional info', '2017-11-05 00:00:00', 0, 1, 1,'Bemerkungen')*/
