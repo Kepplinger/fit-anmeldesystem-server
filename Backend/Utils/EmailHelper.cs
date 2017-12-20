@@ -23,10 +23,10 @@ namespace Backend.Utils
             client.UseDefaultCredentials = false;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal15@gmail.com", "robert&andrej2015");
+            client.Credentials = new NetworkCredential("andi.sakal15@gmail.com", "**********");
 
             //message config
-            objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FITs";
+            objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress(succBooking.Company.Email));
             objeto_mail.IsBodyHtml = true;
