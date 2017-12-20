@@ -65,7 +65,7 @@ namespace Backend.Controllers
             e.RegistrationEnd = DateTime.Now.AddDays(30);
             e.RegistrationStart = DateTime.Now.AddDays(-1);
             e.Areas.AddRange(_unitOfWork.AreaRepository.Get().ToList());
-            return new ObjectResult(e);
+            return new OkObjectResult(e);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Backend.Controllers
         public IActionResult GetAll()
         {
             var contacts = _unitOfWork.ContactRepository.Get();
-            return new ObjectResult(contacts);
+            return new OkObjectResult(contacts);
         }
 
         /// <response code="200">Returns all available Contacts from one company</response>
@@ -39,7 +39,7 @@ namespace Backend.Controllers
         public IActionResult GetByCompanyId(int companyId)
         {
             Contact contact = _unitOfWork.CompanyRepository.Get(filter: con => con.Id == companyId).FirstOrDefault().Contact;
-            return new ObjectResult(contact);
+            return new OkObjectResult(contact);
         }
     }
 }

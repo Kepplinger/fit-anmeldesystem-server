@@ -160,7 +160,9 @@ namespace Backend.Controllers
                     _unitOfWork.Save();
                     transaction.Commit();
                     _unitOfWork.Dispose();
-                    EmailHelper.SendMail(jsonBooking);
+
+                    //Senden der Bestätigungs E-Mail
+                    EmailHelper.SendBookingAcceptedMail(jsonBooking);
 
                     return new OkObjectResult(jsonBooking);
 

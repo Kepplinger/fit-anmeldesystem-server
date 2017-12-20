@@ -10,7 +10,7 @@ namespace Backend.Utils
     public static class EmailHelper
     {
 
-        public static void SendMail(Booking succBooking)
+        public static void SendBookingAcceptedMail(Booking succBooking)
         {
             Booking succBooking2 = succBooking;
             MailMessage objeto_mail = new MailMessage();
@@ -23,7 +23,7 @@ namespace Backend.Utils
             client.UseDefaultCredentials = false;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal15@gmail.com", "**********");
+            client.Credentials = new NetworkCredential("andi.sakal15@gmail.com", "**********s");
 
             //message config
             objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
@@ -31,14 +31,11 @@ namespace Backend.Utils
             objeto_mail.To.Add(new MailAddress(succBooking.Company.Email));
             objeto_mail.IsBodyHtml = true;
 
+            //template config
             string templatePath = $@"{Directory.GetCurrentDirectory()}/EmailTemplates";
-
             EngineFactory ef = new EngineFactory();
-
             IRazorLightEngine engine = ef.ForFileSystem(templatePath);
-
             var model = succBooking;
-
             string result = engine.CompileRenderAsync("AcceptedBooking.cshtml", model).Result;
             objeto_mail.Body = result;
 

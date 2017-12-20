@@ -25,7 +25,7 @@ namespace Backend.Controllers
         public IActionResult GetAll()
         {
             var branches = _unitOfWork.BranchRepository.Get();
-            return new ObjectResult(branches);
+            return new OkObjectResult(branches);
         }
     }
 }
