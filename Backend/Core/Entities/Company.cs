@@ -17,7 +17,7 @@ namespace Backend.Core.Entities
         public Contact Contact { get; set; }
         public int FK_Contact { get; set; }
 
-        [Phone, Required]
+        [Required]
         public string PhoneNumber { get; set; }
 
         [EmailAddress,Required]
