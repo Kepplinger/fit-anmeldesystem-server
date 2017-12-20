@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
 using Swashbuckle.AspNetCore.Swagger;
+using RazorLight;
+using System;
 
 namespace Backend
 {
@@ -20,6 +22,13 @@ namespace Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddSingleton<IRazorLightEngine>(f =>
+        {
+            return (new EngineFactory())
+                    .ForFileSystem($"{Environment.CurrentDirectory}\\Views");
+        });
+
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {

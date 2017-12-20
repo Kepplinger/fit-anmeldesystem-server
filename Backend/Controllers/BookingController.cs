@@ -7,6 +7,8 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
+using Backend.Utils;
+using System.Net.Mail;
 
 namespace Backend.Controllers
 {
@@ -30,27 +32,27 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)] 
         [Consumes("application/json")]
-        public IActionResult Create([FromBody] Booking temp)
+        public IActionResult Create([FromBody] Booking jsonBooking)
         {
 
-            if (temp != null && temp.Company.Id != 0)
-                Update(temp);
-            else if ((temp.Location.Area != null) && (temp != null && temp.Company.Id == 0))
-                return Insert(temp);
+            if (jsonBooking != null && jsonBooking.Company.Id != 0)
+                Update(jsonBooking);
+            else if ((jsonBooking.Location.Area != null) && (jsonBooking != null && jsonBooking.Company.Id == 0))
+                return Insert(jsonBooking);
 
-            Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + temp.ToString());
-            return new BadRequestObjectResult(temp);
+            Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
+            return new BadRequestObjectResult(jsonBooking);
         }
 
         [NonAction]
-        public IActionResult Update(Booking temp) {
+        public IActionResult Update(Booking jsonBooking) {
 
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
                 try
                 {
                     // Update already persistent Entities ------------------
-                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == temp.Company.Id).FirstOrDefault();
+                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
 
                     if (toUpdate.Address != null && toUpdate.FK_Address != 0)
                     {
@@ -76,12 +78,12 @@ namespace Backend.Controllers
                         toUpdate.FK_Contact = toUpdate.Contact.Id;
                     }
 
-                    _unitOfWork.CompanyRepository.Update(temp.Company);
+                    _unitOfWork.CompanyRepository.Update(jsonBooking.Company);
                     _unitOfWork.Save();
 
                     transaction.Commit();
 
-                    return new OkObjectResult(temp);
+                    return new OkObjectResult(jsonBooking);
                 }
                 catch (DbUpdateException ex)
                 {
@@ -96,62 +98,55 @@ namespace Backend.Controllers
         }
 
         [NonAction]
-        public IActionResult Insert(Booking temp) {
+        public IActionResult Insert(Booking jsonBooking) {
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
                 try
                 {
                     // Insert new Company and Booking ----------------------
-                    _unitOfWork.AddressRepository.Insert(temp.Company.Address);
+                    _unitOfWork.AddressRepository.Insert(jsonBooking.Company.Address);
                     _unitOfWork.Save();
 
-                    _unitOfWork.ContactRepository.Insert(temp.Company.Contact);
+                    _unitOfWork.ContactRepository.Insert(jsonBooking.Company.Contact);
                     _unitOfWork.Save();
 
-                    _unitOfWork.CompanyRepository.Insert(temp.Company);
+                    _unitOfWork.CompanyRepository.Insert(jsonBooking.Company);
                     _unitOfWork.Save();
 
-                    _unitOfWork.RepresentativeRepository.InsertMany(temp.Representatives);
+                    _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);
                     _unitOfWork.Save();
 
                     // Get the entity from the DB and give reference to it
-                    temp.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == temp.Location.Area.Id).FirstOrDefault();
-                    _unitOfWork.LocationRepository.Insert(temp.Location);
+                    jsonBooking.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == jsonBooking.Location.Area.Id).FirstOrDefault();
+                    _unitOfWork.LocationRepository.Insert(jsonBooking.Location);
                     _unitOfWork.Save();
 
-                    temp.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == temp.FitPackage.Id).FirstOrDefault();
+                    jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
 
 
                     // Fill up the list
-                    List<Branch> branchTemp = new List<Branch>();
-                    List<int> branchFkList = new List<int>();
-
-                    for (int i = 0; i < temp.Branches.Count(); i++)
+                    List<Branch> branchjsonBooking = new List<Branch>();
+                    for (int i = 0; i < jsonBooking.Branches.Count(); i++)
                     {
-                        branchTemp.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == temp.Branches.ElementAt(i).Id).FirstOrDefault());
-                        branchFkList.Add(temp.Branches.ElementAt(i).Id);
+                        branchjsonBooking.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == jsonBooking.Branches.ElementAt(i).Id).FirstOrDefault());
                     }
-                    temp.Branches = branchTemp;
-                    //temp.FK_Branches = branchFkList;
+                    jsonBooking.Branches = branchjsonBooking;
                     _unitOfWork.Save();
 
-                    List<Resource> resourceTemp = new List<Resource>();
-                    List<int> resourceFkList = new List<int>();
-                    for (int i = 0; i < temp.Resources.Count(); i++)
+                    List<Resource> resourcejsonBooking = new List<Resource>();
+                    for (int i = 0; i < jsonBooking.Resources.Count(); i++)
                     {
-                        resourceTemp.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == temp.Resources.ElementAt(i).Id).FirstOrDefault());
-                        resourceFkList.Add(temp.Resources.ElementAt(i).Id);
+                        resourcejsonBooking.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == jsonBooking.Resources.ElementAt(i).Id).FirstOrDefault());
                     }
-                    temp.Resources = resourceTemp;
-                    //temp.FK_Resources = resourceFkList;
+                    jsonBooking.Resources = resourcejsonBooking;
                     _unitOfWork.Save();
 
 
                     // Get the current active Event (nimmt an das es nur 1 gibt)
-                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == false).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault() != null)
+                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == false).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault() != null)
                     {
-                        temp.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == temp.Event.Id).FirstOrDefault();
+                        jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault();
                         _unitOfWork.Save();
                     }
                     else
@@ -161,11 +156,13 @@ namespace Backend.Controllers
                     }
 
                     // Finales Inserten des Booking Repositorys
-                    _unitOfWork.BookingRepository.Insert(temp);
+                    _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
                     transaction.Commit();
+                    _unitOfWork.Dispose();
+                    EmailHelper.SendMail(jsonBooking);
 
-                    return new OkObjectResult(temp);
+                    return new OkObjectResult(jsonBooking);
 
                 }
                 catch (DbUpdateException ex)
