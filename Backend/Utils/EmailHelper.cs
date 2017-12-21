@@ -32,7 +32,7 @@ namespace Backend.Utils
             objeto_mail.IsBodyHtml = true;
 
             //template config
-            string templatePath = $@"{Directory.GetCurrentDirectory()}/EmailTemplates";
+            string templatePath = @"C:\inetppub\wwwroot\fittest\EmailTemplates\";
             EngineFactory ef = new EngineFactory();
             IRazorLightEngine engine = ef.ForFileSystem(templatePath);
             var model = succBooking;
