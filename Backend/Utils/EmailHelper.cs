@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using Backend.Core.Entities;
-using RazorLight;
 
 namespace Backend.Utils
 {
@@ -30,12 +29,28 @@ namespace Backend.Utils
             objeto_mail.IsBodyHtml = true;
 
             //template config
-            string templatePath = @"C:\inetppub\wwwroot\fittest\EmailTemplates\";
-            EngineFactory ef = new EngineFactory();
-            IRazorLightEngine engine = ef.ForFileSystem(templatePath);
-            var model = succBooking;
-            string result = engine.CompileRenderAsync("AcceptedBooking.cshtml", model).Result;
-            objeto_mail.Body = result;
+            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<div>" +
+                                             "<img src=\"https://www.htl-leonding.at/uploads/pics/HTL_Abteilungsicons_mit_Textbalken_rgb_01.jpg\" align=\"left\" alt=\"Abteilung Logo\" height=\"90px\" width=\"360px\"/>" +
+                                             "<img src=\"http://www.htl-leonding.at/fileadmin/config/main/img/htlleondinglogo.png\" align=\"right\" alt=\"HTL Leonding Logo\"/></center>" +
+                                             "<br><br><br><br><br><br><br><br>" +
+                                             "</div>" +
+                                             "<div>" +
+                                             "<p>Sehr geehrte(r) Frau/Herr " + succBooking.Company.Contact.LastName + "," +
+                                             "<br><br>" +
+                                             "Ihre Anmeldung ist bei uns eingetroffen! Wir freuen uns Sehr das Sie sich dazu entschieden" +
+                                             "haben beim diesjährigen <b>Firmeninformationstag</b> in der <b><a href=\"http://www.htl-leonding.at/\">HTL Leonding</a></b> Ihre Unternehmen vorzustellen!<br>" +
+                                             "</p>" +
+                                             "<p>Bei Fragen oder Anregungen können Sie uns jederzeit unter der Nr.: <a href=\"tel:+439999999\">+43123456789</a> oder per E-Mail <a href=\"mailto:andi.sakal15@gmail.com\">andi.sakal15@gmail.com</a> erreichen" +
+                                             "<br><br>" +
+                                             "<p> Mit freundlichen Grüßen <br><br> FirstName LastName - Ihr Ansprechpartner" +
+                                             "<br><br></div><img src=\"http://www.absleo.at/typo3temp/processed/csm_absleo_logo_ohne_Rahmen_ba0c412e5a.png\" alt=\"ABSLEO Logo\"/>" +
+                                             "</body>" +
+                                             "</html>");
 
             client.SendMailAsync(objeto_mail);
 
