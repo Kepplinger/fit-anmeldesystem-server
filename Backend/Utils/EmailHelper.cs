@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using Backend.Core.Entities;
 using RazorLight;
@@ -23,7 +21,7 @@ namespace Backend.Utils
             client.UseDefaultCredentials = false;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal15@gmail.com", "**********s");
+            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
 
             //message config
             objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
@@ -32,7 +30,7 @@ namespace Backend.Utils
             objeto_mail.IsBodyHtml = true;
 
             //template config
-            string templatePath = $@"{Directory.GetCurrentDirectory()}/EmailTemplates";
+            string templatePath = @"C:\inetppub\wwwroot\fittest\EmailTemplates\";
             EngineFactory ef = new EngineFactory();
             IRazorLightEngine engine = ef.ForFileSystem(templatePath);
             var model = succBooking;

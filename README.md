@@ -18,73 +18,97 @@
 
 ### Example Booking-Json
 ```
-{
-"fK_Event": 1,
-"event": {
-"eventDate": "2017-11-30T00:00:00",
-"registrationStart": "2017-11-01T00:00:00",
-"registrationEnd": "2018-11-30T00:00:00",
-"isLocked": true,
-"id": 1,
-"timestamp": "AAAAAAAAB9Y="
-},
-"company": {
-"name": "Sakal IT",
-"address": null,
-"fK_Address": 1,
-"contact": null,
-"fK_Contact": 1,
-"phoneNumber": "+4369917202927",
-"email": "andi.sakal15@gmail.com",
-"homepage": "www.sakal-it.at",
-"logoUrl": "www.sakal-it.at/logo",
-"subjectAreas": "Informatik",
-"id": 1,
-"timestamp": "AAAAAAAAB9Q="
-},
-"fK_Company": 1,
-"location": {
-"number": 100,
-"area": null,
-"fK_Area": 1,
-"category": "Iagenda Category",
-"xCoordinate": 50,
-"yCoordinate": 50,
-"id": 1,
-"timestamp": "AAAAAAAAB9k="
-},
-"fK_Location": 1,
-"presentation": {
-"branches": null,
-"fK_Branch": 1,
-"roomNumber": "252",
-"title": "Presentations Title",
-"description": "Presentationsbeschreibung",
-"isAccepted": false,
-"fileURL": "www.fileurl.com",
-"id": 1,
-"timestamp": "AAAAAAAAB9o="
-},
-"fK_Presentation": 1,
-"branches": [],
-"fK_Branches": 1,
-"isAccepted": false,
-"package": {
-"name": "Premium Package",
-"tag": "PP",
-"number": 1,
-"id": 1,
-"timestamp": "AAAAAAAAB9U="
-},
-"fK_Package": 1,
-"companyDescription": "Sakal Company",
-"additionalInfo": "Additional Infos need sth",
-"remarks": "bemerkungen",
-"providesSummerJob": true,
-"providesThesis": true,
-"creationDate": "2017-11-05T00:00:00",
-"id": 1,
-"timestamp": "AAAAAAAAB9s="
+{  
+   "event":{  
+      "id":1,
+      "date":"2017-12-20T10:26:30.520Z",
+      "registrationStart":"2017-12-20T10:26:30.521Z",
+      "registrationEnd":"2017-12-20T10:26:30.521Z",
+      "isLocked":false
+   },
+   "company":{  
+      "name":"Firma",
+      "branch":"Branch",
+      "address":{  
+         "city":"Pasching",
+         "zipCode":"4061",
+         "street":"Dr. Karl Rennerstrasse, 17a",
+         "streetNumber":"17a",
+         "addition":"zusatz"
+      },
+      "contact":{  
+         "firstName":"Simon",
+         "lastName":"Kepplinger",
+         "email":"simon.kepplinger@gmail.com",
+         "phoneNumber":"6605791261"
+      },
+      "phoneNumber":"6605791261",
+      "email":"andi.sakal15@gmail.com",
+      "homepage":"web.com",
+      "logoUrl":"hallo Andi \\(◠‿◠)",
+      "establishmentsCountInt":1,
+      "establishmentsInt":"London",
+      "establishmentsCountAut":2,
+      "establishmentsAut":"Linz;Wien"
+   },
+   "location":{  
+      "number":0,
+      "area":{  
+         "id":1,
+         "designation":"",
+         "graphicUrl":"",
+         "eventId":1
+      },
+      "category":"A",
+      "xCoordinate":100,
+      "yCoordinate":100
+   },
+   "presentation":null,
+   "fitPackage":{  
+      "id":1,
+      "name":"",
+      "price":200,
+      "discriminator":1
+   },
+   "representatives":[  
+      {  
+         "name":"Simon Kepplinger",
+         "email":"simon.kepplinger@gmail.com",
+         "imageUrl":"../../../../../assets/contact.png"
+      },
+      {  
+         "name":"Simon Kepplinger2",
+         "email":"simon.kepplinger@gmail.com2",
+         "imageUrl":"../../../../../assets/contact.png"
+      }
+   ],
+   "branches":[  
+      {  
+         "name":"Elektronik/techn. Informatik",
+         "id":2,
+         "timestamp":"AAAAAAAAB+A="
+      }
+   ],
+   "resources":[  
+      {  
+         "name":"Stehtisch",
+         "description":"Ein Stehtisch",
+         "id":2,
+         "timestamp":"AAAAAAAAB9g="
+      },
+      {  
+         "name":"Wlan",
+         "description":"Es wird Ihnen ein Wlan Modul zur Verfügung gestellt",
+         "id":1,
+         "timestamp":"AAAAAAAAB9c="
+      }
+   ],
+   "isAccepted":false,
+   "remarks":"dfkjasöldf",
+   "additionalInfo":"sadf",
+   "companyDescription":"Tätigkeitsfeldes",
+   "providesSummerJob":true,
+   "providesThesis":false
 }
 ```
 
