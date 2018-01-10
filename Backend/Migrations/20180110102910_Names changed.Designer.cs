@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180110102910_Names changed")]
+    partial class Nameschanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,9 +238,6 @@ namespace Backend.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(15);
-
-                    b.Property<string>("Gender")
-                        .IsRequired();
 
                     b.Property<string>("LastName")
                         .IsRequired()

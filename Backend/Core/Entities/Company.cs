@@ -27,7 +27,7 @@ namespace Backend.Core.Entities
         public string Homepage { get; set; }
 
         [Required]
-        public string LogoUrl { get; set; }
+        public string Logo { get; set; }
 
         [Required, MaxLength(20)]
         public string Branch { get; set; }
