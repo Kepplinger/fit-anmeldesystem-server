@@ -42,8 +42,8 @@ namespace Backend.Utils
                                              "<div>" +
                                              "<p>Sehr geehrte(r) Frau/Herr " + succBooking.Company.Contact.LastName + "," +
                                              "<br><br>" +
-                                             "Ihre Anmeldung ist bei uns eingetroffen! Wir freuen uns Sehr das Sie sich dazu entschieden" +
-                                             "haben beim diesjährigen <b>Firmeninformationstag</b> in der <b><a href=\"http://www.htl-leonding.at/\">HTL Leonding</a></b> Ihre Unternehmen vorzustellen!<br>" +
+                                             "Ihre Anmeldung ist bei uns eingetroffen! Wir freuen uns sehr, dass Sie sich dazu entschieden " +
+                                             "haben beim diesjährigen <b>Firmeninformationstag</b> in der <b><a href=\"http://www.htl-leonding.at/\">HTL Leonding</a></b> Ihr Unternehmen vorzustellen!<br>" +
                                              "</p>" +
                                              "<p>Bei Fragen oder Anregungen können Sie uns jederzeit unter der Nr.: <a href=\"tel:+439999999\">+43123456789</a> oder per E-Mail <a href=\"mailto:andi.sakal15@gmail.com\">andi.sakal15@gmail.com</a> erreichen" +
                                              "<br><br>" +
