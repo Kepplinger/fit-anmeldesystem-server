@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Backend.Core.Entities
 {
     public class Event : EntityObject
@@ -21,4 +20,5 @@ namespace Backend.Core.Entities
         public int FK_Areas { get; set; }
 
     }
+
 }
