@@ -8,10 +8,6 @@ namespace Backend.Core.Entities
         [Required]
         public int Number { get; set; }
 
-        [ForeignKey("FK_Area")]
-        public Area Area { get; set; }
-        public int FK_Area { get; set; }
-
         [Required]
         public string Category { get; set; }
         [Required]
