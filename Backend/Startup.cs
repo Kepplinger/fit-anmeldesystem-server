@@ -23,12 +23,6 @@ namespace Backend
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddSingleton<IRazorLightEngine>(f =>
-            {
-                return (new EngineFactory())
-                    .ForFileSystem($"{Environment.CurrentDirectory}\\Views");
-            });
-
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
