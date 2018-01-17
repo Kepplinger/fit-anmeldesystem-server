@@ -10,7 +10,7 @@ namespace Backend.Core.Entities
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required, Url]
+        [Required]
         public string Image { get; set; }
 
     }

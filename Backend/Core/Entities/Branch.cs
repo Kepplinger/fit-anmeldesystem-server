@@ -1,9 +1,11 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace Backend.Core.Entities
 {
     public class Branch : EntityObject
     {
-        [System.ComponentModel.DataAnnotations.Required]
+        [Required]
         public string Name { get; set; }
     }
 }
