@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Media\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="Utils\" />
     <Folder Include="EmailTemplates\" />
