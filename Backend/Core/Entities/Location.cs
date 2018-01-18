@@ -6,7 +6,7 @@ namespace Backend.Core.Entities
     public class Location :EntityObject
     {       
         [Required]
-        public int Number { get; set; }
+        public string Number { get; set; }
 
         [Required]
         public string Category { get; set; }
@@ -14,5 +14,7 @@ namespace Backend.Core.Entities
         public double XCoordinate { get; set; }
         [Required]
         public double YCoordinate { get; set; }
+        [Required]
+        public bool isOccupied { get; set; }
     }
 }

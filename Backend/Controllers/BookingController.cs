@@ -37,7 +37,7 @@ namespace Backend.Controllers
 
             if (jsonBooking != null && jsonBooking.Company.Id != 0)
                 Update(jsonBooking);
-            else if ((jsonBooking.Location.Area != null) && (jsonBooking != null && jsonBooking.Company.Id == 0))
+            else if (jsonBooking != null && jsonBooking.Company.Id == 0)
                 return Insert(jsonBooking);
 
             Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
@@ -117,7 +117,7 @@ namespace Backend.Controllers
                     _unitOfWork.Save();
 
                     // Get the entity from the DB and give reference to it
-                    jsonBooking.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == jsonBooking.Location.Area.Id).FirstOrDefault();
+                   // jsonBooking.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == jsonBooking.Location.Area.Id).FirstOrDefault();
                     _unitOfWork.LocationRepository.Insert(jsonBooking.Location);
                     _unitOfWork.Save();
 
