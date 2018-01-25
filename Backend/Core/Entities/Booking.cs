@@ -50,5 +50,8 @@ namespace Backend.Core.Entities
         public bool ProvidesThesis { get; set; }
 
         public DateTime CreationDate { get; set; }
+
+        public String CompanyDescription { get; set; }
+
     }
 }
