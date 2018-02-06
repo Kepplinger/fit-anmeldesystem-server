@@ -46,7 +46,7 @@ namespace Backend.Core.Entities
 
         [Required,JsonIgnore]
         public string RegistrationToken { get; set; }
-
+ 
        
         
     }

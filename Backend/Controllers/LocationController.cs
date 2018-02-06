@@ -27,5 +27,26 @@ namespace Backend.Controllers
             var locations = _unitOfWork.LocationRepository.Get();
             return new OkObjectResult(locations);
         }
+
+
+        [HttpPost]
+        [ProducesResponseType(typeof(Location), StatusCodes.Status200OK)]
+        public IActionResult PostLocation(Location jsonLocation)
+        {
+
+            _unitOfWork.LocationRepository.Insert(jsonLocation);
+            _unitOfWork.Save();
+
+            return new OkObjectResult( jsonLocation);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(Location), StatusCodes.Status200OK)]
+        public IActionResult PutLocation(Location jsonLocation)
+        {
+            _unitOfWork.LocationRepository.Update(jsonLocation);
+            _unitOfWork.Save();
+            return new OkObjectResult(jsonLocation);
+        }
     }
 }
