@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -42,5 +43,11 @@ namespace Backend.Core.Entities
 
         [Required, MaxLength(30)]
         public string EstablishmentsAut { get; set; }
+
+        [Required,JsonIgnore]
+        public string RegistrationToken { get; set; }
+
+       
+        
     }
 }
