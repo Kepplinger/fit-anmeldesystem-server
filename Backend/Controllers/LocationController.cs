@@ -31,7 +31,7 @@ namespace Backend.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Location), StatusCodes.Status200OK)]
-        public IActionResult PostLocation(Location jsonLocation)
+        public IActionResult PostLocation([FromBody]Location jsonLocation)
         {
 
             _unitOfWork.LocationRepository.Insert(jsonLocation);
@@ -42,7 +42,7 @@ namespace Backend.Controllers
 
         [HttpPut]
         [ProducesResponseType(typeof(Location), StatusCodes.Status200OK)]
-        public IActionResult PutLocation(Location jsonLocation)
+        public IActionResult PutLocation([FromBody]Location jsonLocation)
         {
             _unitOfWork.LocationRepository.Update(jsonLocation);
             _unitOfWork.Save();

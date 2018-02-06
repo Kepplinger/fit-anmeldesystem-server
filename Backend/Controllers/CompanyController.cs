@@ -33,7 +33,7 @@ namespace Backend.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(Company),StatusCodes.Status200OK)]
-        public IActionResult CreateCompany(Company jsonComp)
+        public IActionResult CreateCompany([FromBody]Company jsonComp)
         {
 
             Company storeCompany = jsonComp;
