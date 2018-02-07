@@ -50,10 +50,10 @@ namespace Backend.Controllers
             {
                 try
                 {
-                    // Update already persistent Entities ------------------
+                    // Update already persistent Entities ----------------------
                     Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
 
-                    if (toUpdate.Address != null && toUpdate.FK_Address != 0)
+                    if (toUpdate.FK_Address != 0)
                     {
                         _unitOfWork.AddressRepository.Update(toUpdate.Address);
                         _unitOfWork.Save();
