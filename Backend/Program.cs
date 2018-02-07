@@ -19,7 +19,7 @@ namespace Backend
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            bindurl = configuration["Urls:ServerUrl"];
+            bindurl = configuration["Urls:DefaultUrl"];
             System.Console.WriteLine("!!!You are at" + bindurl + "Mode!!!");
             BuildWebHost(args).Run();
         }

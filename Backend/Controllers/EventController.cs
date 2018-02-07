@@ -27,17 +27,26 @@ namespace Backend.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
-        public IActionResult Create([FromBody] Event temp)
+        public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent)
         {
             try
             {
-                if (temp != null && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault()==null)
+                if (jsonEvent != null && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault()==null)
                 {
-                    _unitOfWork.EventRepository.Insert(temp);
+                    // Saving Areas and Locations for the Event
+                    foreach(Area area in jsonEvent.Areas) {
+                        foreach (Location l in area.Locations)
+                        {
+                            _unitOfWork.LocationRepository.Insert(l);
+                        }
+                        _unitOfWork.Save();
+                        _unitOfWork.AreaRepository.Insert(area);
+                    }
+                    _unitOfWork.EventRepository.Insert(jsonEvent);
                     _unitOfWork.Save();
-                    return new OkObjectResult(temp);
+                    return new OkObjectResult(jsonEvent);
                 }
-                return new BadRequestObjectResult(temp);
+                return new BadRequestObjectResult(jsonEvent);
             }
             catch (DbUpdateException ex)
             {
