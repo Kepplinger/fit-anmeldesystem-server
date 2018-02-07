@@ -10,8 +10,10 @@ namespace Backend.Core.Entities
 
         public DateTime ChangeDate { get; set; }
 
-        public string NewValue { get; set; }
+        public object NewValue { get; set; }
 
-        public string OldValue { get; set; }
+        public object OldValue { get; set; }
+
+        public Type TypeOfValue { get; set; }
     }
 }
