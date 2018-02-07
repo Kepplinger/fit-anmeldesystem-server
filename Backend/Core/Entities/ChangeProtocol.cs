@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Backend.Core.Entities
 {
@@ -10,8 +12,10 @@ namespace Backend.Core.Entities
 
         public DateTime ChangeDate { get; set; }
 
+        [NotMapped]
         public object NewValue { get; set; }
 
+        [NotMapped]
         public object OldValue { get; set; }
 
         public Type TypeOfValue { get; set; }
