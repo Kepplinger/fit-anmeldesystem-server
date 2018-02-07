@@ -110,7 +110,9 @@ namespace Backend.Controllers
                     _unitOfWork.ContactRepository.Insert(jsonBooking.Company.Contact);
                     _unitOfWork.Save();
 
-                    _unitOfWork.CompanyRepository.Insert(jsonBooking.Company);
+                    Company c = jsonBooking.Company;
+                    c.RegistrationToken = Guid.NewGuid().ToString();
+                    _unitOfWork.CompanyRepository.Insert(c);    
                     _unitOfWork.Save();
 
                     _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);

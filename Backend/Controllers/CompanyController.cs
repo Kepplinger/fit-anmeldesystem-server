@@ -2,6 +2,7 @@
 using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Backend.Controllers
 {
@@ -26,6 +27,20 @@ namespace Backend.Controllers
         {
             var companies = _unitOfWork.CompanyRepository.Get();
             return new OkObjectResult(companies);
+            
+        }
+
+
+        [HttpPost]
+        [ProducesResponseType(typeof(Company),StatusCodes.Status200OK)]
+        public IActionResult CreateCompany([FromBody]Company jsonComp)
+        {
+
+            Company storeCompany = jsonComp;
+            storeCompany.RegistrationToken = Guid.NewGuid().ToString();
+            _unitOfWork.CompanyRepository.Insert(storeCompany);
+            _unitOfWork.Save();
+            return new ObjectResult(storeCompany);
         }
     }
 }
