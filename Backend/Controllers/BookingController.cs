@@ -62,10 +62,10 @@ namespace Backend.Controllers
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Address);
-                                change.OldValue = p.GetValue(toUpdate);
+                                change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Address);
-                                change.TypeOfValue = p.PropertyType;
+                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumName);
                             }
                         }
@@ -79,10 +79,10 @@ namespace Backend.Controllers
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Contact);
-                                change.OldValue = p.GetValue(toUpdate);
+                                change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Contact);
-                                change.TypeOfValue = p.PropertyType;
+                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumName);
                             }
                         }

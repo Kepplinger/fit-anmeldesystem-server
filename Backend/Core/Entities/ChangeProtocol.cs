@@ -12,12 +12,12 @@ namespace Backend.Core.Entities
 
         public DateTime ChangeDate { get; set; }
 
-        [NotMapped]
-        public object NewValue { get; set; }
+ 
+        public string NewValue { get; set; }
 
-        [NotMapped]
-        public object OldValue { get; set; }
 
-        public Type TypeOfValue { get; set; }
+        public string OldValue { get; set; }
+
+       // public Type TypeOfValue { get; set; }
     }
 }
