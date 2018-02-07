@@ -40,7 +40,7 @@ namespace Backend.Controllers
             return new OkObjectResult( jsonLocation);
         }
 
-        [HttpPut]
+        [HttpPut()]
         [ProducesResponseType(typeof(Location), StatusCodes.Status200OK)]
         public IActionResult PutLocation([FromBody]Location jsonLocation)
         {
