@@ -8,7 +8,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using Backend.Utils;
-using System.Net.Mail;
 
 namespace Backend.Controllers
 {
