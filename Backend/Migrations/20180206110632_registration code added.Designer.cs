@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180206110632_registration code added")]
+    partial class registrationcodeadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +61,7 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
-                    b.Property<int?>("EventId");
+                    b.Property<int?>("FK_Areas");
 
                     b.Property<string>("GraphicURL")
                         .IsRequired();
@@ -71,7 +72,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("FK_Areas");
 
                     b.ToTable("Areas");
                 });
@@ -269,6 +270,8 @@ namespace Backend.Migrations
 
                     b.Property<DateTime>("EventDate");
 
+                    b.Property<int>("FK_Areas");
+
                     b.Property<bool>("IsLocked");
 
                     b.Property<DateTime>("RegistrationEnd");
@@ -312,10 +315,10 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("AreaId");
-
                     b.Property<string>("Category")
                         .IsRequired();
+
+                    b.Property<int?>("FK_Locations");
 
                     b.Property<string>("Number")
                         .IsRequired();
@@ -332,7 +335,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AreaId");
+                    b.HasIndex("FK_Locations");
 
                     b.ToTable("Locations");
                 });
@@ -447,7 +450,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Event")
                         .WithMany("Areas")
-                        .HasForeignKey("EventId")
+                        .HasForeignKey("FK_Areas")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -509,7 +512,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Area")
                         .WithMany("Locations")
-                        .HasForeignKey("AreaId")
+                        .HasForeignKey("FK_Locations")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

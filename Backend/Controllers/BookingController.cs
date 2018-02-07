@@ -62,10 +62,10 @@ namespace Backend.Controllers
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Address);
-                                change.OldValue = p.GetValue(toUpdate);
+                                change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Address);
-                                change.TypeOfValue = p.PropertyType;
+                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumName);
                             }
                         }
@@ -79,10 +79,10 @@ namespace Backend.Controllers
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Contact);
-                                change.OldValue = p.GetValue(toUpdate);
+                                change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Contact);
-                                change.TypeOfValue = p.PropertyType;
+                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumName);
                             }
                         }
@@ -115,7 +115,9 @@ namespace Backend.Controllers
                     _unitOfWork.ContactRepository.Insert(jsonBooking.Company.Contact);
                     _unitOfWork.Save();
 
-                    _unitOfWork.CompanyRepository.Insert(jsonBooking.Company);
+                    Company c = jsonBooking.Company;
+                    c.RegistrationToken = Guid.NewGuid().ToString();
+                    _unitOfWork.CompanyRepository.Insert(c);    
                     _unitOfWork.Save();
 
                     _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);

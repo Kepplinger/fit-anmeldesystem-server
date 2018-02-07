@@ -76,5 +76,15 @@ namespace Backend.Controllers
             e.Areas.AddRange(_unitOfWork.AreaRepository.Get().ToList());
             return new OkObjectResult(e);
         }
+
+
+        [HttpGet("latest")]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        public IActionResult GetLatestEvent()
+        {
+            Event e = _unitOfWork.EventRepository.Get(orderBy: c => c.OrderByDescending( t => t.EventDate)).First();
+            return new OkObjectResult(e);
+        }
+
     }
 }
