@@ -28,7 +28,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Area), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Area temp)
         {
-            System.Console.WriteLine(temp.Designation);
             try
             {
                 if (temp != null)

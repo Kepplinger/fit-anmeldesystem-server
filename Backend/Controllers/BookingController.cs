@@ -48,6 +48,7 @@ namespace Backend.Controllers
 
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
+                ChangeProtocol change = new ChangeProtocol();
                 try
                 {
                     // Update already persistent Entities ----------------------
@@ -55,33 +56,37 @@ namespace Backend.Controllers
 
                     if (toUpdate.FK_Address != 0)
                     {
-                        _unitOfWork.AddressRepository.Update(toUpdate.Address);
-                        _unitOfWork.Save();
-                    }
-                    else if (toUpdate.FK_Address == 0)
-                    {
-                        _unitOfWork.AddressRepository.Insert(toUpdate.Address);
-                        _unitOfWork.Save();
-                        toUpdate.FK_Address = toUpdate.Address.Id;
+                        foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonBooking.Company.Address);
+                                change.OldValue = p.GetValue(toUpdate);
+                                change.TableName = nameof(Address);
+                                change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("No Update for" + change.ColumName);
+                            }
+                        }
                     }
 
                     if (toUpdate.FK_Contact != 0 && toUpdate.Contact != null)
                     {
-                        _unitOfWork.ContactRepository.Update(toUpdate.Contact);
-                        _unitOfWork.Save();
+                        foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonBooking.Company.Contact);
+                                change.OldValue = p.GetValue(toUpdate);
+                                change.TableName = nameof(Contact);
+                                change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("No Update for" + change.ColumName);
+                            }
+                        }
                     }
-                    else if (toUpdate.FK_Contact == 0)
-                    {
-                        _unitOfWork.ContactRepository.Insert(toUpdate.Contact);
-                        _unitOfWork.Save();
-                        toUpdate.FK_Contact = toUpdate.Contact.Id;
-                    }
-
-                    _unitOfWork.CompanyRepository.Update(jsonBooking.Company);
-                    _unitOfWork.Save();
-
-                    transaction.Commit();
-
                     return new OkObjectResult(jsonBooking);
                 }
                 catch (DbUpdateException ex)
@@ -98,6 +103,7 @@ namespace Backend.Controllers
 
         [NonAction]
         public IActionResult Insert(Booking jsonBooking) {
+
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
                 try
