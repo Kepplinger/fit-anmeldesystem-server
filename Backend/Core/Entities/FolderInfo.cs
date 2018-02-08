@@ -29,10 +29,10 @@ namespace Backend.Core.Entities
         [MaxLength(30)]
         public string EstablishmentsInt { get; set; }
 
-        [Required]
+        
         public int EstablishmentsCountAut { get; set; }
 
-        [Required, MaxLength(30)]
+        [MaxLength(30)]
         public string EstablishmentsAut { get; set; }
     }
 }
