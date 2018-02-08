@@ -17,7 +17,7 @@ namespace Backend.Controllers
         {
             this._unitOfWork = uow;
         }
-        
+
         /// <response code="200">Returns all available Companies</response>
         /// <summary>
         /// Getting all Companies from Database
@@ -28,12 +28,12 @@ namespace Backend.Controllers
         {
             var companies = _unitOfWork.CompanyRepository.Get();
             return new OkObjectResult(companies);
-            
+
         }
 
 
-        [HttpPost("company")]
-        [ProducesResponseType(typeof(Company),StatusCodes.Status200OK)]
+        [HttpPost]
+        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult CreateCompany([FromBody]Company jsonComp)
         {
 
@@ -45,7 +45,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("registertoken")]
-        [ProducesResponseType(typeof(Company),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetCompanyToCode([FromBody] string token)
         {
             Company c = _unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).First();

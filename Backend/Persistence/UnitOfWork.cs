@@ -5,6 +5,9 @@ using Backend.Core.Entities;
 using FITBackend.Persistence;
 using Backend.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace StoreService.Persistence
 {
@@ -40,7 +43,7 @@ namespace StoreService.Persistence
         public IBookingRepository BookingRepository { get; }
 
 
-        public UnitOfWork() 
+        public UnitOfWork()
         {
             _context = new ApplicationDbContext();
 
@@ -103,7 +106,21 @@ namespace StoreService.Persistence
             _context.Database.EnsureDeleted();
         }
 
-        public IDbContextTransaction BeginTransaction() {
+        public void MigrateDatabase()
+        {
+            try
+            {
+                _context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public IDbContextTransaction BeginTransaction()
+        {
             return _context.Database.BeginTransaction();
         }
 
@@ -114,7 +131,106 @@ namespace StoreService.Persistence
 
         public void FillDb()
         {
-            throw new NotImplementedException();
+            DeleteDatabase();
+            MigrateDatabase();
+
+            // Set up Booking
+            Booking booking = new Booking();
+            booking.AdditionalInfo = "Here is some Additional Info";
+            booking.CompanyDescription = "This is the company description";
+            booking.isAccepted = true;
+            booking.ProvidesSummerJob = true;
+            booking.ProvidesThesis = false;
+            booking.Remarks = "Remark";
+
+            // Set up Company
+            Company company = new Company();
+            company.Name = "Kepplinger IT";
+            company.IsPending = false;
+            company.RegistrationToken = "IWASDTOASD";
+
+            // Set up Address
+            Address address = new Address();
+            address.Addition = "Additional Address Info";
+            address.City = "Linz";
+            address.StreetNumber = "14";
+            address.Street = "some Street";
+            address.ZipCode = "4020";
+
+            _context.Addresses.Add(address);
+            _context.SaveChanges();
+
+
+            // Set Up Contact
+            Contact contact = new Contact();
+            contact.FirstName = "Andrej";
+            contact.LastName = "Sakal";
+            contact.Gender = "M";
+            contact.PhoneNumber = "+4369917209297";
+            contact.Email = "andi.sakal15@gmail.com";
+
+            _context.Contacts.Add(contact);
+            _context.SaveChanges();
+
+
+            //Set up FitFolderInfo
+            FolderInfo folderInfo = new FolderInfo();
+            folderInfo.Email = "officemail@gmail.com";
+            folderInfo.Branch = "Firmen Branche";
+            folderInfo.EstablishmentsAut = "Linz";
+            folderInfo.EstablishmentsCountAut = 1;
+            folderInfo.EstablishmentsCountInt = 0;
+            folderInfo.EstablishmentsInt = "";
+            folderInfo.Homepage = "www.fit.com";
+            folderInfo.Logo = "logo";
+            folderInfo.PhoneNumber = "firmenphonenr";
+
+            _context.FolderInfos.Add(folderInfo);
+            _context.SaveChanges();
+
+
+            // Set up Company
+            company.Contact = contact;
+            company.Address = address;
+            company.FolderInfo = folderInfo;
+
+            _context.Companies.Add(company);
+
+            _context.SaveChanges();
+
+            //Set up Ressources
+            ResourceBooking resourceBooking = new ResourceBooking();
+            resourceBooking.Amount = 1;
+
+            List<Resource> resources = new List<Resource>();
+            Resource resource = new Resource();
+            resource.Name = "Stuhl";
+            resource.Description = "Braucht die Firma einen Stuhl";
+            resources.Add(resource);
+
+            resourceBooking.Resource = resource;
+
+            booking.Resources = resources;
+            booking.Company = company;
+
+            //Representatives
+            Representative repr = new Representative();
+            repr.Email = "andi.sakal15@gmail.com";
+            repr.Image = "iagendans";
+            repr.Name = "Andrej Sakal";
+
+
+
+
+
+            _context.Bookings.Add(new Booking());
+
+
+            var res = _context.Bookings.ToList();
+            foreach (var emp in res)
+            {
+                Console.WriteLine(emp.Company.Name);
+            }
         }
     }
 }
