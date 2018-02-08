@@ -24,8 +24,7 @@ namespace Backend.Persistence.Repositories
             {
                 query = query.Where(filter);
             }
-            query = query.Include(p => p.Areas)
-                         .Include(p => p.Areas.FirstOrDefault().Locations);
+            query = query.Include(p => p.Areas).ThenInclude(p => p.Locations);
 
             if (orderBy != null)
             {

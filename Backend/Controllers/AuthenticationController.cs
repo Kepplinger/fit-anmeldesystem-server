@@ -16,11 +16,11 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
-    public class AuthentificationController : Controller
+    public class AuthenticationController : Controller
     {
         private IUnitOfWork _unitOfWork;
 
-        public AuthentificationController(IUnitOfWork uow)
+        public AuthenticationController(IUnitOfWork uow)
         {
             this._unitOfWork = uow;
         }
@@ -73,7 +73,7 @@ namespace Backend.Controllers
         public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Company actCompany = _unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).First();
+            Company actCompany = _unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).FirstOrDefault();
 
             if (actCompany == null)
             {

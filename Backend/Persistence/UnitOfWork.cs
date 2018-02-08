@@ -270,6 +270,10 @@ namespace StoreService.Persistence
             Event e = new Event();
             e.EventDate = DateTime.Now;
             e.IsLocked = false;
+            e.IsCurrent = true;
+
+            _context.Events.Add(e);
+            _context.SaveChanges();
 
             /*booking.FitPackage = package2;
             booking.Representatives.Add(repr);
