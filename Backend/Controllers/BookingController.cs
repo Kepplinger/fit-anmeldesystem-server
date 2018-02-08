@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using Backend.Utils;
+using System.Diagnostics.Contracts;
 
 namespace Backend.Controllers
 {
@@ -35,9 +36,9 @@ namespace Backend.Controllers
         {
 
             if (jsonBooking != null && jsonBooking.Company.Id != 0)
-                Update(jsonBooking);
+                this.Update(jsonBooking);
             else if (jsonBooking != null && jsonBooking.Company.Id == 0)
-                return Insert(jsonBooking);
+                return this.Insert(jsonBooking);
 
             Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
             return new BadRequestObjectResult(jsonBooking);
@@ -46,14 +47,15 @@ namespace Backend.Controllers
         [NonAction]
         public IActionResult Update(Booking jsonBooking)
         {
+            Contract.Ensures(Contract.Result<IActionResult>() != null);
 
-            using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
+            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction())
             {
                 ChangeProtocol change = new ChangeProtocol();
                 try
                 {
                     // Update already persistent Entities ----------------------
-                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
+                    Company toUpdate = this._unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
 
                     if (toUpdate.FK_Address != 0)
                     {

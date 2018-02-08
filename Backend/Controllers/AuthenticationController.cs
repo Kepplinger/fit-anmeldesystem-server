@@ -63,7 +63,7 @@ namespace Backend.Controllers
         public IActionResult SendCompanyCodeForgotten([FromBody] JToken json)
         {
             string mail = json["email"].Value<string>();
-            Company c = _unitOfWork.CompanyRepository.Get(filter: g => g.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
+            Company c = this._unitOfWork.CompanyRepository.Get(filter: g => g.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
             EmailHelper.SendForgotten(c);
             return new NoContentResult();
         }
@@ -73,7 +73,7 @@ namespace Backend.Controllers
         public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Company actCompany = _unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).FirstOrDefault();
+            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).FirstOrDefault();
 
             if (actCompany == null)
             {
@@ -85,7 +85,7 @@ namespace Backend.Controllers
             }
 
             // Get Booking
-            Booking lastBooking = _unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).FirstOrDefault();
+            Booking lastBooking = this._unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).FirstOrDefault();
 
             // If there is no last Booking send just Company
             if (lastBooking == null)
