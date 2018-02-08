@@ -13,7 +13,6 @@ namespace Backend.Core.Contracts
         /// Standard Repositories 
         /// </summary>
         IGenericRepository<Area> AreaRepository { get; }
-
         IGenericRepository<Branch> BranchRepository { get; }
         IGenericRepository<Company> CompanyRepository { get; }
         IGenericRepository<Contact> ContactRepository { get; }
@@ -24,7 +23,6 @@ namespace Backend.Core.Contracts
         IGenericRepository<Resource> ResourceRepository { get; }
         IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         IGenericRepository<Address> AddressRepository { get; }
-
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>

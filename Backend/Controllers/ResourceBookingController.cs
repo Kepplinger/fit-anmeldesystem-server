@@ -32,7 +32,6 @@ namespace Backend.Controllers
             {
                 if (temp != null)
                 {
-
                     _unitOfWork.ResourceBookingRepository.Insert(temp);
                     _unitOfWork.Save();
 
