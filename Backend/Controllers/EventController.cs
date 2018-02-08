@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Backend.Core.Entities;
+using System.Diagnostics;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Backend.Controllers
 {
@@ -27,17 +30,36 @@ namespace Backend.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
-        public IActionResult Create([FromBody] Event temp)
+        public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent)
         {
+            List<Event> active = _unitOfWork.EventRepository.Get(p => p.IsCurrent == true).ToList();
+            for (int i = 0; i < active.Count; i++)
+            {
+                active.ElementAt(i).IsCurrent = false;
+                _unitOfWork.EventRepository.Update(active.ElementAt(i));
+            }
+            _unitOfWork.Save();
             try
             {
-                if (temp != null && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault()==null)
+                jsonEvent.IsCurrent = true;
+                //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
+                if (jsonEvent != null)
                 {
-                    _unitOfWork.EventRepository.Insert(temp);
+                    // Saving Areas and Locations for the Event
+                    foreach (Area area in jsonEvent.Areas)
+                    {
+                        foreach (Location l in area.Locations)
+                        {
+                            _unitOfWork.LocationRepository.Insert(l);
+                        }
+                        _unitOfWork.Save();
+                        _unitOfWork.AreaRepository.Insert(area);
+                    }
+                    _unitOfWork.EventRepository.Insert(jsonEvent);
                     _unitOfWork.Save();
-                    return new OkObjectResult(temp);
+                    return new OkObjectResult(jsonEvent);
                 }
-                return new BadRequestObjectResult(temp);
+                return new BadRequestObjectResult(jsonEvent);
             }
             catch (DbUpdateException ex)
             {
@@ -56,16 +78,28 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetCurrentEvent()
         {
-            /*
-              return ner OkObjectResult(_unitOfWork.EventRepository.Get(p => p.IsLocked == false).FirstOrDefault());
-            */
+            return new OkObjectResult(_unitOfWork.EventRepository.Get(p => p.IsCurrent == true, includeProperties: "Areas").FirstOrDefault());
+        }
 
-            Event e = new Event();
-            e.IsLocked = false;
-            e.RegistrationEnd = DateTime.Now.AddDays(30);
-            e.RegistrationStart = DateTime.Now.AddDays(-1);
-            e.Areas.AddRange(_unitOfWork.AreaRepository.Get().ToList());
+        /*// <response code="200">Return current Event</response>
+        /// <summary>
+        /// Getting all Events from Database
+        /// </summary>
+        [HttpGet("next")]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        public IActionResult GetNextEvent()
+        {
+            return new OkObjectResult(_unitOfWork.EventRepository.Get(p => p.EventDate.C, includeProperties: "Area").FirstOrDefault());
+        }*/
+
+
+        [HttpGet("latest")]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        public IActionResult GetLatestEvent()
+        {
+            Event e = _unitOfWork.EventRepository.Get(orderBy: c => c.OrderByDescending(t => t.EventDate)).First();
             return new OkObjectResult(e);
         }
+
     }
 }

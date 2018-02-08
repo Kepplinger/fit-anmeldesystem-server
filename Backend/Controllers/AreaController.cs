@@ -28,7 +28,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Area), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Area temp)
         {
-            System.Console.WriteLine(temp.Designation);
             try
             {
                 if (temp != null)
@@ -57,6 +56,15 @@ namespace Backend.Controllers
         {
             var areas = _unitOfWork.AreaRepository.Get();
             return new ObjectResult(areas);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(Area), 200)]
+        public IActionResult PutArea([FromBody]Area area)
+        {
+            _unitOfWork.AreaRepository.Update(area);
+            _unitOfWork.Save();
+            return new ObjectResult(area);
         }
     }
 }

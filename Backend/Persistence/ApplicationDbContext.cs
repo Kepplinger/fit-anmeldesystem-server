@@ -24,6 +24,7 @@ namespace Backend.Persistence
         public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
+        public DbSet<FolderInfo> FolderInfos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,7 +32,7 @@ namespace Backend.Persistence
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
-            string connectionString = configuration["ConnectionStrings:ServerConnection"];
+            string connectionString = configuration["ConnectionStrings:Sakal"];
             optionsBuilder.UseSqlServer(connectionString);
         }
 

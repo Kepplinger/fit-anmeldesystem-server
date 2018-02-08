@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Backend.Core.Entities
 {
@@ -16,9 +17,11 @@ namespace Backend.Core.Entities
         [Required]
         public bool IsLocked { get; set; }
 
-        [ForeignKey("FK_Areas"),Required]
+        [Required]
         public List<Area> Areas { get; set; }
-        public int FK_Areas { get; set; }
 
+        [JsonIgnore]
+        public bool IsCurrent { get; set; }
     }
+
 }

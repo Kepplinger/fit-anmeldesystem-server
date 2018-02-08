@@ -15,5 +15,9 @@ namespace Backend.Core.Entities
 
         [Required]
         public string PhoneNumber { get; set; }
+
+
+        [Required]
+        public string Gender { get; set; }
     }
 }

@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180208120001_folder info model added")]
+    partial class folderinfomodeladded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,7 +185,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Contact");
 
-                    b.Property<int?>("FolderInfoId");
+                    b.Property<int>("FK_FolderInfo");
 
                     b.Property<bool>("IsPending");
 
@@ -205,7 +206,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("FK_Contact");
 
-                    b.HasIndex("FolderInfoId");
+                    b.HasIndex("FK_FolderInfo");
 
                     b.ToTable("Companies");
                 });
@@ -247,8 +248,6 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("EventDate");
-
-                    b.Property<bool>("IsCurrent");
 
                     b.Property<bool>("IsLocked");
 
@@ -527,7 +526,7 @@ namespace Backend.Migrations
 
                     b.HasOne("Backend.Core.Entities.FolderInfo", "FolderInfo")
                         .WithMany()
-                        .HasForeignKey("FolderInfoId")
+                        .HasForeignKey("FK_FolderInfo")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

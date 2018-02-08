@@ -8,7 +8,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using Backend.Utils;
-using System.Net.Mail;
 
 namespace Backend.Controllers
 {
@@ -37,7 +36,7 @@ namespace Backend.Controllers
 
             if (jsonBooking != null && jsonBooking.Company.Id != 0)
                 Update(jsonBooking);
-            else if ((jsonBooking.Location.Area != null) && (jsonBooking != null && jsonBooking.Company.Id == 0))
+            else if (jsonBooking != null && jsonBooking.Company.Id == 0)
                 return Insert(jsonBooking);
 
             Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
@@ -49,40 +48,45 @@ namespace Backend.Controllers
 
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
+                ChangeProtocol change = new ChangeProtocol();
                 try
                 {
-                    // Update already persistent Entities ------------------
+                    // Update already persistent Entities ----------------------
                     Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
 
-                    if (toUpdate.Address != null && toUpdate.FK_Address != 0)
+                    if (toUpdate.FK_Address != 0)
                     {
-                        _unitOfWork.AddressRepository.Update(toUpdate.Address);
-                        _unitOfWork.Save();
-                    }
-                    else if (toUpdate.FK_Address == 0)
-                    {
-                        _unitOfWork.AddressRepository.Insert(toUpdate.Address);
-                        _unitOfWork.Save();
-                        toUpdate.FK_Address = toUpdate.Address.Id;
+                        foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.TableName = nameof(Address);
+                                //change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("No Update for" + change.ColumName);
+                            }
+                        }
                     }
 
                     if (toUpdate.FK_Contact != 0 && toUpdate.Contact != null)
                     {
-                        _unitOfWork.ContactRepository.Update(toUpdate.Contact);
-                        _unitOfWork.Save();
+                        foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.TableName = nameof(Contact);
+                                //change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("No Update for" + change.ColumName);
+                            }
+                        }
                     }
-                    else if (toUpdate.FK_Contact == 0)
-                    {
-                        _unitOfWork.ContactRepository.Insert(toUpdate.Contact);
-                        _unitOfWork.Save();
-                        toUpdate.FK_Contact = toUpdate.Contact.Id;
-                    }
-
-                    _unitOfWork.CompanyRepository.Update(jsonBooking.Company);
-                    _unitOfWork.Save();
-
-                    transaction.Commit();
-
                     return new OkObjectResult(jsonBooking);
                 }
                 catch (DbUpdateException ex)
@@ -99,6 +103,7 @@ namespace Backend.Controllers
 
         [NonAction]
         public IActionResult Insert(Booking jsonBooking) {
+
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
                 try
@@ -110,14 +115,16 @@ namespace Backend.Controllers
                     _unitOfWork.ContactRepository.Insert(jsonBooking.Company.Contact);
                     _unitOfWork.Save();
 
-                    _unitOfWork.CompanyRepository.Insert(jsonBooking.Company);
+                    Company c = jsonBooking.Company;
+                    c.RegistrationToken = Guid.NewGuid().ToString();
+                    _unitOfWork.CompanyRepository.Insert(c);    
                     _unitOfWork.Save();
 
                     _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);
                     _unitOfWork.Save();
 
                     // Get the entity from the DB and give reference to it
-                    jsonBooking.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == jsonBooking.Location.Area.Id).FirstOrDefault();
+                   // jsonBooking.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == jsonBooking.Location.Area.Id).FirstOrDefault();
                     _unitOfWork.LocationRepository.Insert(jsonBooking.Location);
                     _unitOfWork.Save();
 

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
 using Swashbuckle.AspNetCore.Swagger;
-using RazorLight;
+//using RazorLight;
 using System;
 
 namespace Backend
