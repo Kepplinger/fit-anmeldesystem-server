@@ -8,6 +8,7 @@ namespace Backend.Core.Entities
     {
         [Required]
         public string Designation { get; set; }
+
         [Required]
         public string GraphicURL { get; set; }
 

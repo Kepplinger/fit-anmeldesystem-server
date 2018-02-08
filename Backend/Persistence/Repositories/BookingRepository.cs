@@ -27,7 +27,7 @@ namespace Backend.Persistence.Repositories
                          .Include(p => p.Company.Address)
                          .Include(p => p.Company.Contact)
                          .Include(p => p.Presentation.Branches)
-                         //.Include(p => p.Location.Area)
+                         .Include(p => p.Location)
                          .Include(p => p.FitPackage)
                          .Include(p => p.Branches)
                          .Include(p => p.Resources)
