@@ -7,6 +7,7 @@ using System.Linq;
 using Backend.Core.Entities;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Backend.Controllers
 {
@@ -31,8 +32,16 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
         public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent)
         {
+            List<Event> active = _unitOfWork.EventRepository.Get(p => p.IsCurrent == true).ToList();
+            for (int i = 0; i < active.Count; i++)
+            {
+                active.ElementAt(i).IsCurrent = false;
+                _unitOfWork.EventRepository.Update(active.ElementAt(i));
+            }
+            _unitOfWork.Save();
             try
             {
+                jsonEvent.IsCurrent = true;
                 //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
                 if (jsonEvent != null)
                 {
