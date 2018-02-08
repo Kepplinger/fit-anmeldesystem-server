@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+
 namespace Backend.Core.Entities
 {
     public class Event : EntityObject
@@ -17,6 +19,9 @@ namespace Backend.Core.Entities
 
         [Required]
         public List<Area> Areas { get; set; }
+
+        [JsonIgnore]
+        public bool IsCurrent { get; set; }
     }
 
 }

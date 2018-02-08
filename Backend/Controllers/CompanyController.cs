@@ -52,6 +52,5 @@ namespace Backend.Controllers
             _unitOfWork.Save();
             return new ObjectResult(storeCompany);
         }
-
     }
 }

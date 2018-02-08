@@ -69,7 +69,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetCurrentEvent()
         {
-            return new OkObjectResult(_unitOfWork.EventRepository.Get(p => p.IsLocked == false, includeProperties: "Areas").FirstOrDefault());
+            return new OkObjectResult(_unitOfWork.EventRepository.Get(p => p.IsCurrent == true, includeProperties: "Areas").FirstOrDefault());
         }
 
         /*// <response code="200">Return current Event</response>

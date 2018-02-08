@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using SQLitePCL;
+using Backend.Core.Contracts.Repositories;
 
 namespace StoreService.Persistence
 {
@@ -26,7 +27,6 @@ namespace StoreService.Persistence
         public IGenericRepository<Company> CompanyRepository { get; }
         public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
-        public IGenericRepository<Event> EventRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
         public IGenericRepository<FitPackage> PackageRepository { get; }
         public IGenericRepository<Presentation> PresentationRepository { get; }
@@ -42,6 +42,8 @@ namespace StoreService.Persistence
         /// </summary>
 
         public IBookingRepository BookingRepository { get; }
+
+        public IEventRepository EventRepository { get; }
 
 
         public UnitOfWork()
@@ -70,9 +72,9 @@ namespace StoreService.Persistence
 
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
 
-            EventRepository = new GenericRepository<Event>(_context);
-
             FolderInfoRepository = new GenericRepository<FolderInfo>(_context);
+
+            EventRepository = new EventRepository(_context);
 
         }
 

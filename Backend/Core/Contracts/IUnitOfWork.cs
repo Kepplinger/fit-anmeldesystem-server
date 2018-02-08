@@ -2,21 +2,21 @@
 using Backend.Persistence.Repositories;
 using System;
 using Microsoft.EntityFrameworkCore.Storage;
+using Backend.Core.Contracts.Repositories;
 
 namespace Backend.Core.Contracts
 {
-    public interface IUnitOfWork: IDisposable
+    public interface IUnitOfWork : IDisposable
     {
-        
+
         /// <summary>
         /// Standard Repositories 
         /// </summary>
         IGenericRepository<Area> AreaRepository { get; }
-        
+
         IGenericRepository<Branch> BranchRepository { get; }
         IGenericRepository<Company> CompanyRepository { get; }
         IGenericRepository<Contact> ContactRepository { get; }
-        IGenericRepository<Event> EventRepository { get; }
         IGenericRepository<Location> LocationRepository { get; }
         IGenericRepository<FitPackage> PackageRepository { get; }
         IGenericRepository<Presentation> PresentationRepository { get; }
@@ -29,6 +29,7 @@ namespace Backend.Core.Contracts
         /// Erweiterte Repositories
         /// </summary>
         IBookingRepository BookingRepository { get; }
+        IEventRepository EventRepository { get; }
 
 
         void Save();
