@@ -25,7 +25,7 @@ namespace Backend.Utils
             //message config
             objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(succBooking.Company.Email));
+            objeto_mail.To.Add(new MailAddress(succBooking.Company.Contact.Email));
             objeto_mail.IsBodyHtml = true;
 
             //template config

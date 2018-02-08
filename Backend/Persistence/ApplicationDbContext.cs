@@ -24,6 +24,7 @@ namespace Backend.Persistence
         public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
+        public DbSet<FolderInfo> FolderInfos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

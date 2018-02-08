@@ -24,15 +24,15 @@ namespace Backend.Controllers
 
 
 
-        [HttpGet]
-        [ProducesResponseType(typeof(String), StatusCodes.Status200OK)]
-        public IActionResult getImagesToCompany(int companyId)
-        {
-            string folderPath = "../Media";
-            Company c = _unitOfWork.CompanyRepository.GetById(companyId);
-            byte[] image = System.Text.Encoding.UTF8.GetBytes(c.Logo);
-            return new OkObjectResult(folderPath);
-        }
+        //[HttpGet]
+        //[ProducesResponseType(typeof(String), StatusCodes.Status200OK)]
+        //public IActionResult getImagesToCompany(int companyId)
+        //{
+        //    string folderPath = "../Media";
+        //    Company c = _unitOfWork.CompanyRepository.GetById(companyId);
+        //    byte[] image = System.Text.Encoding.UTF8.GetBytes(c.Logo);
+        //    return new OkObjectResult(folderPath);
+        //}
 
     }
 }
