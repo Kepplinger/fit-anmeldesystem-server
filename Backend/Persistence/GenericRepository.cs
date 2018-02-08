@@ -14,7 +14,7 @@ namespace FITBackend.Persistence
     /// abgeleitete Klasse erstellt.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public class GenericRepository<TEntity>: IGenericRepository<TEntity> where TEntity : class, IEntityObject, new()
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class, IEntityObject, new()
     {
         protected readonly DbContext _context; // Aktueller DbContext wird vom UnitOfWork übergeben
         protected readonly DbSet<TEntity> _dbSet; // Set der entsprechenden Entität im Context
@@ -118,7 +118,7 @@ namespace FITBackend.Persistence
             if (existingEntity != null)
             {
                 if (Context.Entry(entityToUpdate).State == EntityState.Added)
-                    throw new DbUpdateException("Update performed on inserted but not commited dataset",default(Exception));
+                    throw new DbUpdateException("Update performed on inserted but not commited dataset", default(Exception));
                 Context.Entry(existingEntity).State = EntityState.Added;
                 _dbSet.Local.Remove(existingEntity);
                 EntityState state = Context.Entry(existingEntity).State;
