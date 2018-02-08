@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180208212345_presentation is not required")]
+    partial class presentationisnotrequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,8 +99,6 @@ namespace Backend.Migrations
 
                     b.Property<int?>("FK_Presentation");
 
-                    b.Property<int>("LocationId");
-
                     b.Property<bool>("ProvidesSummerJob");
 
                     b.Property<bool>("ProvidesThesis");
@@ -121,9 +120,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("FK_FitPackage");
 
-                    b.HasIndex("FK_Presentation");
+                    b.HasIndex("FK_Location");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("FK_Presentation");
 
                     b.ToTable("Bookings");
                 });
@@ -489,14 +488,14 @@ namespace Backend.Migrations
                         .HasForeignKey("FK_FitPackage")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Backend.Core.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("FK_Location")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany()
                         .HasForeignKey("FK_Presentation")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
