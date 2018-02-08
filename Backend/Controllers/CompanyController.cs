@@ -53,13 +53,5 @@ namespace Backend.Controllers
             return new ObjectResult(storeCompany);
         }
 
-        [HttpPost("registertoken")]
-        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult GetCompanyToCode([FromBody] string token)
-        {
-            Company c = _unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).First();
-
-            return new OkObjectResult(c);
-        }
     }
 }

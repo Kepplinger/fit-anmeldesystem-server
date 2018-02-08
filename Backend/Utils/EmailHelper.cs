@@ -84,7 +84,7 @@ namespace Backend.Utils
                                              "<head>" +
                                              "</head>" +
                                              "<body>" +
-                                             "<p>Zeas keppi du vogi do hos dein code du pissa " + comp.RegistrationToken +
+                                             "<p>Ihr Token: " + comp.RegistrationToken +
                                              "</body>" +
                                              "</html>");
             client.SendMailAsync(objeto_mail);

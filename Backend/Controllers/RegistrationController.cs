@@ -40,7 +40,7 @@ namespace Backend.Controllers
             {
                 var a = new
                 {
-                    existing = "true"
+                    existing = true
                 };
                 return new OkObjectResult(a);
             }
@@ -48,7 +48,7 @@ namespace Backend.Controllers
             {
                 var a = new
                 {
-                    existing = "false"
+                    existing = false
                 };
                 return new OkObjectResult(a);
             }
