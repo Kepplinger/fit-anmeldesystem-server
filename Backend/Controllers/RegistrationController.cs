@@ -29,14 +29,12 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public IActionResult ForgotCode([FromBody] JToken json)
         {
-            Debugger.Break();
-
             Company existing;
             string mail = json["email"].Value<string>();
 
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                existing = uow.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail)).FirstOrDefault();
+                existing = uow.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail)).FirstOrDefault();
             }
             if (existing != null)
             {
@@ -55,6 +53,16 @@ namespace Backend.Controllers
                 return new OkObjectResult(a);
             }
 
+        }
+
+        [HttpPost("mail/code")]
+        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        public IActionResult SendCompanyCodeForgotten([FromBody] JToken json)
+        {
+            string mail = json["email"].Value<string>();
+            Company c = _unitOfWork.CompanyRepository.Get(filter: g => g.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
+            EmailHelper.SendForgotten(c);
+            return new OkObjectResult(c);
         }
     }
 }

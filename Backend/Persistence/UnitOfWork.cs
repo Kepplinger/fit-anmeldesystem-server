@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using SQLitePCL;
 
 namespace StoreService.Persistence
 {
@@ -210,20 +211,71 @@ namespace StoreService.Persistence
 
             resourceBooking.Resource = resource;
 
-            booking.Resources = resources;
-            booking.Company = company;
-
             //Representatives
             Representative repr = new Representative();
             repr.Email = "andi.sakal15@gmail.com";
             repr.Image = "iagendans";
             repr.Name = "Andrej Sakal";
 
+            _context.Rerpresentatives.Add(repr);
+            _context.SaveChanges();
+
+            FitPackage package = new FitPackage();
+            package.Name = "Basispaket";
+            package.Discriminator = 1;
+            package.Description = "Das Grundpaket bietet Ihnen einen Standplatz am FIT";
+            package.Price = 200;
+
+            _context.Packages.Add(package);
+            _context.SaveChanges();
+
+            FitPackage package2 = new FitPackage();
+            package2.Name = "Sponsorpaket";
+            package2.Discriminator = 2;
+            package2.Description = "Beim Sponsorpaket zusätzlich enthalten ist noch anbringung Ihres Firmenlogos auf Werbematerialien des FITs";
+            package2.Price = 400;
+
+            _context.Packages.Add(package2);
+            _context.SaveChanges();
+
+            FitPackage package3 = new FitPackage();
+            package3.Name = "Vortragspaket";
+            package3.Discriminator = 3;
+            package3.Description = "Beim Vortragspaket zuästzlich zu den restlichen Paketen darf man einen Vortrag halten";
+            package3.Price = 600;
+
+            _context.Packages.Add(package3);
+            _context.SaveChanges();
+
+            Branch it = new Branch();
+            it.Name = "Informatik/Medientechnik";
+
+            _context.Branches.Add(it);
+            _context.SaveChanges();
+
+            Branch elektr = new Branch();
+            elektr.Name = "Elektronik/techn. Informatik";
+
+            _context.Branches.Add(elektr);
+            _context.SaveChanges();
+
+            Branch bio = new Branch();
+            bio.Name = "Biomedizin & Gesundheitstechnik";
+
+            _context.Branches.Add(bio);
+            _context.SaveChanges();
+
+            Event e = new Event();
+            e.EventDate = DateTime.Now;
+            e.IsLocked = false;
+
+            /*booking.FitPackage = package2;
+            booking.Representatives.Add(repr);
+            booking.Resources = resources;
+            booking.Company = company;
 
 
-
-
-            _context.Bookings.Add(new Booking());
+            _context.Bookings.Add(new Booking());*/
 
 
             var res = _context.Bookings.ToList();

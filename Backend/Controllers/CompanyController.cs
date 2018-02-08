@@ -26,17 +26,26 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var companies = _unitOfWork.CompanyRepository.Get();
+            var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,FolderInfo");
             return new OkObjectResult(companies);
-
         }
 
+        /// <response code="200">Returns all pending Companies</response>
+        /// <summary>
+        /// Getting all Companies from Database
+        /// </summary>
+        [HttpGet("pending")]
+        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        public IActionResult GetAllPending()
+        {
+            var companies = _unitOfWork.CompanyRepository.Get(filter: f => f.IsPending == true, includeProperties: "Address,Contact");
+            return new OkObjectResult(companies);
+        }
 
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult CreateCompany([FromBody]Company jsonComp)
+        public IActionResult CreateCompany([FromBody] Company jsonComp)
         {
-
             Company storeCompany = jsonComp;
             storeCompany.RegistrationToken = Guid.NewGuid().ToString();
             _unitOfWork.CompanyRepository.Insert(storeCompany);
