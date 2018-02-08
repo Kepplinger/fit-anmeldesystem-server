@@ -36,7 +36,7 @@ namespace Backend.Controllers
 
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                existing = uow.CompanyRepository.Get(filter: p => p.Email.Equals(mail)).FirstOrDefault();
+                existing = uow.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail)).FirstOrDefault();
             }
             if (existing != null)
             {
