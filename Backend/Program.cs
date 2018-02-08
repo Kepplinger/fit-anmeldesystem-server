@@ -5,16 +5,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Backend.Core.Contracts;
 
 namespace Backend
 {
     public class Program
     {
-
         public static string bindurl = "";
 
         public static void Main(string[] args)
         {
+            /*using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
+            {
+                uow.FillDb();
+            }*/
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");

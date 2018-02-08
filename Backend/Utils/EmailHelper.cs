@@ -55,5 +55,39 @@ namespace Backend.Utils
             client.SendMailAsync(objeto_mail);
 
         }
+
+
+        public static void SendForgotten(Company comp)
+        {
+            Company company = comp;
+            MailMessage objeto_mail = new MailMessage();
+
+            //client config
+            SmtpClient client = new SmtpClient();
+            client.Host = "smtp.gmail.com";
+            client.Port = 587;
+            client.Timeout = 10000;
+            client.UseDefaultCredentials = false;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+
+            //message config
+            objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
+            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
+            objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
+            objeto_mail.IsBodyHtml = true;
+
+            //template config
+            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<p>Ihr Token: " + comp.RegistrationToken +
+                                             "</body>" +
+                                             "</html>");
+            client.SendMailAsync(objeto_mail);
+        }
     }
 }
