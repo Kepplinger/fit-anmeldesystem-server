@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Backend.Core.Entities;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Backend.Controllers
 {
@@ -31,10 +33,11 @@ namespace Backend.Controllers
         {
             try
             {
-                if (jsonEvent != null && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault()==null)
+                if (jsonEvent != null && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null)
                 {
                     // Saving Areas and Locations for the Event
-                    foreach(Area area in jsonEvent.Areas) {
+                    foreach (Area area in jsonEvent.Areas)
+                    {
                         foreach (Location l in area.Locations)
                         {
                             _unitOfWork.LocationRepository.Insert(l);
@@ -82,7 +85,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetLatestEvent()
         {
-            Event e = _unitOfWork.EventRepository.Get(orderBy: c => c.OrderByDescending( t => t.EventDate)).First();
+            Event e = _unitOfWork.EventRepository.Get(orderBy: c => c.OrderByDescending(t => t.EventDate)).First();
             return new OkObjectResult(e);
         }
 
