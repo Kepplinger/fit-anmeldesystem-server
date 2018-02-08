@@ -30,6 +30,7 @@ namespace StoreService.Persistence
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         public IGenericRepository<Address> AddressRepository { get; }
+        public IGenericRepository<FolderInfo> FolderInfoRepository { get; set; }
 
 
         /// <summary>
@@ -66,6 +67,8 @@ namespace StoreService.Persistence
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
 
             EventRepository = new GenericRepository<Event>(_context);
+
+            FolderInfoRepository = new GenericRepository<FolderInfo>(_context);
 
         }
 

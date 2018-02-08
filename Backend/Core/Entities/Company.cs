@@ -18,31 +18,14 @@ namespace Backend.Core.Entities
         public Contact Contact { get; set; }
         public int FK_Contact { get; set; }
 
+        [ForeignKey("FK_FolderInfo")]
+        public FolderInfo FolderInfo { get; set; }
+        public int FK_FolderInfo { get; set; }
+            
         [Required]
-        public string PhoneNumber { get; set; }
+        public bool IsPending { get; set; }
 
-        [EmailAddress,Required]
-        public string Email { get; set; }
 
-        [Required, Url]
-        public string Homepage { get; set; }
-
-        [Required]
-        public string Logo { get; set; }
-
-        [Required, MaxLength(20)]
-        public string Branch { get; set; }
-
-        public int EstablishmentsCountInt { get; set; }
-
-        [MaxLength(30)]
-        public string EstablishmentsInt { get; set; }
-
-        [Required]
-        public int EstablishmentsCountAut { get; set; }
-
-        [Required, MaxLength(30)]
-        public string EstablishmentsAut { get; set; }
 
         [Required,JsonIgnore]
         public string RegistrationToken { get; set; }

@@ -180,40 +180,17 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Branch")
-                        .IsRequired()
-                        .HasMaxLength(20);
-
-                    b.Property<string>("Email")
-                        .IsRequired();
-
-                    b.Property<string>("EstablishmentsAut")
-                        .IsRequired()
-                        .HasMaxLength(30);
-
-                    b.Property<int>("EstablishmentsCountAut");
-
-                    b.Property<int>("EstablishmentsCountInt");
-
-                    b.Property<string>("EstablishmentsInt")
-                        .HasMaxLength(30);
-
                     b.Property<int>("FK_Address");
 
                     b.Property<int>("FK_Contact");
 
-                    b.Property<string>("Homepage")
-                        .IsRequired();
+                    b.Property<int>("FK_FolderInfo");
 
-                    b.Property<string>("Logo")
-                        .IsRequired();
+                    b.Property<bool>("IsPending");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30);
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired();
 
                     b.Property<string>("RegistrationToken")
                         .IsRequired();
@@ -227,6 +204,8 @@ namespace Backend.Migrations
                     b.HasIndex("FK_Address");
 
                     b.HasIndex("FK_Contact");
+
+                    b.HasIndex("FK_FolderInfo");
 
                     b.ToTable("Companies");
                 });
@@ -305,6 +284,46 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.FolderInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Branch")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
+                    b.Property<string>("Email")
+                        .IsRequired();
+
+                    b.Property<string>("EstablishmentsAut")
+                        .HasMaxLength(30);
+
+                    b.Property<int>("EstablishmentsCountAut");
+
+                    b.Property<int>("EstablishmentsCountInt");
+
+                    b.Property<string>("EstablishmentsInt")
+                        .HasMaxLength(30);
+
+                    b.Property<string>("Homepage")
+                        .IsRequired();
+
+                    b.Property<string>("Logo")
+                        .IsRequired();
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired();
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FolderInfos");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Location", b =>
@@ -502,6 +521,11 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Contact", "Contact")
                         .WithMany()
                         .HasForeignKey("FK_Contact")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.FolderInfo", "FolderInfo")
+                        .WithMany()
+                        .HasForeignKey("FK_FolderInfo")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
