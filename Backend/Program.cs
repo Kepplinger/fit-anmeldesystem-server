@@ -11,7 +11,7 @@ namespace Backend
 {
     public class Program
     {
-        public static string bindurl = "";
+        private static string bindurl = string.Empty;
 
         public static void Main(string[] args)
         {

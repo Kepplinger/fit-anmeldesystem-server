@@ -32,14 +32,14 @@ namespace Backend.Controllers
             {
                 if (temp != null)
                 {
-                    _unitOfWork.AreaRepository.Insert(temp);
-                    _unitOfWork.Save();
+                    this._unitOfWork.AreaRepository.Insert(temp);
+                    this._unitOfWork.Save();
                     return new ObjectResult(temp);
                 }
             }
             catch (DbUpdateException ex)
             {
-                String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
+                string error = string.Format("*********************\n\nDbUpdateException Message: {0}\n\n*********************\n\nInnerExceptionMessage: {1}", ex.Message, ex.InnerException.Message);
                 System.Console.WriteLine(error);
                 return new BadRequestObjectResult(error);
             }
@@ -54,7 +54,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Area), 200)]
         public IActionResult GetAll()
         {
-            var areas = _unitOfWork.AreaRepository.Get();
+            var areas = this._unitOfWork.AreaRepository.Get();
             return new ObjectResult(areas);
         }
 
@@ -62,8 +62,8 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Area), 200)]
         public IActionResult PutArea([FromBody]Area area)
         {
-            _unitOfWork.AreaRepository.Update(area);
-            _unitOfWork.Save();
+            this._unitOfWork.AreaRepository.Update(area);
+            this._unitOfWork.Save();
             return new ObjectResult(area);
         }
     }

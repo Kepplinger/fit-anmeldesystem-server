@@ -7,15 +7,15 @@ namespace Backend.Core.Entities
 {
     public class Booking : EntityObject
     {
-        [ForeignKey("FK_Event"),Required]
+        [ForeignKey("FK_Event"), Required]
         public Event Event { get; set; }
         public int FK_Event { get; set; }
 
-        [ForeignKey("FK_Company"),Required]
+        [ForeignKey("FK_Company"), Required]
         public Company Company { get; set; }
         public int FK_Company { get; set; }
 
-        [ForeignKey("FK_Location"),Required]
+        [Required]
         public Location Location { get; set; }
         public int FK_Location { get; set; }
 
@@ -26,7 +26,7 @@ namespace Backend.Core.Entities
         [ForeignKey("FK_Branches")]
         public List<Branch> Branches { get; set; }
 
-        [ForeignKey("FK_Representatives"),Required]
+        [ForeignKey("FK_Representatives"), Required]
         public List<Representative> Representatives { get; set; }
 
         [ForeignKey("FK_Resources")]
@@ -35,7 +35,7 @@ namespace Backend.Core.Entities
         [Required]
         public bool isAccepted { get; set; }
 
-        [ForeignKey("FK_FitPackage"),Required]
+        [ForeignKey("FK_FitPackage"), Required]
         public FitPackage FitPackage { get; set; }
         public int FK_FitPackage { get; set; }
 

@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using Backend.Utils;
+using System.Diagnostics.Contracts;
 
 namespace Backend.Controllers
 {
@@ -29,30 +30,32 @@ namespace Backend.Controllers
         /// <response code="400">If the item is null</response>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         public IActionResult Create([FromBody] Booking jsonBooking)
         {
 
             if (jsonBooking != null && jsonBooking.Company.Id != 0)
-                Update(jsonBooking);
+                this.Update(jsonBooking);
             else if (jsonBooking != null && jsonBooking.Company.Id == 0)
-                return Insert(jsonBooking);
+                return this.Insert(jsonBooking);
 
             Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
             return new BadRequestObjectResult(jsonBooking);
         }
 
         [NonAction]
-        public IActionResult Update(Booking jsonBooking) {
+        public IActionResult Update(Booking jsonBooking)
+        {
+            Contract.Ensures(Contract.Result<IActionResult>() != null);
 
-            using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
+            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction())
             {
                 ChangeProtocol change = new ChangeProtocol();
                 try
                 {
                     // Update already persistent Entities ----------------------
-                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
+                    Company toUpdate = this._unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
 
                     if (toUpdate.FK_Address != 0)
                     {
@@ -102,7 +105,8 @@ namespace Backend.Controllers
         }
 
         [NonAction]
-        public IActionResult Insert(Booking jsonBooking) {
+        public IActionResult Insert(Booking jsonBooking)
+        {
 
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
@@ -117,16 +121,16 @@ namespace Backend.Controllers
 
                     Company c = jsonBooking.Company;
                     c.RegistrationToken = Guid.NewGuid().ToString();
-                    _unitOfWork.CompanyRepository.Insert(c);    
+                    _unitOfWork.CompanyRepository.Insert(c);
                     _unitOfWork.Save();
 
                     _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);
                     _unitOfWork.Save();
 
                     // Get the entity from the DB and give reference to it
-                   // jsonBooking.Location.Area = _unitOfWork.AreaRepository.Get(filter: p => p.Id == jsonBooking.Location.Area.Id).FirstOrDefault();
-                    _unitOfWork.LocationRepository.Insert(jsonBooking.Location);
-                    _unitOfWork.Save();
+                    //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
+                    jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
+                    //_unitOfWork.Save();
 
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
@@ -151,10 +155,11 @@ namespace Backend.Controllers
 
 
                     // Get the current active Event (nimmt an das es nur 1 gibt)
-                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsLocked == false).FirstOrDefault() != null && _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault() != null)
+                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
                     {
                         jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault();
                         _unitOfWork.Save();
+                        jsonBooking.CreationDate = DateTime.Now;
                     }
                     else
                     {

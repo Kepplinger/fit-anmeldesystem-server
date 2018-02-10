@@ -32,7 +32,6 @@ namespace Backend.Controllers
             {
                 if (temp != null)
                 {
-
                     _unitOfWork.ResourceRepository.Insert(temp);
                     _unitOfWork.Save();
                     return new StatusCodeResult(StatusCodes.Status200OK);
@@ -45,7 +44,7 @@ namespace Backend.Controllers
             return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
 
-    
+
         /// <response code="200">Returns all available Resources</response>
         /// <summary>
         /// Getting all Resources from Database
