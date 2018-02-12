@@ -275,10 +275,10 @@ namespace StoreService.Persistence
             _context.Events.Add(e);
             _context.SaveChanges();
 
-            booking.FitPackage = package;
+            booking.FK_FitPackage = package.Id;
             booking.Event = e;
             booking.Representatives = repre;
-            booking.Company = _context.Companies.Find(company.Id);
+            booking.FK_Company = company.Id;
 
             _context.Bookings.Add(booking);
             _context.SaveChanges();
