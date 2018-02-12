@@ -15,16 +15,16 @@ namespace Backend
 
         public static void Main(string[] args)
         {
-            /*using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
+            using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
             {
                 uow.FillDb();
-            }*/
+            }
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
             bindurl = configuration["Urls:DefaultUrl"];
-            System.Console.WriteLine("!!!You are at" + bindurl + "Mode!!!");
+            System.Console.WriteLine("!!!You are at reachable at: " + bindurl + "");
             BuildWebHost(args).Run();
         }
 

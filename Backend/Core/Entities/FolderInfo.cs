@@ -18,7 +18,6 @@ namespace Backend.Core.Entities
         [Required, Url]
         public string Homepage { get; set; }
 
-        [Required]
         public string Logo { get; set; }
 
         [Required, MaxLength(20)]
@@ -29,7 +28,7 @@ namespace Backend.Core.Entities
         [MaxLength(30)]
         public string EstablishmentsInt { get; set; }
 
-        
+
         public int EstablishmentsCountAut { get; set; }
 
         [MaxLength(30)]

@@ -86,19 +86,17 @@ namespace Backend.Migrations
 
                     b.Property<string>("CompanyDescription");
 
+                    b.Property<int?>("CompanyId");
+
                     b.Property<DateTime>("CreationDate");
 
-                    b.Property<int>("FK_Company");
+                    b.Property<int?>("EventId");
 
-                    b.Property<int>("FK_Event");
+                    b.Property<int?>("FitPackageId");
 
-                    b.Property<int>("FK_FitPackage");
+                    b.Property<int?>("LocationId");
 
-                    b.Property<int>("FK_Location");
-
-                    b.Property<int?>("FK_Presentation");
-
-                    b.Property<int>("LocationId");
+                    b.Property<int?>("PresentationId");
 
                     b.Property<bool>("ProvidesSummerJob");
 
@@ -115,15 +113,15 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Company");
+                    b.HasIndex("CompanyId");
 
-                    b.HasIndex("FK_Event");
+                    b.HasIndex("EventId");
 
-                    b.HasIndex("FK_FitPackage");
-
-                    b.HasIndex("FK_Presentation");
+                    b.HasIndex("FitPackageId");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("PresentationId");
 
                     b.ToTable("Bookings");
                 });
@@ -133,9 +131,9 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("FK_Branch");
+                    b.Property<int?>("BookingId");
 
-                    b.Property<int?>("FK_Branches");
+                    b.Property<int?>("FK_Branch");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -146,9 +144,9 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Branch");
+                    b.HasIndex("BookingId");
 
-                    b.HasIndex("FK_Branches");
+                    b.HasIndex("FK_Branch");
 
                     b.ToTable("Branches");
                 });
@@ -315,8 +313,7 @@ namespace Backend.Migrations
                     b.Property<string>("Homepage")
                         .IsRequired();
 
-                    b.Property<string>("Logo")
-                        .IsRequired();
+                    b.Property<string>("Logo");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired();
@@ -394,10 +391,10 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("BookingId");
+
                     b.Property<string>("Email")
                         .IsRequired();
-
-                    b.Property<int?>("FK_Representatives");
 
                     b.Property<string>("Image")
                         .IsRequired();
@@ -411,7 +408,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Representatives");
+                    b.HasIndex("BookingId");
 
                     b.ToTable("Rerpresentatives");
                 });
@@ -421,10 +418,10 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("BookingId");
+
                     b.Property<string>("Description")
                         .IsRequired();
-
-                    b.Property<int?>("FK_Resources");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -435,7 +432,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Resources");
+                    b.HasIndex("BookingId");
 
                     b.ToTable("Resources");
                 });
@@ -476,40 +473,40 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Company", "Company")
                         .WithMany()
-                        .HasForeignKey("FK_Company")
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("FK_Event")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.FitPackage", "FitPackage")
                         .WithMany()
-                        .HasForeignKey("FK_FitPackage")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
-                        .WithMany()
-                        .HasForeignKey("FK_Presentation")
+                        .HasForeignKey("FitPackageId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
+                        .WithMany()
+                        .HasForeignKey("PresentationId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Branch", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.Booking")
+                        .WithMany("Branches")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Presentation")
                         .WithMany("Branches")
                         .HasForeignKey("FK_Branch")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Booking")
-                        .WithMany("Branches")
-                        .HasForeignKey("FK_Branches")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -543,7 +540,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Booking")
                         .WithMany("Representatives")
-                        .HasForeignKey("FK_Representatives")
+                        .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -551,7 +548,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Booking")
                         .WithMany("Resources")
-                        .HasForeignKey("FK_Resources")
+                        .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

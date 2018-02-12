@@ -36,7 +36,6 @@ namespace StoreService.Persistence
         public IGenericRepository<Address> AddressRepository { get; }
         public IGenericRepository<FolderInfo> FolderInfoRepository { get; set; }
 
-
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
         /// </summary>
@@ -202,18 +201,18 @@ namespace StoreService.Persistence
             _context.SaveChanges();
 
             //Set up Ressources
-            ResourceBooking resourceBooking = new ResourceBooking();
-            resourceBooking.Amount = 1;
-
             List<Resource> resources = new List<Resource>();
             Resource resource = new Resource();
             resource.Name = "Stuhl";
             resource.Description = "Braucht die Firma einen Stuhl";
+            Resource resource2 = new Resource();
+            resource2.Name = "Fernseher";
+            resource2.Description = "Die Firma brauch einen Fernseher";
             resources.Add(resource);
 
-            resourceBooking.Resource = resource;
 
             //Representatives
+            List<Representative> repre = new List<Representative>();
             Representative repr = new Representative();
             repr.Email = "andi.sakal15@gmail.com";
             repr.Image = "iagendans";
@@ -221,6 +220,7 @@ namespace StoreService.Persistence
 
             _context.Rerpresentatives.Add(repr);
             _context.SaveChanges();
+            repre.Add(repr);
 
             FitPackage package = new FitPackage();
             package.Name = "Basispaket";
@@ -275,19 +275,28 @@ namespace StoreService.Persistence
             _context.Events.Add(e);
             _context.SaveChanges();
 
-            /*booking.FitPackage = package2;
-            booking.Representatives.Add(repr);
-            booking.Resources = resources;
-            booking.Company = company;
+            booking.FitPackage = package;
+            booking.Event = e;
+            booking.Representatives = repre;
+            booking.Company = _context.Companies.Find(company.Id);
 
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
 
-            _context.Bookings.Add(new Booking());*/
+            var res = _context.Bookings
+                              .Include(p => p.Event)
+                              .Include(p => p.Branches)
+                              .Include(p => p.FitPackage)
+                              .Include(p => p.Company)
+                              .Include(p => p.Location)
+                              .Include(p => p.Representatives)
+                              .Include(p => p.Resources);
 
-
-            var res = _context.Bookings.ToList();
             foreach (var emp in res)
             {
-                Console.WriteLine(emp.Company.Name);
+                Console.WriteLine("Booking eingefügt!\n" +
+                                  "Firma: " + emp.Company.Name +
+                                  "Package: " + emp.FitPackage.Name);
             }
         }
     }

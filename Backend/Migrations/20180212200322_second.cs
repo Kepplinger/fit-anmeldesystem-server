@@ -4,14 +4,13 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class makingpresentationvirtual2 : Migration
+    public partial class second : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<int>(
-                name: "FK_Presentation",
+                name: "CompanyId",
                 table: "Bookings",
-                type: "int",
                 nullable: true,
                 oldClrType: typeof(int));
         }
@@ -19,11 +18,10 @@ namespace Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<int>(
-                name: "FK_Presentation",
+                name: "CompanyId",
                 table: "Bookings",
                 nullable: false,
                 oldClrType: typeof(int),
-                oldType: "int",
                 oldNullable: true);
         }
     }
