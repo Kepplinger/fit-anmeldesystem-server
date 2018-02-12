@@ -27,7 +27,7 @@ namespace Backend.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-        public IActionResult CheckIfCompanyExists([FromBody] JToken json)
+        public IActionResult CheckIfCompanyExists([FromBody] JProperty json)
         {
             Company existing;
             string mail = json["email"].Value<string>();
@@ -62,10 +62,39 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult SendCompanyCodeForgotten([FromBody] JToken json)
         {
-            string mail = json["email"].Value<string>();
-            Company c = this._unitOfWork.CompanyRepository.Get(filter: g => g.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
-            EmailHelper.SendForgotten(c);
-            return new NoContentResult();
+
+            string mail = String.Empty;
+            try
+            {
+                mail = json["email"].Value<string>();
+            }
+            catch (NullReferenceException e)
+            {
+                var error = new
+                {
+                    errorMessage = "Es wurde keine E-Mail übermittelt!"
+                };
+                return new BadRequestObjectResult(error);
+            }
+
+            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail)).FirstOrDefault();
+
+            if (company == null)
+                company = _unitOfWork.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail)).FirstOrDefault();
+
+            if (company != null)
+            {
+                EmailHelper.SendForgotten(company);
+                return new NoContentResult();
+            }
+            else
+            {
+                var error = new
+                {
+                    errorMessage = "Es gibt kein Unternehmen mit dieser E-Mail!"
+                };
+                return new BadRequestObjectResult(error);
+            }
         }
 
         [HttpPost("booking/token")]
