@@ -200,7 +200,7 @@ namespace Backend.Controllers
         public IActionResult GetAll()
         {
             var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
-            return new ObjectResult(bookings);
+            return new OkObjectResult(bookings);
         }
 
         /// <response code="200">Returning Booking by id</response>

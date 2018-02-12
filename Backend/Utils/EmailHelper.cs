@@ -56,7 +56,6 @@ namespace Backend.Utils
 
         }
 
-
         public static void SendForgotten(Company comp)
         {
             Company company = comp;

@@ -294,9 +294,10 @@ namespace StoreService.Persistence
 
             foreach (var emp in res)
             {
-                Console.WriteLine("Booking eingefügt!\n" +
+                Console.WriteLine("Testdaten eingefügt! \n" +
                                   "Firma: " + emp.Company.Name +
-                                  "Package: " + emp.FitPackage.Name);
+                                  "\nPackage: " + emp.FitPackage.Name +
+                                  "\nAdditionalInfo: " + emp.AdditionalInfo);
             }
         }
     }

@@ -24,7 +24,7 @@ namespace Backend
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
             bindurl = configuration["Urls:DefaultUrl"];
-            System.Console.WriteLine("!!!You are at reachable at: " + bindurl + "");
+            System.Console.WriteLine("Server reachable at: " + bindurl);
             BuildWebHost(args).Run();
         }
 

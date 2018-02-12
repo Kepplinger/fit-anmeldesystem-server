@@ -89,9 +89,17 @@ namespace Backend.Controllers
 
             // If there is no last Booking send just Company
             if (lastBooking == null)
+            {
                 return new OkObjectResult(actCompany);
+            }
             else
-                return new OkObjectResult(lastBooking);
+            {
+                var booking = new
+                {
+                    booking = lastBooking
+                };
+                return new OkObjectResult(booking);
+            }
         }
     }
 }
