@@ -49,15 +49,32 @@ namespace Backend.Controllers
                     // Saving Areas and Locations for the Event
                     foreach (Area area in jsonEvent.Areas)
                     {
-                        string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation;
+                        // parse from 64 String all image infos
+                        string dataFormat = String.Empty;
                         int indexof = area.GraphicURL.IndexOf("base64,");
-                        int length = area.GraphicURL.Length;
-                        string baseString = area.GraphicURL.Substring(indexof+7);
+                        string start = area.GraphicURL.Substring(0, indexof);
+                        string baseString = area.GraphicURL.Substring(indexof + 7);
+
+                        // Check image file format
+                        if (start.ToLower().Contains("png"))
+                            dataFormat = ".png";
+                        else if (start.ToLower().Contains("jpg"))
+                            dataFormat = ".jpg";
+                        else if (start.ToLower().Contains("jpeg"))
+                            dataFormat = ".jpeg";
+
+                        // filepath
+                        string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation + dataFormat;
+
+                        // Save image to disk
                         this.Base64ToImage(baseString, filepath);
+                        area.GraphicURL = area.Designation + dataFormat;
+
                         foreach (Location l in area.Locations)
                         {
                             _unitOfWork.LocationRepository.Insert(l);
                         }
+
                         _unitOfWork.Save();
                         _unitOfWork.AreaRepository.Insert(area);
                     }
