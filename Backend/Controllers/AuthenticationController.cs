@@ -27,7 +27,7 @@ namespace Backend.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-        public IActionResult CheckIfCompanyExists([FromBody] JProperty json)
+        public IActionResult CheckIfCompanyExists([FromBody] JToken json)
         {
             Company existing;
             string mail = json["email"].Value<string>();
@@ -77,10 +77,10 @@ namespace Backend.Controllers
                 return new BadRequestObjectResult(error);
             }
 
-            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail)).FirstOrDefault();
+            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
 
             if (company == null)
-                company = _unitOfWork.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail)).FirstOrDefault();
+                company = _unitOfWork.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
 
             if (company != null)
             {
@@ -102,7 +102,7 @@ namespace Backend.Controllers
         public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token)).FirstOrDefault();
+            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address, Contact, FolderInfo").FirstOrDefault();
 
             if (actCompany == null)
             {
@@ -119,7 +119,11 @@ namespace Backend.Controllers
             // If there is no last Booking send just Company
             if (lastBooking == null)
             {
-                return new OkObjectResult(actCompany);
+                var companyJson = new
+                {
+                    company = actCompany
+                };
+                return new OkObjectResult(companyJson);
             }
             else
             {
