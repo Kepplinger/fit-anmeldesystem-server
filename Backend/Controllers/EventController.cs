@@ -8,6 +8,7 @@ using Backend.Core.Entities;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
+using System.IO;
 
 namespace Backend.Controllers
 {
@@ -48,6 +49,11 @@ namespace Backend.Controllers
                     // Saving Areas and Locations for the Event
                     foreach (Area area in jsonEvent.Areas)
                     {
+                        string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation;
+                        int indexof = area.GraphicURL.IndexOf("base64,");
+                        int length = area.GraphicURL.Length;
+                        string baseString = area.GraphicURL.Substring(indexof+7);
+                        this.Base64ToImage(baseString, filepath);
                         foreach (Location l in area.Locations)
                         {
                             _unitOfWork.LocationRepository.Insert(l);
@@ -99,6 +105,20 @@ namespace Backend.Controllers
         {
             Event e = _unitOfWork.EventRepository.Get(orderBy: c => c.OrderByDescending(t => t.EventDate)).First();
             return new OkObjectResult(e);
+        }
+
+        public object Base64ToImage(string basestr, string filepath)
+        {
+            byte[] imageBytes = Convert.FromBase64String(basestr);
+            //MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+            //ms.Write(imageBytes, 0, imageBytes.Length);
+            using (var imageFile = new FileStream(filepath, FileMode.Create))
+            {
+                imageFile.Write(imageBytes, 0, imageBytes.Length);
+                imageFile.Flush();
+                return imageFile;
+                //images/areas/0.jpg
+            }
         }
 
     }

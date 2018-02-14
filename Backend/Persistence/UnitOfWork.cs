@@ -149,7 +149,7 @@ namespace StoreService.Persistence
             Company company = new Company();
             company.Name = "Kepplinger IT";
             company.IsPending = false;
-            company.RegistrationToken = "IWASDTOASD";
+            company.RegistrationToken = "FirmenToken1";
 
             // Set up Address
             Address address = new Address();
