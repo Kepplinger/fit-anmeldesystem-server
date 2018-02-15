@@ -32,7 +32,7 @@ namespace Backend.Persistence
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
-            string connectionString = configuration["ConnectionStrings:Sakal"];
+            string connectionString = configuration["ConnectionStrings:ServerConnection"];
             optionsBuilder.UseSqlServer(connectionString);
         }
 

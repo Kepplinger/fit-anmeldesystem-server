@@ -64,12 +64,12 @@ namespace Backend.Controllers
                             dataFormat = ".jpeg";
 
                         // filepath
-                        string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation + dataFormat;
+                        string filepath = @"C:\inetpub\wwwroot\images\" + area.Designation + dataFormat;
 
                         // Save image to disk
                         this.Base64ToImage(baseString, filepath);
                         area.GraphicURL = area.Designation + dataFormat;
-
+                        
                         foreach (Location l in area.Locations)
                         {
                             _unitOfWork.LocationRepository.Insert(l);

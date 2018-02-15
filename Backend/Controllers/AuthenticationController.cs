@@ -102,7 +102,7 @@ namespace Backend.Controllers
         public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address, Contact, FolderInfo").FirstOrDefault();
+            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address,Contact,FolderInfo").FirstOrDefault();
 
             if (actCompany == null)
             {
