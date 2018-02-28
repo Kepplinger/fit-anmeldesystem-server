@@ -51,7 +51,6 @@ namespace Backend.Controllers
         [HttpPost]
         public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent)
         {
-            Boolean pictureChange = false;
             try
             {
                 if (jsonEvent.Id > 0)
@@ -59,46 +58,55 @@ namespace Backend.Controllers
                     Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == jsonEvent.Id, includeProperties: "Areas").FirstOrDefault();
                     if (eventToUpdate != null)
                     {
-                        if (eventToUpdate.Areas.Count != jsonEvent.Areas.Count)
-                            pictureChange = true;
-                        else
-                            for (int i = 0; i < eventToUpdate.Areas.Count; i++)
-                                if (eventToUpdate.Areas.ElementAt(i).GraphicURL.Equals(jsonEvent.Areas.ElementAt(i)) || eventToUpdate.Areas.ElementAt(i).Designation.Equals(jsonEvent.Areas.ElementAt(i).Designation))
-                                    pictureChange = true;
-
-                        if (pictureChange)
+                        foreach (Area area in jsonEvent.Areas)
                         {
-                            foreach (Area area in jsonEvent.Areas)
+                            if (area.GraphicURL.Contains("base64,"))
                             {
-                                string dataFormat = this.ImageParsing(area);
-                                area.GraphicURL = area.Designation + dataFormat;
+                                string filename = this.ImageParsing(area);
+                                area.GraphicURL = filename;
+                                if (area.Id > 0)
+                                {
+                                    _unitOfWork.AreaRepository.Update(area);
+                                }
+                                else
+                                {
+                                    _unitOfWork.AreaRepository.Insert(area);
+                                }
+                                _unitOfWork.Save();
                             }
-                        }
                             _unitOfWork.EventRepository.Update(jsonEvent);
-                    }
-                }
-                jsonEvent.IsCurrent = true;
-                //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
-                if (jsonEvent != null)
-                {
-                    // Saving Areas and Locations for the Event
-                    foreach (Area area in jsonEvent.Areas)
-                    {
-                        string dataFormat = this.ImageParsing(area);
-                        area.GraphicURL = area.Designation + dataFormat;
-
-                        foreach (Location l in area.Locations)
-                        {
-                            _unitOfWork.LocationRepository.Insert(l);
+                            _unitOfWork.Save();
                         }
-
-                        _unitOfWork.Save();
-                        _unitOfWork.AreaRepository.Insert(area);
+                        return new OkObjectResult(jsonEvent);
                     }
-                    _unitOfWork.EventRepository.Insert(jsonEvent);
-                    _unitOfWork.Save();
-                    return new OkObjectResult(jsonEvent);
                 }
+                else
+                {
+
+                    jsonEvent.IsCurrent = true;
+                    //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
+                    if (jsonEvent != null)
+                    {
+                        // Saving Areas and Locations for the Event
+                        foreach (Area area in jsonEvent.Areas)
+                        {
+                            string filename = this.ImageParsing(area);
+                            area.GraphicURL = filename;
+
+                            foreach (Location l in area.Locations)
+                            {
+                                _unitOfWork.LocationRepository.Insert(l);
+                            }
+
+                            _unitOfWork.Save();
+                            _unitOfWork.AreaRepository.Insert(area);
+                        }
+                        _unitOfWork.EventRepository.Insert(jsonEvent);
+                        _unitOfWork.Save();
+                        return new OkObjectResult(jsonEvent);
+                    }
+                }
+
                 return new BadRequestObjectResult(jsonEvent);
             }
             catch (DbUpdateException ex)
@@ -167,7 +175,8 @@ namespace Backend.Controllers
             string filepath = configuration["ImageFilePaths:SakalWindows"];
 
             //set filepath name
-            filepath = filepath + this.GetHashString(area.Designation) + dataFormat;
+            string filename = this.GetHashString(area.Designation) + dataFormat;
+            filepath = filepath + filename;
 
             // filepath
             //string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation + dataFormat;
@@ -175,7 +184,7 @@ namespace Backend.Controllers
             // Save image to disk
             this.Base64ToImage(baseString, filepath);
 
-            return dataFormat;
+            return filename;
         }
         public object Base64ToImage(string basestr, string filepath)
         {

@@ -269,6 +269,8 @@ namespace StoreService.Persistence
 
             Event e = new Event();
             e.EventDate = DateTime.Now;
+            e.RegistrationEnd = DateTime.Now.AddMonths(2);
+            e.RegistrationStart = DateTime.Now.AddMonths(-2);
             e.IsLocked = false;
             e.IsCurrent = true;
 
