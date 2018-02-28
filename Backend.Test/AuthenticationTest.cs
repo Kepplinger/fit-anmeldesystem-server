@@ -3,7 +3,6 @@ using Backend.Controllers;
 using Backend.Core.Entities;
 using System.Linq;
 using Backend.Core.Contracts;
-using Moq;
 using Xunit;
 using System;
 using Newtonsoft.Json.Linq;
@@ -17,7 +16,6 @@ namespace Backend.Test
         public void SampleTest()
         {
             // Arrange
-            var mockRepo = new Mock<IUnitOfWork>();
             mockRepo.Setup(repo => repo.BookingRepository.Get(null, null, "Event,Branches,Company,Package,Location,Presentation")).Returns(GetAllBookings());
             var controller = new BookingController(mockRepo.Object);
 
