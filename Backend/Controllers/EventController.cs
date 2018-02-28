@@ -9,6 +9,10 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using System.IO;
+using StoreService.Persistence;
+using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Backend.Controllers
 {
@@ -23,25 +27,56 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
+        public IActionResult GetAllEvents()
+        {
+            using(IUnitOfWork uow = new UnitOfWork())
+            {
+                List<Event> events = uow.EventRepository.Get().ToList();
+                if (events.Count > 0)
+                {
+                    return new OkObjectResult(events);
+                }
+                return new NoContentResult();
+            }
+        }
+
         /// <summary>
         /// Creates a Event Object.
         /// </summary>
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
-        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
         public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent)
         {
-            List<Event> active = _unitOfWork.EventRepository.Get(p => p.IsCurrent == true).ToList();
-            for (int i = 0; i < active.Count; i++)
-            {
-                active.ElementAt(i).IsCurrent = false;
-                _unitOfWork.EventRepository.Update(active.ElementAt(i));
-            }
-            _unitOfWork.Save();
+            Boolean pictureChange = false;
             try
             {
+                if (jsonEvent.Id > 0)
+                {
+                    Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == jsonEvent.Id, includeProperties: "Areas").FirstOrDefault();
+                    if (eventToUpdate != null)
+                    {
+                        if (eventToUpdate.Areas.Count != jsonEvent.Areas.Count)
+                            pictureChange = true;
+                        else
+                            for (int i = 0; i < eventToUpdate.Areas.Count; i++)
+                                if (eventToUpdate.Areas.ElementAt(i).GraphicURL.Equals(jsonEvent.Areas.ElementAt(i)) || eventToUpdate.Areas.ElementAt(i).Designation.Equals(jsonEvent.Areas.ElementAt(i).Designation))
+                                    pictureChange = true;
+
+                        if (pictureChange)
+                        {
+                            foreach (Area area in jsonEvent.Areas)
+                            {
+                                string dataFormat = this.ImageParsing(area);
+                                area.GraphicURL = area.Designation + dataFormat;
+                            }
+                        }
+                            _unitOfWork.EventRepository.Update(jsonEvent);
+                    }
+                }
                 jsonEvent.IsCurrent = true;
                 //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
                 if (jsonEvent != null)
@@ -49,27 +84,9 @@ namespace Backend.Controllers
                     // Saving Areas and Locations for the Event
                     foreach (Area area in jsonEvent.Areas)
                     {
-                        // parse from 64 String all image infos
-                        string dataFormat = String.Empty;
-                        int indexof = area.GraphicURL.IndexOf("base64,");
-                        string start = area.GraphicURL.Substring(0, indexof);
-                        string baseString = area.GraphicURL.Substring(indexof + 7);
-
-                        // Check image file format
-                        if (start.ToLower().Contains("png"))
-                            dataFormat = ".png";
-                        else if (start.ToLower().Contains("jpg"))
-                            dataFormat = ".jpg";
-                        else if (start.ToLower().Contains("jpeg"))
-                            dataFormat = ".jpeg";
-
-                        // filepath
-                        string filepath = @"C:\inetpub\wwwroot\images\" + area.Designation + dataFormat;
-
-                        // Save image to disk
-                        this.Base64ToImage(baseString, filepath);
+                        string dataFormat = this.ImageParsing(area);
                         area.GraphicURL = area.Designation + dataFormat;
-                        
+
                         foreach (Location l in area.Locations)
                         {
                             _unitOfWork.LocationRepository.Insert(l);
@@ -101,20 +118,16 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetCurrentEvent()
         {
-            return new OkObjectResult(_unitOfWork.EventRepository.Get(p => p.IsCurrent == true, includeProperties: "Areas").FirstOrDefault());
+            List<Event> events = _unitOfWork
+                                        .EventRepository
+                                        .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
+                                        .Where(f => _unitOfWork.EventRepository.Get()
+                                        .Any(d => f.EventDate.Subtract(DateTime.Now) < d.EventDate
+                                        .Subtract(DateTime.Now)))
+                                        .ToList();
+                                        //.Select(p => p.EventDate.Subtract(DateTime.Now)).ToList();
+            return new OkObjectResult(events);
         }
-
-        /*// <response code="200">Return current Event</response>
-        /// <summary>
-        /// Getting all Events from Database
-        /// </summary>
-        [HttpGet("next")]
-        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        public IActionResult GetNextEvent()
-        {
-            return new OkObjectResult(_unitOfWork.EventRepository.Get(p => p.EventDate.C, includeProperties: "Area").FirstOrDefault());
-        }*/
-
 
         [HttpGet("latest")]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
@@ -124,6 +137,46 @@ namespace Backend.Controllers
             return new OkObjectResult(e);
         }
 
+
+        /// <summary>
+        /// My utils
+        /// </summary>
+        /// <param name="area"></param>
+        /// <returns></returns>
+        public string ImageParsing(Area area)
+        {
+            // parse from 64 String all image infos
+            string dataFormat = String.Empty;
+            int indexof = area.GraphicURL.IndexOf("base64,");
+            string start = area.GraphicURL.Substring(0, indexof);
+            string baseString = area.GraphicURL.Substring(indexof + 7);
+
+            // Check image file format
+            if (start.ToLower().Contains("png"))
+                dataFormat = ".png";
+            else if (start.ToLower().Contains("jpg"))
+                dataFormat = ".jpg";
+            else if (start.ToLower().Contains("jpeg"))
+                dataFormat = ".jpeg";
+
+            //Read filepath from appsetting.json
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+            var configuration = builder.Build();
+            string filepath = configuration["ImageFilePaths:SakalWindows"];
+
+            //set filepath name
+            filepath = filepath + this.GetHashString(area.Designation) + dataFormat;
+
+            // filepath
+            //string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation + dataFormat;
+
+            // Save image to disk
+            this.Base64ToImage(baseString, filepath);
+
+            return dataFormat;
+        }
         public object Base64ToImage(string basestr, string filepath)
         {
             byte[] imageBytes = Convert.FromBase64String(basestr);
@@ -134,9 +187,22 @@ namespace Backend.Controllers
                 imageFile.Write(imageBytes, 0, imageBytes.Length);
                 imageFile.Flush();
                 return imageFile;
-                //images/areas/0.jpg
+                //images/name.jpg
             }
         }
+        public byte[] GetHash(string inputString)
+        {
+            HashAlgorithm algorithm = SHA256.Create();  //SHA256
+            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+        }
+        public string GetHashString(string inputString)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in this.GetHash(inputString))
+                sb.Append(b.ToString("X2"));
+            return sb.ToString();
+        }
+
 
     }
 }

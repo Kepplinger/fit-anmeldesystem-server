@@ -97,7 +97,7 @@ namespace Backend.Controllers
             }
         }
 
-        [HttpPost("booking/token")]
+        [HttpPost("company/token")]
         [Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
         {
