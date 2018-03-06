@@ -26,6 +26,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
+            
             var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,FolderInfo");
             return new OkObjectResult(companies);
         }
