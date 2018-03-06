@@ -2,7 +2,10 @@
 using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Backend.Controllers
@@ -52,6 +55,89 @@ namespace Backend.Controllers
             _unitOfWork.CompanyRepository.Insert(storeCompany);
             _unitOfWork.Save();
             return new ObjectResult(storeCompany);
+        }
+
+
+        [HttpPut]
+        [Consumes("application/json")]
+        public IActionResult Update(Company jsonCompany)
+        {
+            Contract.Ensures(Contract.Result<IActionResult>() != null);
+
+            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction())
+            {
+                ChangeProtocol change = new ChangeProtocol();
+
+                try
+                {
+                    Company toUpdate = this._unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonCompany.Id).FirstOrDefault();
+                    if (toUpdate.FK_Address != 0)
+                    {
+                        foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonCompany.Address).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.TableName = nameof(Address);
+
+                                _unitOfWork.ChangeRepository.Insert(change);
+
+                                //change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("No Update for" + change.ColumName);
+                            }
+                        }
+                    }
+
+                    if (toUpdate.FK_Contact != 0)
+                    {
+                        foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonCompany.Contact).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.TableName = nameof(Contact);
+
+                                _unitOfWork.ChangeRepository.Insert(change);
+
+                                //change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("Updated: " + change.ColumName);
+                            }
+                        }
+                    }
+
+                    if (toUpdate.Name != null && !jsonCompany.Name.Equals(toUpdate.Name))
+                    {
+                        change.ChangeDate = DateTime.Now;
+                        change.ColumName = "Name";
+                        change.NewValue = jsonCompany.Name;
+                        change.OldValue = toUpdate.Name;
+                        change.TableName = nameof(Company);
+                        _unitOfWork.ChangeRepository.Insert(change);
+                        Console.WriteLine("Updated: " + change.ColumName);
+
+                    }
+                    _unitOfWork.Save();
+                    return new OkObjectResult(jsonCompany);
+
+
+                }
+                catch (DbUpdateException ex)
+                {
+                    transaction.Rollback();
+
+                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
+                    System.Console.WriteLine(error);
+
+                    return new BadRequestObjectResult(error);
+                }
+            }
+                
         }
     }
 }

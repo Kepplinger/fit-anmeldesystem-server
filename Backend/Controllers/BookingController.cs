@@ -79,7 +79,7 @@ namespace Backend.Controllers
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company).Equals(p.GetValue(toUpdate.Address)))
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;

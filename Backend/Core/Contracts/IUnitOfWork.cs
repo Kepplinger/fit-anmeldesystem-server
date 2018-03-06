@@ -23,6 +23,7 @@ namespace Backend.Core.Contracts
         IGenericRepository<Resource> ResourceRepository { get; }
         IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         IGenericRepository<Address> AddressRepository { get; }
+        IGenericRepository<ChangeProtocol> ChangeRepository { get;}
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
