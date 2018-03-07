@@ -57,10 +57,22 @@ namespace Backend.Controllers
             return new ObjectResult(storeCompany);
         }
 
+        [HttpPut]
+        public IActionResult Accepting(int compId)
+        {
+            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId).FirstOrDefault();
+            if (c != null)
+            {
+                c.IsPending = false;
+                return new OkResult();
+            }
+            return new BadRequestResult();
+        }
+
 
         [HttpPut]
         [Consumes("application/json")]
-        public IActionResult Update(Company jsonCompany)
+        public IActionResult Update([FromBody]Company jsonCompany)
         {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
 
@@ -70,20 +82,22 @@ namespace Backend.Controllers
 
                 try
                 {
-                    Company toUpdate = this._unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonCompany.Id).FirstOrDefault();
+                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id),includeProperties: "Address,Contact").FirstOrDefault();
                     if (toUpdate.FK_Address != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address,null) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;
                                 change.NewValue = p.GetValue(jsonCompany.Address).ToString();
-                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.OldValue = p.GetValue(toUpdate.Address).ToString();
                                 change.TableName = nameof(Address);
 
                                 _unitOfWork.ChangeRepository.Insert(change);
+                                _unitOfWork.Save();
+                                change = new ChangeProtocol();
 
                                 //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumName);
@@ -95,15 +109,18 @@ namespace Backend.Controllers
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact, null) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumName = p.Name;
                                 change.NewValue = p.GetValue(jsonCompany.Contact).ToString();
-                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.OldValue = p.GetValue(toUpdate.Contact).ToString();
                                 change.TableName = nameof(Contact);
 
                                 _unitOfWork.ChangeRepository.Insert(change);
+                                _unitOfWork.Save();
+
+                                change = new ChangeProtocol();
 
                                 //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("Updated: " + change.ColumName);
@@ -119,10 +136,16 @@ namespace Backend.Controllers
                         change.OldValue = toUpdate.Name;
                         change.TableName = nameof(Company);
                         _unitOfWork.ChangeRepository.Insert(change);
+                        _unitOfWork.Save();
+                        change = new ChangeProtocol();
+
                         Console.WriteLine("Updated: " + change.ColumName);
 
                     }
                     _unitOfWork.Save();
+                    change = new ChangeProtocol();
+
+                    transaction.Commit();
                     return new OkObjectResult(jsonCompany);
 
 
