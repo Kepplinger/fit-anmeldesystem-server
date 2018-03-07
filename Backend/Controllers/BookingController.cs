@@ -44,7 +44,8 @@ namespace Backend.Controllers
             return new BadRequestObjectResult(jsonBooking);
         }
 
-        [NonAction]
+        [HttpPut]
+        [Consumes("application/json")]
         public IActionResult Update(Booking jsonBooking)
         {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
@@ -60,6 +61,23 @@ namespace Backend.Controllers
                     if (toUpdate.FK_Address != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
+                        {
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumName = p.Name;
+                                change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
+                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.TableName = nameof(Address);
+                                //change.TypeOfValue = p.PropertyType;
+                                Console.WriteLine("No Update for" + change.ColumName);
+                            }
+                        }
+                    }
+
+                    if (toUpdate.FK_Address != 0)
+                    {
+                        foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
                         {
                             if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
