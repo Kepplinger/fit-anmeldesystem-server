@@ -47,7 +47,7 @@ namespace Backend.Controllers
             switch (change.TableName)
             {
                 case "Booking":
-                    Booking booking = _unitOfWork.BookingRepository.GetById(change.RowId);
+                    Booking booking = _unitOfWork.BookingRepository.Get(filter: c => c.Id == id).First();
                     var bookingInfo = booking.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     bookingInfo.SetValue(booking, change.OldValue, null);
                     break;
@@ -60,7 +60,7 @@ namespace Backend.Controllers
                 case "Contact":
                     break;
                 case "Addresse":
-                    Address address = _unitOfWork.AddressRepository.GetById(change.RowId);
+                    Address address = _unitOfWork.AddressRepository.Get(filter: c => c.Id == id).First();
                     var addressInfo = address.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     addressInfo.SetValue(address, change.OldValue, null);
                     _unitOfWork.AddressRepository.Update(address);
@@ -71,7 +71,7 @@ namespace Backend.Controllers
                     return new NoContentResult();
                     break;
                 case "Company":
-                    Company company = _unitOfWork.CompanyRepository.GetById(change.RowId);
+                    Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == id).First();
                     var companyInfo = company.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     companyInfo.SetValue(company, change.OldValue, null);
                     _unitOfWork.CompanyRepository.Update(company);
