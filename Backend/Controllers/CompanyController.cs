@@ -87,7 +87,7 @@ namespace Backend.Controllers
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address,null) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -112,7 +112,7 @@ namespace Backend.Controllers
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact, null) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;

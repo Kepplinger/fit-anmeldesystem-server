@@ -42,7 +42,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
         public IActionResult revertChange(int id)
         {
-            ChangeProtocol change = _unitOfWork.ChangeRepository.GetById(id);
+            ChangeProtocol change = _unitOfWork.ChangeRepository.Get(filter: c => c.Id == id).First();
             
             switch (change.TableName)
             {
@@ -60,6 +60,15 @@ namespace Backend.Controllers
                 case "Contact":
                     break;
                 case "Addresse":
+                    Address address = _unitOfWork.AddressRepository.GetById(change.RowId);
+                    var addressInfo = address.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    addressInfo.SetValue(address, change.OldValue, null);
+                    _unitOfWork.AddressRepository.Update(address);
+                    change.IsPending = false;
+                    _unitOfWork.ChangeRepository.Update(change);
+                    _unitOfWork.Save();
+
+                    return new NoContentResult();
                     break;
                 case "Company":
                     Company company = _unitOfWork.CompanyRepository.GetById(change.RowId);
