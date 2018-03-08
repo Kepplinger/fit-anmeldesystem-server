@@ -57,8 +57,8 @@ namespace Backend.Controllers
             return new ObjectResult(storeCompany);
         }
 
-        [HttpPut]
-        public IActionResult Accepting(int compId)
+        [HttpPut("accepting")]
+        public IActionResult Accepting([FromBody] int compId)
         {
             Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId).FirstOrDefault();
             if (c != null)
@@ -94,6 +94,7 @@ namespace Backend.Controllers
                                 change.NewValue = p.GetValue(jsonCompany.Address).ToString();
                                 change.OldValue = p.GetValue(toUpdate.Address).ToString();
                                 change.TableName = nameof(Address);
+                                change.RowId = toUpdate.Address.Id;
 
                                 _unitOfWork.ChangeRepository.Insert(change);
                                 _unitOfWork.Save();
@@ -116,6 +117,7 @@ namespace Backend.Controllers
                                 change.NewValue = p.GetValue(jsonCompany.Contact).ToString();
                                 change.OldValue = p.GetValue(toUpdate.Contact).ToString();
                                 change.TableName = nameof(Contact);
+                                change.RowId = toUpdate.Contact.Id;
 
                                 _unitOfWork.ChangeRepository.Insert(change);
                                 _unitOfWork.Save();
@@ -135,6 +137,8 @@ namespace Backend.Controllers
                         change.NewValue = jsonCompany.Name;
                         change.OldValue = toUpdate.Name;
                         change.TableName = nameof(Company);
+                        change.RowId = toUpdate.Id;
+
                         _unitOfWork.ChangeRepository.Insert(change);
                         _unitOfWork.Save();
                         change = new ChangeProtocol();
