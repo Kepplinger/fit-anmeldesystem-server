@@ -65,12 +65,12 @@ namespace Backend.Controllers
                             if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
-                                change.ColumName = p.Name;
+                                change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
                                 change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Address);
                                 //change.TypeOfValue = p.PropertyType;
-                                Console.WriteLine("No Update for" + change.ColumName);
+                                Console.WriteLine("No Update for" + change.ColumnName);
                             }
                         }
                     }
@@ -82,12 +82,12 @@ namespace Backend.Controllers
                             if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
-                                change.ColumName = p.Name;
+                                change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
                                 change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Address);
                                 //change.TypeOfValue = p.PropertyType;
-                                Console.WriteLine("No Update for" + change.ColumName);
+                                Console.WriteLine("No Update for" + change.ColumnName);
                             }
                         }
                     }
@@ -99,12 +99,12 @@ namespace Backend.Controllers
                             if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonBooking.Company.Contact).Equals(p.GetValue(toUpdate.Contact)))
                             {
                                 change.ChangeDate = DateTime.Now;
-                                change.ColumName = p.Name;
+                                change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
                                 change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Contact);
                                 //change.TypeOfValue = p.PropertyType;
-                                Console.WriteLine("No Update for" + change.ColumName);
+                                Console.WriteLine("No Update for" + change.ColumnName);
                             }
                         }
                     }

@@ -90,18 +90,20 @@ namespace Backend.Controllers
                             if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address,null) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
-                                change.ColumName = p.Name;
+                                change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonCompany.Address).ToString();
                                 change.OldValue = p.GetValue(toUpdate.Address).ToString();
                                 change.TableName = nameof(Address);
                                 change.RowId = toUpdate.Address.Id;
-
+                                change.IsPending = true;
+                                change.CompanyId = toUpdate.Id;
                                 _unitOfWork.ChangeRepository.Insert(change);
+                                _unitOfWork.AddressRepository.Update(jsonCompany.Address);
                                 _unitOfWork.Save();
                                 change = new ChangeProtocol();
 
                                 //change.TypeOfValue = p.PropertyType;
-                                Console.WriteLine("No Update for" + change.ColumName);
+                                Console.WriteLine("No Update for" + change.ColumnName);
                             }
                         }
                     }
@@ -113,19 +115,21 @@ namespace Backend.Controllers
                             if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact, null) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
                             {
                                 change.ChangeDate = DateTime.Now;
-                                change.ColumName = p.Name;
+                                change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonCompany.Contact).ToString();
                                 change.OldValue = p.GetValue(toUpdate.Contact).ToString();
                                 change.TableName = nameof(Contact);
                                 change.RowId = toUpdate.Contact.Id;
-
+                                change.IsPending = true;
+                                change.CompanyId = toUpdate.Id;
                                 _unitOfWork.ChangeRepository.Insert(change);
+                                _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
                                 _unitOfWork.Save();
 
                                 change = new ChangeProtocol();
 
                                 //change.TypeOfValue = p.PropertyType;
-                                Console.WriteLine("Updated: " + change.ColumName);
+                                Console.WriteLine("Updated: " + change.ColumnName);
                             }
                         }
                     }
@@ -133,17 +137,19 @@ namespace Backend.Controllers
                     if (toUpdate.Name != null && !jsonCompany.Name.Equals(toUpdate.Name))
                     {
                         change.ChangeDate = DateTime.Now;
-                        change.ColumName = "Name";
+                        change.ColumnName = "Name";
                         change.NewValue = jsonCompany.Name;
                         change.OldValue = toUpdate.Name;
                         change.TableName = nameof(Company);
                         change.RowId = toUpdate.Id;
-
+                        change.IsPending = true;
+                        change.CompanyId = toUpdate.Id;
                         _unitOfWork.ChangeRepository.Insert(change);
+                        _unitOfWork.CompanyRepository.Update(jsonCompany);
                         _unitOfWork.Save();
                         change = new ChangeProtocol();
 
-                        Console.WriteLine("Updated: " + change.ColumName);
+                        Console.WriteLine("Updated: " + change.ColumnName);
 
                     }
                     _unitOfWork.Save();
