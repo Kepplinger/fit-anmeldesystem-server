@@ -122,20 +122,23 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all Events from Database
         /// </summary>
-        [HttpGet("current")]
-        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        public IActionResult GetCurrentEvent()
-        {
-            List<Event> events = _unitOfWork
-                                        .EventRepository
-                                        .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                        .Where(f => _unitOfWork.EventRepository.Get()
-                                        .Any(d => f.EventDate.Subtract(DateTime.Now) < d.EventDate
-                                        .Subtract(DateTime.Now)))
-                                        .ToList();
-                                        //.Select(p => p.EventDate.Subtract(DateTime.Now)).ToList();
-            return new OkObjectResult(events);
-        }
+        /// wi warads wann amoi duachgschaut wiad wos fia methoden das es scho gibt und east dann programmiert wida btw die methode steht 1 drunta 
+
+            //----------------------DIE METHODE WÜRDE ÜBRIGENS GEHEN WENN MAN NCIHT .toList() SONDERN .firs() MACHT 
+        //[HttpGet("current")]
+        //[ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        //public IActionResult GetCurrentEvent()
+        //{
+        //    List<Event> events = _unitOfWork
+        //                                .EventRepository
+        //                                .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
+        //                                .Where(f => _unitOfWork.EventRepository.Get()
+        //                                .Any(d => f.EventDate.Subtract(DateTime.Now) < d.EventDate
+        //                                .Subtract(DateTime.Now)))
+        //                                .ToList();
+        //                                //.Select(p => p.EventDate.Subtract(DateTime.Now)).ToList();
+        //    return new OkObjectResult(events);
+        //}
 
         [HttpGet("latest")]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]

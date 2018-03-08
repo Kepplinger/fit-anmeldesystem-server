@@ -18,6 +18,8 @@ namespace Backend.Core.Entities
 
         public string OldValue { get; set; }
 
+        public int RowId { get; set; }
+
        // public Type TypeOfValue { get; set; }
     }
 }
