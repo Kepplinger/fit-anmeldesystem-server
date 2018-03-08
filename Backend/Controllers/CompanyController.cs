@@ -83,11 +83,11 @@ namespace Backend.Controllers
                 try
                 {
                     Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id),includeProperties: "Address,Contact").FirstOrDefault();
-                    if (toUpdate.FK_Address != 0)
+                    if (jsonCompany.FK_Address != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -98,21 +98,19 @@ namespace Backend.Controllers
                                 change.IsPending = true;
                                 change.CompanyId = toUpdate.Id;
                                 _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.AddressRepository.Update(jsonCompany.Address);
                                 _unitOfWork.Save();
-                                change = new ChangeProtocol();
-
-                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumnName);
+                                change = new ChangeProtocol();
                             }
                         }
+                        _unitOfWork.AddressRepository.Update(jsonCompany.Address);
                     }
 
-                    if (toUpdate.FK_Contact != 0)
+                    if (jsonCompany.FK_Contact != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
                         {
-                            if (!p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -123,33 +121,40 @@ namespace Backend.Controllers
                                 change.IsPending = true;
                                 change.CompanyId = toUpdate.Id;
                                 _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
                                 _unitOfWork.Save();
 
-                                change = new ChangeProtocol();
-
-                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("Updated: " + change.ColumnName);
+                                change = new ChangeProtocol();
                             }
+                        
                         }
+                        _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
+
                     }
 
-                    if (toUpdate.Name != null && !jsonCompany.Name.Equals(toUpdate.Name))
+                    if (jsonCompany.Id != 0)
                     {
-                        change.ChangeDate = DateTime.Now;
-                        change.ColumnName = "Name";
-                        change.NewValue = jsonCompany.Name;
-                        change.OldValue = toUpdate.Name;
-                        change.TableName = nameof(Company);
-                        change.RowId = toUpdate.Id;
-                        change.IsPending = true;
-                        change.CompanyId = toUpdate.Id;
-                        _unitOfWork.ChangeRepository.Insert(change);
-                        _unitOfWork.CompanyRepository.Update(jsonCompany);
-                        _unitOfWork.Save();
-                        change = new ChangeProtocol();
+                        foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
+                        {
+                            jsonCompany.RegistrationToken = toUpdate.RegistrationToken;
+                            if (!p.Name.Contains("Timestamp") && p.Name!="FolderInfo" && !p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany) != null && !p.GetValue(jsonCompany).Equals(p.GetValue(toUpdate)))
+                            {
+                                change.ChangeDate = DateTime.Now;
+                                change.ColumnName = p.Name;
+                                change.NewValue = Convert.ToString(p.GetValue(jsonCompany));
+                                change.OldValue = Convert.ToString(p.GetValue(toUpdate));
+                                change.TableName = nameof(Company);
+                                change.RowId = toUpdate.Id;
+                                change.IsPending = true;
+                                change.CompanyId = toUpdate.Id;
+                                _unitOfWork.ChangeRepository.Insert(change);
+                                _unitOfWork.Save();
+                                Console.WriteLine("Updated: " + change.ColumnName);
+                                change = new ChangeProtocol();
+                            }
 
-                        Console.WriteLine("Updated: " + change.ColumnName);
+                        }
+                        _unitOfWork.CompanyRepository.Update(jsonCompany);
 
                     }
                     _unitOfWork.Save();

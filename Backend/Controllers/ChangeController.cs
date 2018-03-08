@@ -29,7 +29,6 @@ namespace Backend.Controllers
             if (changes != null && changes.Count > 0)
             {
                 return new OkObjectResult(changes);
-
             }
             else
             {
@@ -40,14 +39,15 @@ namespace Backend.Controllers
 
         [HttpPut("revert")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
-        public IActionResult revertChange(int id)
+        public IActionResult revertChange([FromBody] int id)
         {
-            ChangeProtocol change = _unitOfWork.ChangeRepository.Get(filter: c => c.Id == id).First();
+            Console.WriteLine(id);
+            ChangeProtocol change = _unitOfWork.ChangeRepository.Get(filter: c => c.Id == id).FirstOrDefault();
             
             switch (change.TableName)
             {
                 case "Booking":
-                    Booking booking = _unitOfWork.BookingRepository.Get(filter: c => c.Id == id).First();
+                    Booking booking = _unitOfWork.BookingRepository.Get(filter: c => c.Id == id).FirstOrDefault();
                     var bookingInfo = booking.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     bookingInfo.SetValue(booking, change.OldValue, null);
                     break;
@@ -59,27 +59,34 @@ namespace Backend.Controllers
                     break;
                 case "Contact":
                     break;
-                case "Addresse":
-                    Address address = _unitOfWork.AddressRepository.Get(filter: c => c.Id == id).First();
-                    var addressInfo = address.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    addressInfo.SetValue(address, change.OldValue, null);
+                case "Address":
+                    var comp = _unitOfWork.CompanyRepository.Get(p => p.Id == change.CompanyId, includeProperties: "Address").FirstOrDefault();
+                    Address address = _unitOfWork.AddressRepository.Get(filter: c => c.Id == comp.Address.Id).FirstOrDefault();
+
+                    var addressInfo = address.GetType().GetProperty(change.ColumnName);
+                    addressInfo.SetValue(address, change.OldValue);
                     _unitOfWork.AddressRepository.Update(address);
+
                     change.IsPending = false;
+
                     _unitOfWork.ChangeRepository.Update(change);
                     _unitOfWork.Save();
 
-                    return new NoContentResult();
+                    return new OkObjectResult(change);
                     break;
                 case "Company":
-                    Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == id).First();
-                    var companyInfo = company.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                    companyInfo.SetValue(company, change.OldValue, null);
+                    Company company = _unitOfWork.CompanyRepository.Get(p => p.Id == change.CompanyId, includeProperties: "Address").FirstOrDefault();
+
+                    var companyProperty = company.GetType().GetProperty(change.ColumnName);
+                    companyProperty.SetValue(company, change.OldValue);
                     _unitOfWork.CompanyRepository.Update(company);
+
                     change.IsPending = false;
+
                     _unitOfWork.ChangeRepository.Update(change);
                     _unitOfWork.Save();
 
-                    return new NoContentResult();
+                    return new OkObjectResult(change);
                     break;
                 default:
                     return new BadRequestResult();
