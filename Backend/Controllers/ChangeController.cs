@@ -38,5 +38,46 @@ namespace Backend.Controllers
         }
 
 
+        [HttpPut("revert")]
+        [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
+        public IActionResult revertChange(int id)
+        {
+            ChangeProtocol change = _unitOfWork.ChangeRepository.GetById(id);
+            
+            switch (change.TableName)
+            {
+                case "Booking":
+                    Booking booking = _unitOfWork.BookingRepository.GetById(change.RowId);
+                    var bookingInfo = booking.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    bookingInfo.SetValue(booking, change.OldValue, null);
+                    break;
+                case "Presentation":
+                    break;
+                case "Representative":
+                    break;
+                case "FolderInfo":
+                    break;
+                case "Contact":
+                    break;
+                case "Addresse":
+                    break;
+                case "Company":
+                    Company company = _unitOfWork.CompanyRepository.GetById(change.RowId);
+                    var companyInfo = company.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    companyInfo.SetValue(company, change.OldValue, null);
+                    _unitOfWork.CompanyRepository.Update(company);
+                    change.IsPending = false;
+                    _unitOfWork.ChangeRepository.Update(change);
+                    _unitOfWork.Save();
+
+                    return new NoContentResult();
+                    break;
+                default:
+                    return new BadRequestResult();
+              
+            }
+            return new BadRequestResult();
+        }
+
     }
 }
