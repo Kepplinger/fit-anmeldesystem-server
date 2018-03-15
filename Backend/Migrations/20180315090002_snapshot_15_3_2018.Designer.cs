@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180315090002_snapshot_15_3_2018")]
+    partial class snapshot_15_3_2018
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,7 +63,8 @@ namespace Backend.Migrations
 
                     b.Property<int?>("EventId");
 
-                    b.Property<string>("GraphicURL");
+                    b.Property<string>("GraphicURL")
+                        .IsRequired();
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()

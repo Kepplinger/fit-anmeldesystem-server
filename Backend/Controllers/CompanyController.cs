@@ -30,7 +30,7 @@ namespace Backend.Controllers
         public IActionResult GetAll()
         {
             
-            var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,FolderInfo");
+            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact,FolderInfo");
             return new OkObjectResult(companies);
         }
 
