@@ -23,7 +23,7 @@ namespace Backend.Utils
 
             //message config
             objeto_mail.Subject = "Ihr Firmenantrag wurde eingereicht - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("FIT-Admin Name");
+            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
             objeto_mail.IsBodyHtml = true;
 
@@ -56,7 +56,7 @@ namespace Backend.Utils
 
             //message config
             objeto_mail.Subject = "Ein neuer Firmenantrag wurde eingereicht";
-            objeto_mail.From = new MailAddress("FIT System");
+            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress("andi.sakal15@gmail.com"));
             objeto_mail.IsBodyHtml = true;
 
@@ -89,8 +89,8 @@ namespace Backend.Utils
 
             //message config
             objeto_mail.Subject = "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("FIT-Admin Name");
-            objeto_mail.To.Add(new MailAddress("andi.sakal15@gmail.com"));
+            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
+            objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
             objeto_mail.IsBodyHtml = true;
 
             //template config
@@ -100,6 +100,7 @@ namespace Backend.Utils
                                              "</head>" +
                                              "<body>" +
                                              "<p>Ihr Firmenantrag wurde akzeptiert!" +
+                                             "<br>Hier ist der Zugangstoken: " + comp.RegistrationToken +
                                              "</p></body>" +
                                              "</html>");
             client.SendMailAsync(objeto_mail);
@@ -122,7 +123,7 @@ namespace Backend.Utils
 
             //message config
             objeto_mail.Subject = "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("FIT-Admin Name");
+            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress("andi.sakal15@gmail.com"));
             objeto_mail.IsBodyHtml = true;
 
@@ -159,6 +160,7 @@ namespace Backend.Utils
             objeto_mail.To.Add(new MailAddress(succBooking.Company.Contact.Email));
             objeto_mail.IsBodyHtml = true;
 
+            //objeto_mail.Attachments.Add(new Attachment());
             //template config
             objeto_mail.Body = string.Format("<!DOCTYPE html>" +
                                              "<html>" +
