@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            
             var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact,FolderInfo");
             return new OkObjectResult(companies);
         }
@@ -50,20 +50,32 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult CreateCompany([FromBody] Company jsonComp)
         {
-            Company storeCompany = jsonComp;
-            storeCompany.RegistrationToken = Guid.NewGuid().ToString();
-            _unitOfWork.CompanyRepository.Insert(storeCompany);
-            _unitOfWork.Save();
-            return new ObjectResult(storeCompany);
+            if (jsonComp != null)
+            {
+                Company storeCompany = jsonComp;
+                storeCompany.RegistrationToken = Guid.NewGuid().ToString();
+                _unitOfWork.ContactRepository.Insert(storeCompany.Contact);
+                _unitOfWork.Save();
+                _unitOfWork.AddressRepository.Insert(storeCompany.Address);
+                _unitOfWork.Save();
+
+                _unitOfWork.CompanyRepository.Insert(storeCompany);
+                _unitOfWork.Save();
+                EmailHelper.isPendingGottenAdmin(storeCompany);
+                EmailHelper.isPendingGottenCompany(storeCompany);
+                return new ObjectResult(storeCompany);
+            }
+            return new BadRequestResult();
         }
 
         [HttpPut("accepting")]
         public IActionResult Accepting([FromBody] int compId)
         {
-            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId).FirstOrDefault();
+            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address").FirstOrDefault();
             if (c != null)
             {
                 c.IsPending = false;
+                EmailHelper.isPendingAcceptedCompany(c);
                 return new OkResult();
             }
             return new BadRequestResult();
