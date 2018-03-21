@@ -147,7 +147,7 @@ namespace Backend.Controllers
 
                     // Get the entity from the DB and give reference to it
                     //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
-                    jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
+                    //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
                     //_unitOfWork.Save();
 
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
@@ -193,6 +193,8 @@ namespace Backend.Controllers
 
                     //Senden der Bestätigungs E-Mail
                     EmailHelper.SendBookingAcceptedMail(jsonBooking);
+                    DocumentBuilder doc = new DocumentBuilder();
+                    doc.CreatePdfOfBooking(jsonBooking);
 
                     return new OkObjectResult(jsonBooking);
 
