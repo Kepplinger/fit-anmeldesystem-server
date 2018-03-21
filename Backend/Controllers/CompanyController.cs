@@ -83,11 +83,11 @@ namespace Backend.Controllers
                 try
                 {
                     Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id),includeProperties: "Address,Contact").FirstOrDefault();
-                    if (jsonCompany.FK_Address != 0)
+                    if (jsonCompany.Address.Id != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
                         {
-                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -104,13 +104,17 @@ namespace Backend.Controllers
                             }
                         }
                         _unitOfWork.AddressRepository.Update(jsonCompany.Address);
+                        _unitOfWork.Save();
+
                     }
 
-                    if (jsonCompany.FK_Contact != 0)
+                    change = new ChangeProtocol();
+
+                    if (jsonCompany.Contact.Id != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
                         {
-                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany.Contact) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany.Contact) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -129,15 +133,18 @@ namespace Backend.Controllers
                         
                         }
                         _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
+                        _unitOfWork.Save();
+
 
                     }
+                    change = new ChangeProtocol();
 
                     if (jsonCompany.Id != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
                         {
                             jsonCompany.RegistrationToken = toUpdate.RegistrationToken;
-                            if (!p.Name.Contains("Timestamp") && p.Name!="FolderInfo" && !p.Name.ToLower().Contains("id") && p.GetValue(jsonCompany) != null && !p.GetValue(jsonCompany).Equals(p.GetValue(toUpdate)))
+                            if (!p.Name.Contains("Timestamp") && p.Name!="FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany) != null && !p.GetValue(jsonCompany).Equals(p.GetValue(toUpdate)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -155,6 +162,7 @@ namespace Backend.Controllers
 
                         }
                         _unitOfWork.CompanyRepository.Update(jsonCompany);
+                        _unitOfWork.Save();
 
                     }
                     _unitOfWork.Save();
