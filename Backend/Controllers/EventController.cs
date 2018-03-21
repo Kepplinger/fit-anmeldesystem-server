@@ -34,7 +34,7 @@ namespace Backend.Controllers
         {
             using(IUnitOfWork uow = new UnitOfWork())
             {
-                List<Event> events = uow.EventRepository.Get().ToList();
+                List<Event> events = uow.EventRepository.Get(includeProperties: "Areas").ToList();
                 if (events.Count > 0)
                 {
                     return new OkObjectResult(events);
