@@ -109,6 +109,8 @@ namespace Backend.Controllers
                                 change.RowId = toUpdate.Address.Id;
                                 change.IsPending = true;
                                 change.CompanyId = toUpdate.Id;
+                                change.isAdminChange = false;
+                                change.isReverted = false;
                                 _unitOfWork.ChangeRepository.Insert(change);
                                 _unitOfWork.Save();
                                 Console.WriteLine("No Update for" + change.ColumnName);
@@ -136,6 +138,8 @@ namespace Backend.Controllers
                                 change.RowId = toUpdate.Contact.Id;
                                 change.IsPending = true;
                                 change.CompanyId = toUpdate.Id;
+                                change.isAdminChange = false;
+                                change.isReverted = false;
                                 _unitOfWork.ChangeRepository.Insert(change);
                                 _unitOfWork.Save();
 
@@ -166,24 +170,22 @@ namespace Backend.Controllers
                                 change.RowId = toUpdate.Id;
                                 change.IsPending = true;
                                 change.CompanyId = toUpdate.Id;
+                                change.isAdminChange = false;
+                                change.isReverted = false;
                                 _unitOfWork.ChangeRepository.Insert(change);
                                 _unitOfWork.Save();
                                 Console.WriteLine("Updated: " + change.ColumnName);
                                 change = new ChangeProtocol();
                             }
-
                         }
                         _unitOfWork.CompanyRepository.Update(jsonCompany);
                         _unitOfWork.Save();
-
                     }
                     _unitOfWork.Save();
                     change = new ChangeProtocol();
 
                     transaction.Commit();
                     return new OkObjectResult(jsonCompany);
-
-
                 }
                 catch (DbUpdateException ex)
                 {
