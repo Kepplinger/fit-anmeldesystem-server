@@ -136,154 +136,160 @@ namespace StoreService.Persistence
             DeleteDatabase();
             MigrateDatabase();
 
-            // Set up Booking
-            Booking booking = new Booking();
-            booking.AdditionalInfo = "Here is some Additional Info";
-            booking.CompanyDescription = "This is the company description";
-            booking.isAccepted = true;
-            booking.ProvidesSummerJob = true;
-            booking.ProvidesThesis = false;
-            booking.Remarks = "Remark";
+            
+                // Set up Company
+                Company company = new Company();
+                company.Name = "Kepplinger IT";
+                company.IsPending = false;
+                company.RegistrationToken = "FirmenToken1";
 
-            // Set up Company
-            Company company = new Company();
-            company.Name = "Kepplinger IT";
-            company.IsPending = false;
-            company.RegistrationToken = "FirmenToken1";
+                // Set up Address
+                Address address = new Address();
+                address.Addition = "Additional Address Info";
+                address.City = "Linz";
+                address.StreetNumber = "14";
+                address.Street = "some Street";
+                address.ZipCode = "4020";
 
-            // Set up Address
-            Address address = new Address();
-            address.Addition = "Additional Address Info";
-            address.City = "Linz";
-            address.StreetNumber = "14";
-            address.Street = "some Street";
-            address.ZipCode = "4020";
-
-            _context.Addresses.Add(address);
-            _context.SaveChanges();
+                _context.Addresses.Add(address);
+                _context.SaveChanges();
 
 
-            // Set Up Contact
-            Contact contact = new Contact();
-            contact.FirstName = "Andrej";
-            contact.LastName = "Sakal";
-            contact.Gender = "M";
-            contact.PhoneNumber = "+4369917209297";
-            contact.Email = "andi.sakal15@gmail.com";
+                // Set Up Contact
+                Contact contact = new Contact();
+                contact.FirstName = "Andrej";
+                contact.LastName = "Sakal";
+                contact.Gender = "M";
+                contact.PhoneNumber = "+4369917209297";
+                contact.Email = "andi.sakal15@gmail.com";
 
-            _context.Contacts.Add(contact);
-            _context.SaveChanges();
-
-
-            //Set up FitFolderInfo
-            FolderInfo folderInfo = new FolderInfo();
-            folderInfo.Email = "officemail@gmail.com";
-            folderInfo.Branch = "Firmen Branche";
-            folderInfo.EstablishmentsAut = "Linz";
-            folderInfo.EstablishmentsCountAut = 1;
-            folderInfo.EstablishmentsCountInt = 0;
-            folderInfo.EstablishmentsInt = "";
-            folderInfo.Homepage = "www.fit.com";
-            folderInfo.Logo = "logo";
-            folderInfo.PhoneNumber = "firmenphonenr";
-
-            _context.FolderInfos.Add(folderInfo);
-            _context.SaveChanges();
+                _context.Contacts.Add(contact);
+                _context.SaveChanges();
 
 
-            // Set up Company
-            company.Contact = contact;
-            company.Address = address;
-            company.FolderInfo = folderInfo;
+                //Set up FitFolderInfo
+                FolderInfo folderInfo = new FolderInfo();
+                folderInfo.Email = "officemail@gmail.com";
+                folderInfo.Branch = "Firmen Branche";
+                folderInfo.EstablishmentsAut = "Linz";
+                folderInfo.EstablishmentsCountAut = 1;
+                folderInfo.EstablishmentsCountInt = 0;
+                folderInfo.EstablishmentsInt = "";
+                folderInfo.Homepage = "www.fit.com";
+                folderInfo.Logo = "logo";
+                folderInfo.PhoneNumber = "firmenphonenr";
 
-            _context.Companies.Add(company);
-
-            _context.SaveChanges();
-
-            //Set up Ressources
-            List<Resource> resources = new List<Resource>();
-            Resource resource = new Resource();
-            resource.Name = "Stuhl";
-            resource.Description = "Braucht die Firma einen Stuhl";
-            Resource resource2 = new Resource();
-            resource2.Name = "Fernseher";
-            resource2.Description = "Die Firma brauch einen Fernseher";
-            resources.Add(resource);
+                _context.FolderInfos.Add(folderInfo);
+                _context.SaveChanges();
 
 
-            //Representatives
-            List<Representative> repre = new List<Representative>();
-            Representative repr = new Representative();
-            repr.Email = "andi.sakal15@gmail.com";
-            repr.Image = "iagendans";
-            repr.Name = "Andrej Sakal";
+                // Set up Company
+                company.Contact = contact;
+                company.Address = address;
+                company.FolderInfo = folderInfo;
 
-            _context.Rerpresentatives.Add(repr);
-            _context.SaveChanges();
-            repre.Add(repr);
+                _context.Companies.Add(company);
 
-            FitPackage package = new FitPackage();
-            package.Name = "Basispaket";
-            package.Discriminator = 1;
-            package.Description = "Das Grundpaket bietet Ihnen einen Standplatz am FIT";
-            package.Price = 200;
+                _context.SaveChanges();
 
-            _context.Packages.Add(package);
-            _context.SaveChanges();
+                //Set up Ressources
+                List<Resource> resources = new List<Resource>();
+                Resource resource = new Resource();
+                resource.Name = "Stuhl";
+                resource.Description = "Braucht die Firma einen Stuhl";
+                Resource resource2 = new Resource();
+                resource2.Name = "Fernseher";
+                resource2.Description = "Die Firma brauch einen Fernseher";
+                resources.Add(resource);
 
-            FitPackage package2 = new FitPackage();
-            package2.Name = "Sponsorpaket";
-            package2.Discriminator = 2;
-            package2.Description = "Beim Sponsorpaket zusätzlich enthalten ist noch anbringung Ihres Firmenlogos auf Werbematerialien des FITs";
-            package2.Price = 400;
 
-            _context.Packages.Add(package2);
-            _context.SaveChanges();
+                //Representatives
+                List<Representative> repre = new List<Representative>();
+                Representative repr = new Representative();
+                repr.Email = "andi.sakal15@gmail.com";
+                repr.Image = "iagendans";
+                repr.Name = "Andrej Sakal";
 
-            FitPackage package3 = new FitPackage();
-            package3.Name = "Vortragspaket";
-            package3.Discriminator = 3;
-            package3.Description = "Beim Vortragspaket zuästzlich zu den restlichen Paketen darf man einen Vortrag halten";
-            package3.Price = 600;
+                _context.Rerpresentatives.Add(repr);
+                _context.SaveChanges();
+                repre.Add(repr);
 
-            _context.Packages.Add(package3);
-            _context.SaveChanges();
+                FitPackage package = new FitPackage();
+                package.Name = "Basispaket";
+                package.Discriminator = 1;
+                package.Description = "Das Grundpaket bietet Ihnen einen Standplatz am FIT";
+                package.Price = 200;
 
-            Branch it = new Branch();
-            it.Name = "Informatik/Medientechnik";
+                _context.Packages.Add(package);
+                _context.SaveChanges();
 
-            _context.Branches.Add(it);
-            _context.SaveChanges();
+                FitPackage package2 = new FitPackage();
+                package2.Name = "Sponsorpaket";
+                package2.Discriminator = 2;
+                package2.Description = "Beim Sponsorpaket zusätzlich enthalten ist noch anbringung Ihres Firmenlogos auf Werbematerialien des FITs";
+                package2.Price = 400;
 
-            Branch elektr = new Branch();
-            elektr.Name = "Elektronik/techn. Informatik";
+                _context.Packages.Add(package2);
+                _context.SaveChanges();
 
-            _context.Branches.Add(elektr);
-            _context.SaveChanges();
+                FitPackage package3 = new FitPackage();
+                package3.Name = "Vortragspaket";
+                package3.Discriminator = 3;
+                package3.Description = "Beim Vortragspaket zuästzlich zu den restlichen Paketen darf man einen Vortrag halten";
+                package3.Price = 600;
 
-            Branch bio = new Branch();
-            bio.Name = "Biomedizin & Gesundheitstechnik";
+                _context.Packages.Add(package3);
+                _context.SaveChanges();
 
-            _context.Branches.Add(bio);
-            _context.SaveChanges();
+                Branch it = new Branch();
+                it.Name = "Informatik/Medientechnik";
 
-            Event e = new Event();
-            e.EventDate = DateTime.Now;
-            e.RegistrationEnd = DateTime.Now.AddMonths(2);
-            e.RegistrationStart = DateTime.Now.AddMonths(-2);
-            e.IsLocked = false;
-            e.IsCurrent = true;
+                _context.Branches.Add(it);
+                _context.SaveChanges();
 
-            _context.Events.Add(e);
-            _context.SaveChanges();
+                Branch elektr = new Branch();
+                elektr.Name = "Elektronik/techn. Informatik";
 
-            booking.FK_FitPackage = package.Id;
-            booking.Event = e;
-            booking.Representatives = repre;
-            booking.FK_Company = company.Id;
+                _context.Branches.Add(elektr);
+                _context.SaveChanges();
 
-            _context.Bookings.Add(booking);
-            _context.SaveChanges();
+                Branch bio = new Branch();
+                bio.Name = "Biomedizin & Gesundheitstechnik";
+
+                _context.Branches.Add(bio);
+                _context.SaveChanges();
+
+                Event e = new Event();
+                e.EventDate = DateTime.Now;
+                e.RegistrationEnd = DateTime.Now.AddMonths(2);
+                e.RegistrationStart = DateTime.Now.AddMonths(-2);
+                e.IsLocked = false;
+                e.IsCurrent = true;
+
+                _context.Events.Add(e);
+                _context.SaveChanges();
+
+
+            for (int i = 0; i < 121; i++)
+            {
+                // Set up Booking
+                Booking booking = new Booking();
+                booking.AdditionalInfo = "Here is some Additional Info";
+                booking.CompanyDescription = "This is the company description";
+                booking.isAccepted = true;
+                booking.ProvidesSummerJob = true;
+                booking.ProvidesThesis = false;
+                booking.Remarks = "Remark";
+                booking.CreationDate = DateTime.Now;
+                booking.FK_FitPackage = package.Id;
+                booking.Event = e;
+                booking.Representatives = repre;
+                booking.FK_Company = company.Id;
+
+                _context.Bookings.Add(booking);
+                _context.SaveChanges();
+            }
+
 
             var res = _context.Bookings
                               .Include(p => p.Event)
