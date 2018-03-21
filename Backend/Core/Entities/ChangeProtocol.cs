@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using Backend.Utils;
 
 namespace Backend.Core.Entities
 {
@@ -20,10 +21,12 @@ namespace Backend.Core.Entities
 
         public int RowId { get; set; }
 
-       // public Type TypeOfValue { get; set; }
-
         public bool IsPending { get; set; }
 
         public int CompanyId { get; set; }
+
+        public bool isAdminChange { get; set; }
+
+        public bool isReverted { get; set; }
     }
 }
