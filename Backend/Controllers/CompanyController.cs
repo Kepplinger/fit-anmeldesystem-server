@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -98,6 +99,22 @@ namespace Backend.Controllers
                 return new OkResult();
             }
             return new BadRequestResult();
+        }
+        [HttpGet("presentation/{eventId:int}")]
+        public IActionResult PresentationByEvent(int eventId)
+        {
+            List<object> pres = new List<object>();
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Presentation != null && p.Event.Id == eventId).ToList();
+            for (int i = 0; i < bookings.Count; i++)
+            {
+                var companyPresentations = new
+                {
+                    company = bookings.ElementAt(i).Company,
+                    presentation = bookings.ElementAt(i).Presentation,
+                };
+                pres.Add(companyPresentations);
+            }
+            return new OkObjectResult(pres);
         }
 
 
