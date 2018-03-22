@@ -53,7 +53,26 @@ namespace Backend.Controllers
             if (jsonComp != null)
             {
                 Company storeCompany = jsonComp;
-                storeCompany.RegistrationToken = Guid.NewGuid().ToString();
+                
+                string finalCode="";
+                string encoded = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+                encoded = encoded.Replace("/", "_").Replace("+", "-");
+                encoded = encoded.Substring(0, 12);
+
+                for (int i = 1; i < encoded.Length; i++)
+                {
+                    if (i % 4 == 0)
+                    {
+                        finalCode += encoded[i - 1];
+                        finalCode += "-";
+                    }
+                    else
+                    {
+                        finalCode += encoded[i - 1];
+                    }
+                }
+
+                storeCompany.RegistrationToken = finalCode;
                 _unitOfWork.ContactRepository.Insert(storeCompany.Contact);
                 _unitOfWork.Save();
                 _unitOfWork.AddressRepository.Insert(storeCompany.Address);

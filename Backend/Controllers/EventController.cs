@@ -56,6 +56,7 @@ namespace Backend.Controllers
                 if (jsonEvent.Id > 0)
                 {
                     Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == jsonEvent.Id, includeProperties: "Areas").FirstOrDefault();
+                    jsonEvent.IsCurrent = eventToUpdate.IsCurrent;
                     if (eventToUpdate != null)
                     {
                         foreach (Area area in jsonEvent.Areas)
