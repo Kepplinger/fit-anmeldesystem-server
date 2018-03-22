@@ -32,8 +32,10 @@ namespace Backend.Controllers
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
             string url = configuration["Urls:DefaultUrl"];
-            ZipFile.CreateFromDirectory(".wwwroot/images/","./images.zip");
-            return new OkObjectResult(url + "/images.zip");
+            Directory.CreateDirectory("wwwroot/tempImages/");
+            File.Copy("wwwroot/images/", "wwwroot/tempImages/");
+            ZipFile.CreateFromDirectory("wwwroot/tempImages/", "wwwroot/images/images.zip");
+            return new OkObjectResult("wwwroot/images/images.zip");
         }
     }
 }

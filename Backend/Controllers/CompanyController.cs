@@ -105,12 +105,19 @@ namespace Backend.Controllers
         {
             List<object> pres = new List<object>();
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Presentation != null && p.Event.Id == eventId).ToList();
-            for (int i = 0; i < bookings.Count; i++)
+            for (int i = 0; i < 10; i++)
             {
-                var companyPresentations = new
+                /*var companyPresentations = new
                 {
                     company = bookings.ElementAt(i).Company,
                     presentation = bookings.ElementAt(i).Presentation,
+                };*/
+
+                var companyPresentations = new
+                {
+                    companyName = "company Name: " + i,
+                    presentationTitle = "presentation title" + i,
+                    presentationDescr = "This is a presentation description from: " + i,
                 };
                 pres.Add(companyPresentations);
             }
