@@ -13,6 +13,7 @@ using StoreService.Persistence;
 using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Text;
+using Backend.Utils;
 
 namespace Backend.Controllers
 {
@@ -61,9 +62,9 @@ namespace Backend.Controllers
                     {
                         foreach (Area area in jsonEvent.Areas)
                         {
-                            /*if (area.GraphicURL.Contains("base64,"))
+                            if (area.GraphicURL.Contains("base64,"))
                             {
-                                string filename = this.ImageParsing(area);
+                                string filename = new ImageHelper().ImageParsing(area);
                                 area.GraphicURL = filename;
                                 if (area.Id > 0)
                                 {
@@ -74,7 +75,7 @@ namespace Backend.Controllers
                                     _unitOfWork.AreaRepository.Insert(area);
                                 }
                                 _unitOfWork.Save();
-                            }*/
+                            }
                             _unitOfWork.EventRepository.Update(jsonEvent);
                             _unitOfWork.Save();
                         }
@@ -91,8 +92,8 @@ namespace Backend.Controllers
                         // Saving Areas and Locations for the Event
                         foreach (Area area in jsonEvent.Areas)
                         {
-                            /*string filename = this.ImageParsing(area);
-                            area.GraphicURL = filename;*/
+                            string filename = new ImageHelper().ImageParsing(area);
+                            area.GraphicURL = filename;
 
                             foreach (Location l in area.Locations)
                             {
