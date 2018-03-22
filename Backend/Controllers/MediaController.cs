@@ -26,8 +26,8 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult ZipArchive()
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public FileContentResult ZipArchive()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -45,8 +45,18 @@ namespace Backend.Controllers
                 string destFile = System.IO.Path.Combine(temp, fileName);
                 System.IO.File.Copy(s, destFile, true);
             }
+            if (System.IO.File.Exists("wwwroot/images/images.zip"))
+            {
+                System.IO.File.Delete("wwwroot/images/images.zip");
+            }
             ZipFile.CreateFromDirectory("wwwroot/tempImages/", "wwwroot/images/images.zip");
-            return new OkObjectResult(url + "/images/images.zip");
+
+            FileContentResult result = new FileContentResult(System.IO.File.ReadAllBytes("wwwroot/images/images.zip"), "application/zip")
+            {
+                FileDownloadName = "images.zip"
+            };
+
+            return result;
         }
     }
 }
