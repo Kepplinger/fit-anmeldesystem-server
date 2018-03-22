@@ -26,6 +26,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
+        [Produces("application/zip")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public FileContentResult ZipArchive()
         {
@@ -41,9 +42,12 @@ namespace Backend.Controllers
             foreach (string s in files)
             {
                 // Use static Path methods to extract only the file name from the path.
-                string fileName = System.IO.Path.GetFileName(s);
-                string destFile = System.IO.Path.Combine(temp, fileName);
-                System.IO.File.Copy(s, destFile, true);
+                if (!s.Contains("zip"))
+                {
+                    string fileName = System.IO.Path.GetFileName(s);
+                    string destFile = System.IO.Path.Combine(temp, fileName);
+                    System.IO.File.Copy(s, destFile, true);
+                }
             }
             if (System.IO.File.Exists("wwwroot/images/images.zip"))
             {
@@ -55,7 +59,6 @@ namespace Backend.Controllers
             {
                 FileDownloadName = "images.zip"
             };
-
             return result;
         }
     }
