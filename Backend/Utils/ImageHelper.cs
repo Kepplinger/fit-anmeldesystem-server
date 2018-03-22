@@ -41,8 +41,10 @@ namespace Backend.Utils
             var configuration = builder.Build();
             string filepath = configuration["ImageFilePaths:SakalWindows"];
 
+            string baseurl = configuration["Urls:DefaultUrl"];
+
             //set filepath name
-            string filename = this.GetHashString(area.Designation) + dataFormat;
+            string filename = this.GetHash() + dataFormat;
             filepath = filepath + filename;
 
             // filepath
@@ -66,17 +68,9 @@ namespace Backend.Utils
                 //images/name.jpg
             }
         }
-        public byte[] GetHash(string inputString)
+        public string GetHash()
         {
-            HashAlgorithm algorithm = SHA256.Create();  //SHA256
-            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-        }
-        public string GetHashString(string inputString)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in this.GetHash(inputString))
-                sb.Append(b.ToString("X2"));
-            return sb.ToString();
+            return Guid.NewGuid().ToString();
         }
     }
 }
