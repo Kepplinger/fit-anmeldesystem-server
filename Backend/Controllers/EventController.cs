@@ -60,6 +60,19 @@ namespace Backend.Controllers
                             {
                                 string filename = new ImageHelper().ImageParsing(area);
                                 area.GraphicURL = filename;
+
+                                foreach (Location l in area.Locations)
+                                {
+                                    if (l.Id > 0)
+                                    {
+                                        _unitOfWork.LocationRepository.Update(l);
+                                    }
+                                    else
+                                    {
+                                        _unitOfWork.LocationRepository.Insert(l);
+                                    }
+                                }
+
                                 if (area.Id > 0)
                                 {
                                     _unitOfWork.AreaRepository.Update(area);

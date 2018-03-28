@@ -186,7 +186,7 @@ namespace StoreService.Persistence
                 List<Representative> repre = new List<Representative>();
                 Representative repr = new Representative();
                 repr.Email = "andi.sakal15@gmail.com";
-                repr.Image = "iagendans";
+                repr.ImageUrl = "iagendans";
                 repr.Name = "Andrej Sakal";
 
                 _context.Rerpresentatives.Add(repr);

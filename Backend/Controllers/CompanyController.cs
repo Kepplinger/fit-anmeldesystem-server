@@ -31,7 +31,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact,FolderInfo");
+            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact");
             return new OkObjectResult(companies);
         }
 

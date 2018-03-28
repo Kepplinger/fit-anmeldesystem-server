@@ -37,7 +37,17 @@ namespace Backend.Controllers
                 existing = uow.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail)).FirstOrDefault();
 
                 if (existing == null)
-                    existing = uow.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail)).FirstOrDefault();
+                {
+                    List<Booking> bookings = uow.BookingRepository.Get().ToList();
+
+                    for (int i = 0; i < bookings.Count; i++)
+                    {
+                        if (bookings.ElementAt(i).Email.Equals(mail))
+                        {
+                            existing = bookings.ElementAt(i).Company;
+                        }
+                    }
+                }
             }
             if (existing != null)
             {
@@ -80,7 +90,18 @@ namespace Backend.Controllers
             Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
 
             if (company == null)
-                company = _unitOfWork.CompanyRepository.Get(filter: p => p.FolderInfo.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
+            {
+                List<Booking> bookings = _unitOfWork.BookingRepository.Get().ToList();
+
+                for (int i = 0; i < bookings.Count; i++)
+                {
+                    if (bookings.ElementAt(i).Email.Equals(mail))
+                    {
+                        company = bookings.ElementAt(i).Company;
+                    }
+                }
+            }
+
 
             if (company != null)
             {
@@ -102,7 +123,7 @@ namespace Backend.Controllers
         public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address,Contact,FolderInfo").FirstOrDefault();
+            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address,Contact").FirstOrDefault();
 
             if (actCompany == null)
             {
@@ -127,11 +148,22 @@ namespace Backend.Controllers
             }
             else
             {
-                var booking = new
+                if (lastBooking.Event.IsCurrent)
                 {
-                    booking = lastBooking
-                };
-                return new OkObjectResult(booking);
+                    var booking = new
+                    {
+                        currentBooking = lastBooking
+                    };
+                    return new OkObjectResult(booking);
+                }
+                else
+                {
+                    var booking = new
+                    {
+                        oldBooking = lastBooking
+                    };
+                    return new OkObjectResult(booking);
+                }
             }
         }
     }

@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180328185511_url")]
+    partial class url
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,15 +388,15 @@ namespace Backend.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired();
-
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Url")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
