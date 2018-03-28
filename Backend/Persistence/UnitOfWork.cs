@@ -34,7 +34,6 @@ namespace StoreService.Persistence
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         public IGenericRepository<Address> AddressRepository { get; }
-        public IGenericRepository<FolderInfo> FolderInfoRepository { get; set; }
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
@@ -70,8 +69,6 @@ namespace StoreService.Persistence
             ResourceRepository = new GenericRepository<Resource>(_context);
 
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
-
-            FolderInfoRepository = new GenericRepository<FolderInfo>(_context);
 
             EventRepository = new EventRepository(_context);
 
@@ -166,27 +163,9 @@ namespace StoreService.Persistence
                 _context.Contacts.Add(contact);
                 _context.SaveChanges();
 
-
-                //Set up FitFolderInfo
-                FolderInfo folderInfo = new FolderInfo();
-                folderInfo.Email = "officemail@gmail.com";
-                folderInfo.Branch = "Firmen Branche";
-                folderInfo.EstablishmentsAut = "Linz";
-                folderInfo.EstablishmentsCountAut = 1;
-                folderInfo.EstablishmentsCountInt = 0;
-                folderInfo.EstablishmentsInt = "";
-                folderInfo.Homepage = "www.fit.com";
-                folderInfo.Logo = "logo";
-                folderInfo.PhoneNumber = "firmenphonenr";
-
-                _context.FolderInfos.Add(folderInfo);
-                _context.SaveChanges();
-
-
                 // Set up Company
                 company.Contact = contact;
                 company.Address = address;
-                company.FolderInfo = folderInfo;
 
                 _context.Companies.Add(company);
 
@@ -285,6 +264,15 @@ namespace StoreService.Persistence
                 booking.Event = e;
                 booking.Representatives = repre;
                 booking.FK_Company = company.Id;
+                booking.Email = "officemail@gmail.com";
+                booking.Branch = "Firmen Branche";
+                booking.EstablishmentsAut = "Linz";
+                booking.EstablishmentsCountAut = 1;
+                booking.EstablishmentsCountInt = 0;
+                booking.EstablishmentsInt = "";
+                booking.Homepage = "www.fit.com";
+                booking.Logo = "logo";
+                booking.PhoneNumber = "firmenphonenr";
 
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();

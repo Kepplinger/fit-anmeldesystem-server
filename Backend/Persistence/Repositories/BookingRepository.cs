@@ -23,7 +23,7 @@ namespace Backend.Persistence.Repositories
             {
                 query = query.Where(filter);
             }
-            query = query.Include(p => p.Company).ThenInclude(p => p.FolderInfo)
+            query = query.Include(p => p.Company)
                          .Include(p => p.Company.Address)
                          .Include(p => p.Company.Contact)
                          .Include(p => p.Presentation.Branches)

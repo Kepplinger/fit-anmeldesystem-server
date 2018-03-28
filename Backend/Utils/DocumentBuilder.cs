@@ -86,7 +86,7 @@ namespace Backend.Utils
             nameAndClassTable.AddCell(new CustomBorderCell(CustomBorderCell.CustomBorderType.RIDGE_BORDER)
             { LeftBorder = Border.NO_BORDER, RightBorder = Border.NO_BORDER }.Add(
             new Paragraph()
-                .Add(new Text(booking.Company.FolderInfo.Branch))
+                .Add(new Text(booking.Branch))
                 .SetTextAlignment(TextAlignment.RIGHT)
                 .SetFontSize(14)
                 .SetFont(font)

@@ -20,8 +20,6 @@ namespace Backend.Core.Entities
         public Contact Contact { get; set; }
         public int FK_Contact { get; set; }
 
-        public FolderInfo FolderInfo { get; set; }
-
         [Required]
         public bool IsPending { get; set; }
 

@@ -5,14 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using Backend.Core.Entities;
-using System.Diagnostics;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp;
-using System.IO;
 using StoreService.Persistence;
-using Microsoft.Extensions.Configuration;
-using System.Security.Cryptography;
-using System.Text;
 using Backend.Utils;
 
 namespace Backend.Controllers

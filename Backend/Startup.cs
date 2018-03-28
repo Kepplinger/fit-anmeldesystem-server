@@ -47,7 +47,8 @@ namespace Backend
             {
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "FITAS2.0");
             });
-
+            app.UseStaticFiles();
+            app.UseDeveloperExceptionPage();
         }
     }
 }
