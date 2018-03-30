@@ -9,6 +9,5 @@ namespace Backend.Core.Entities
 
         [Required]
         public string Description { get; set; }
-        
     }
 }

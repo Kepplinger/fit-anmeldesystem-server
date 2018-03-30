@@ -168,7 +168,7 @@ namespace Backend.Controllers
                     {
                         resourcejsonBooking.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == jsonBooking.Resources.ElementAt(i).Id).FirstOrDefault());
                     }
-                    jsonBooking.Resources = resourcejsonBooking;
+                    //jsonBooking.Resources = resourcejsonBooking;
                     _unitOfWork.Save();
 
 
