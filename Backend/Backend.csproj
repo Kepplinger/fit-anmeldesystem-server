@@ -7,15 +7,19 @@
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="ConsoleFillDb\**" />
+    <Content Remove="ConsoleFillDb\**" />
+    <EmbeddedResource Remove="ConsoleFillDb\**" />
+    <None Remove="ConsoleFillDb\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="Controllers\ValuesController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Media\" />
     <Folder Include="wwwroot\images\" />
-    <Folder Include="Utils\" />
     <Folder Include="EmailTemplates\" />
-    <Folder Include="ConsoleFillDb\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="itext7" Version="7.1.1" />

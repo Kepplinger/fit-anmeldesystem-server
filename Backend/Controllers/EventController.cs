@@ -98,8 +98,10 @@ namespace Backend.Controllers
                 }
                 else
                 {
-                    if (jsonEvent != null && jsonEvent.Areas != null && jsonEvent.Areas.Count > 0 && jsonEvent.Areas.ElementAt(0).Locations != null
-                        && jsonEvent.Areas.ElementAt(0).Locations.Count > 0)
+
+                    jsonEvent.IsCurrent = true;
+                    //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
+                    if (jsonEvent != null)
                     {
                         // Saving Areas and Locations for the Event
                         foreach (Area area in jsonEvent.Areas)
@@ -249,3 +251,5 @@ namespace Backend.Controllers
         }
     }
 }
+                    if (jsonEvent != null && jsonEvent.Areas != null && jsonEvent.Areas.Count > 0 && jsonEvent.Areas.ElementAt(0).Locations != null
+                        && jsonEvent.Areas.ElementAt(0).Locations.Count > 0)
