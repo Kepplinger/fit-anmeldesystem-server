@@ -22,9 +22,9 @@ namespace Backend.Utils
         {
             // parse from 64 String all image infos
             string dataFormat = String.Empty;
-            int indexof = area.GraphicURL.IndexOf("base64,");
-            string start = area.GraphicURL.Substring(0, indexof);
-            string baseString = area.GraphicURL.Substring(indexof + 7);
+            int indexof = area.GraphicUrl.IndexOf("base64,");
+            string start = area.GraphicUrl.Substring(0, indexof);
+            string baseString = area.GraphicUrl.Substring(indexof + 7);
 
             // Check image file format
             if (start.ToLower().Contains("png"))
@@ -53,7 +53,7 @@ namespace Backend.Utils
             // Save image to disk
             this.Base64ToImage(baseString, filepath);
 
-            return filename;
+            return baseurl + "/images/" + filename;
         }
         public object Base64ToImage(string basestr, string filepath)
         {
