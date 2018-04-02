@@ -219,8 +219,15 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation");
-            return new OkObjectResult(bookings);
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation").ToList();
+            if (bookings != null && bookings.Count > 0)
+            {
+                return new OkObjectResult(bookings);
+            }
+            else
+            {
+                return new NoContentResult();
+            }
         }
 
         /// <response code="200">Returning Booking by id</response>
@@ -231,8 +238,12 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetById(int id)
         {
-            var bookings = _unitOfWork.BookingRepository.GetById(id);
-            return new ObjectResult(bookings);
+            Booking booking = _unitOfWork.BookingRepository.GetById(id);
+            if (booking != null)
+            {
+                return new OkObjectResult(booking);
+            }
+            return new NoContentResult();
         }
 
         /// <response code="200">Returns the available bookings by company id</response>
