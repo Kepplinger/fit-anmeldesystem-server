@@ -20,7 +20,6 @@ namespace Backend.Core.Entities
         [Required]
         public List<Area> Areas { get; set; }
 
-        [JsonIgnore]
         public bool IsCurrent { get; set; }
     }
 

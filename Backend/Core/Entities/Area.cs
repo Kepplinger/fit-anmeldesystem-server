@@ -10,7 +10,7 @@ namespace Backend.Core.Entities
         public string Designation { get; set; }
 
         
-        public string GraphicURL { get; set; }
+        public string GraphicUrl { get; set; }
 
         [Required]
         public List<Location> Locations { get; set; }

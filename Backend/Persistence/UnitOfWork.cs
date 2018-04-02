@@ -68,6 +68,8 @@ namespace StoreService.Persistence
 
             ResourceRepository = new GenericRepository<Resource>(_context);
 
+            ResourceBookingRepository = new GenericRepository<ResourceBooking>(_context);
+
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
 
             EventRepository = new EventRepository(_context);
@@ -261,7 +263,7 @@ namespace StoreService.Persistence
             _context.SaveChanges();
 
 
-            for (int i = 0; i < 121; i++)
+            for (int i = 0; i < 11; i++)
             {
                 // Set up Booking
                 Booking booking = new Booking();
@@ -285,12 +287,21 @@ namespace StoreService.Persistence
                 booking.Homepage = "www.fit.com";
                 booking.Logo = "logo";
                 booking.PhoneNumber = "firmenphonenr";
-                booking.Resources = new List<ResourceBooking>();
-                ResourceBooking rsb = new ResourceBooking();
-                rsb.Resource = resource;
-                rsb.Booking = booking;
-                rsb.Amount = 1;
+
+                booking.Resources = new List<Resource>();
+                Resource rsb = new Resource();
+                rsb.Name = "eine ressource";
+                rsb.Description = "description einer ressource";
+                _context.Resources.Add(rsb);
                 booking.Resources.Add(rsb);
+
+                ResourceBooking rb = new ResourceBooking();
+                rb.Booking = booking;
+                rb.Amount = 2;
+                rb.Resource = rsb;
+
+                _context.ResourceBookings.Add(rb);
+
 
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
