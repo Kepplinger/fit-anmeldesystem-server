@@ -5,8 +5,8 @@ using System.Linq;
 using Backend.Core.Contracts;
 using Xunit;
 using System;
-using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 
 namespace Backend.Test
 {
