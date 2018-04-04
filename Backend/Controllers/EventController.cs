@@ -251,5 +251,4 @@ namespace Backend.Controllers
         }
     }
 }
-                    if (jsonEvent != null && jsonEvent.Areas != null && jsonEvent.Areas.Count > 0 && jsonEvent.Areas.ElementAt(0).Locations != null
-                        && jsonEvent.Areas.ElementAt(0).Locations.Count > 0)
+                   
