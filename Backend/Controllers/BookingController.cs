@@ -86,7 +86,6 @@ namespace Backend.Controllers
                                 change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
                                 change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Address);
-                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumnName);
                             }
                         }
@@ -103,7 +102,6 @@ namespace Backend.Controllers
                                 change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
                                 change.OldValue = p.GetValue(toUpdate).ToString();
                                 change.TableName = nameof(Contact);
-                                //change.TypeOfValue = p.PropertyType;
                                 Console.WriteLine("No Update for" + change.ColumnName);
                             }
                         }
@@ -192,7 +190,7 @@ namespace Backend.Controllers
                     _unitOfWork.Dispose();
 
                     //Senden der Bestätigungs E-Mail
-                    //EmailHelper.SendBookingAcceptedMail(jsonBooking);
+                    EmailHelper.SendMailByName("SendBookingAcceptedMail",jsonBooking, jsonBooking.Company.Contact.Email);
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
 

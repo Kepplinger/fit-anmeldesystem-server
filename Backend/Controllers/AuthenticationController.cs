@@ -102,10 +102,9 @@ namespace Backend.Controllers
                 }
             }
 
-
             if (company != null)
             {
-                EmailHelper.SendForgotten(company);
+                EmailHelper.SendMailByName("SendForgotten", company, company.Contact.Email);
                 return new NoContentResult();
             }
             else
@@ -120,9 +119,10 @@ namespace Backend.Controllers
 
         [HttpPost("company/token")]
         [Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetBookingAndCompanyByToken([FromBody] JToken json)
+        public IActionResult BookingLogin([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
+            //Graduate graduate = thi
             Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address,Contact").FirstOrDefault();
 
             if (actCompany == null)
