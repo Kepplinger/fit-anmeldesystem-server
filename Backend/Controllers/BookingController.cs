@@ -168,15 +168,6 @@ namespace Backend.Controllers
                     jsonBooking.Branches = branchjsonBooking;
                     _unitOfWork.Save();
 
-                    List<Resource> resourcejsonBooking = new List<Resource>();
-                    for (int i = 0; i < jsonBooking.Resources.Count(); i++)
-                    {
-                        resourcejsonBooking.Add(_unitOfWork.ResourceRepository.Get(filter: p => p.Id == jsonBooking.Resources.ElementAt(i).Id).FirstOrDefault());
-                        _unitOfWork.ResourceRepository.Update(resourcejsonBooking.ElementAt(i));
-                    }
-                    jsonBooking.Resources = resourcejsonBooking;
-                    _unitOfWork.Save();
-
                     // Get the current active Event (nimmt an das es nur 1 gibt)
                     if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
                     {
@@ -194,14 +185,10 @@ namespace Backend.Controllers
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
-                    foreach (Resource item in jsonBooking.Resources)
+                    foreach (ResourceBooking item in jsonBooking.Resources)
                     {
-                        ResourceBooking rsb = new ResourceBooking();
-                        rsb.FK_Booking = jsonBooking.Id;
-                        rsb.FK_Resource = item.Id;
-                        rsb.Amount = 1;
-                        _unitOfWork.ResourceBookingRepository.Insert(rsb);
-                        _unitOfWork.ResourceRepository.Update(item);
+                        item.FK_Booking = jsonBooking.Id;
+                        _unitOfWork.ResourceBookingRepository.Update(item);
                         _unitOfWork.Save();
                     }
 
