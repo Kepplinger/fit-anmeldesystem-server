@@ -60,7 +60,7 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
-                    b.Property<int?>("EventId");
+                    b.Property<int?>("FK_Event");
 
                     b.Property<string>("GraphicUrl");
 
@@ -70,7 +70,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("FK_Event");
 
                     b.ToTable("Areas");
                 });
@@ -271,6 +271,34 @@ namespace Backend.Migrations
                     b.ToTable("Contacts");
                 });
 
+            modelBuilder.Entity("Backend.Core.Entities.Email", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(25);
+
+                    b.Property<string>("Subject")
+                        .IsRequired();
+
+                    b.Property<string>("Template")
+                        .IsRequired();
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Emails");
+                });
+
             modelBuilder.Entity("Backend.Core.Entities.Event", b =>
                 {
                     b.Property<int>("Id")
@@ -454,9 +482,9 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
                 {
-                    b.HasOne("Backend.Core.Entities.Event")
+                    b.HasOne("Backend.Core.Entities.Event", "Event")
                         .WithMany("Areas")
-                        .HasForeignKey("EventId")
+                        .HasForeignKey("FK_Event")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

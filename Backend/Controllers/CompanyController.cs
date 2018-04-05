@@ -54,8 +54,8 @@ namespace Backend.Controllers
             if (jsonComp != null)
             {
                 Company storeCompany = jsonComp;
-                
-                string finalCode="";
+
+                string finalCode = "";
                 string encoded = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
                 encoded = encoded.Replace("/", "_").Replace("+", "-");
                 encoded = encoded.Substring(0, 12);
@@ -95,7 +95,7 @@ namespace Backend.Controllers
             if (c != null)
             {
                 c.IsPending = false;
-                EmailHelper.isPendingAcceptedCompany(c);
+                EmailHelper.IsPendingAcceptedCompany(c);
                 return new OkResult();
             }
             return new BadRequestResult();
@@ -137,7 +137,7 @@ namespace Backend.Controllers
 
                 try
                 {
-                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id),includeProperties: "Address,Contact").FirstOrDefault();
+                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact").FirstOrDefault();
                     if (jsonCompany.Address.Id != 0)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
@@ -189,7 +189,7 @@ namespace Backend.Controllers
                                 Console.WriteLine("Updated: " + change.ColumnName);
                                 change = new ChangeProtocol();
                             }
-                        
+
                         }
                         _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
                         _unitOfWork.Save();
@@ -203,7 +203,7 @@ namespace Backend.Controllers
                         foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
                         {
                             jsonCompany.RegistrationToken = toUpdate.RegistrationToken;
-                            if (!p.Name.Contains("Timestamp") && p.Name!="FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany) != null && !p.GetValue(jsonCompany).Equals(p.GetValue(toUpdate)))
+                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany) != null && !p.GetValue(jsonCompany).Equals(p.GetValue(toUpdate)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
@@ -240,7 +240,7 @@ namespace Backend.Controllers
                     return new BadRequestObjectResult(error);
                 }
             }
-                
+
         }
 
         [HttpDelete("assign")]

@@ -2,6 +2,8 @@
 using System.Net.Mail;
 using Backend.Core.Entities;
 using System;
+using Backend.Core.Contracts;
+using StoreService.Persistence;
 
 namespace Backend.Utils
 {
@@ -28,20 +30,10 @@ namespace Backend.Utils
             client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
 
             //message config
-            objeto_mail.Subject = "Ihr Firmenantrag wurde eingereicht - ABSLEO HTL Leonding FIT";
+            objeto_mail.Subject = "";
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
             objeto_mail.IsBodyHtml = true;
-
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Ihr Antrag wurde empfangen und wird so schnell wie möglich verarbeitet!</p>" +
-                                             "</body>" +
-                                             "</html>");
             client.SendMailAsync(objeto_mail);
         }
 
@@ -61,7 +53,7 @@ namespace Backend.Utils
             client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
 
             //message config
-            objeto_mail.Subject = "Ein neuer Firmenantrag wurde eingereicht";
+            objeto_mail.Subject = "t";
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress("andi.sakal15@gmail.com"));
             objeto_mail.IsBodyHtml = true;
@@ -78,7 +70,7 @@ namespace Backend.Utils
             client.SendMailAsync(objeto_mail);
         }
 
-        public static void isPendingAcceptedCompany(Company comp)
+        public static void IsPendingAcceptedCompany(Company comp)
         {
             Company company = comp;
             MailMessage objeto_mail = new MailMessage();
@@ -112,7 +104,7 @@ namespace Backend.Utils
             client.SendMailAsync(objeto_mail);
         }
 
-        public static void isPendingDeniedCompany(Company comp)
+        public static void IsPendingDeniedCompany(Company comp)
         {
             Company company = comp;
             MailMessage objeto_mail = new MailMessage();
@@ -259,6 +251,46 @@ namespace Backend.Utils
                                              "</body>" +
                                              "</html>");
             client.SendMailAsync(objeto_mail);
+        }
+
+        public static void InitializeEmails()
+        {
+            Email isPendingGottenCompany = new Email("isPendingGottenCompany",
+                                "Diese Email geht an die Firma und gilt als Bestätigungsemail eines erfolgreichen Firmenantrags",
+                                "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<p>Ihr Antrag wurde empfangen und wird so schnell wie möglich verarbeitet!</p>" +
+                                             "</body>" +
+                                             "</html>",
+                                "Ihr Firmenantrag wurde eingereicht - ABSLEO HTL Leonding FIT");
+
+            Email isPendingGottenAdmin = new Email("isPendingGottenAdmin",
+                                "Diese Email wird dem Admin bei einer neuen Firmenanmeldung versendet",
+                                                   "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                                   "<p>Es wurde ein neuer Antrag eingereicht von der Firma: {{comp.Name}}" +
+                                             "</p></body>" +
+                                             "</html>",
+                               "Ein neuer Firmenantrag wurde eingereich");
+
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                uow.EmailRepository.Insert(isPendingGottenCompany);
+            }
+
+
+
+
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                uow.EmailRepository.Insert(isPendingGottenCompany);
+            }
         }
     }
 }

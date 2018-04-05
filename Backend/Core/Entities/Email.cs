@@ -8,7 +8,7 @@ namespace Backend.Core.Entities
         [Required, MaxLength(25)]
         public string Name { get; set; }
 
-        [Required, MaxLength(300)]
+        [Required]
         public string Description { get; set; }
 
         [Required]
@@ -19,11 +19,12 @@ namespace Backend.Core.Entities
 
         public Email() { }
 
-        public Email(string _name, string _desc, string _template)
+        public Email(string _name, string _desc, string _template, string _subject)
         {
             this.Name = _name;
             this.Description = _desc;
             this.Template = _template;
+            this.Subject = _subject;
         }
     }
 }
