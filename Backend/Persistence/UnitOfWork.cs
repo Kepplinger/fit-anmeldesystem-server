@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using SQLitePCL;
 using Backend.Core.Contracts.Repositories;
+using System.Diagnostics;
 
 namespace StoreService.Persistence
 {
@@ -138,10 +139,15 @@ namespace StoreService.Persistence
 
         public void FillDb()
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            Console.WriteLine("Delete Database ...");
             DeleteDatabase();
+            Console.WriteLine("Make Migrations ...");
             MigrateDatabase();
 
 
+            Console.WriteLine("Search for Companies who want to join FIT ...");
             // Set up Company
             Company company = new Company();
             company.Name = "Kepplinger IT";
@@ -179,6 +185,7 @@ namespace StoreService.Persistence
 
             _context.SaveChanges();
 
+            Console.WriteLine("Search for Resources in the HTL Leonding ...");
             //Set up Ressources
             Resource resource = new Resource();
             resource.Name = "Stuhl";
@@ -269,8 +276,22 @@ namespace StoreService.Persistence
             _context.SaveChanges();
 
 
+            Console.WriteLine("Set up some students in the database ...");
+            Graduate g = new Graduate();
+            g.LastName = "Kepplinger";
+            g.FirstName = "Simon";
+            g.Gender = "M";
+            g.Email = "simon.kepplinger@gmail.com";
+            g.PhoneNumber = "seiFlammenTelNr";
+            g.RegistrationToken = "GraduateToken1";
+            g.Address = address;
+
+            _context.Graduates.Add(g);
+            _context.SaveChanges();
+
             for (int i = 0; i < 11; i++)
             {
+
                 // Set up Booking
                 Booking booking = new Booking();
                 booking.AdditionalInfo = "Here is some Additional Info";
@@ -293,18 +314,13 @@ namespace StoreService.Persistence
                 booking.Homepage = "www.fit.com";
                 booking.Logo = "logo";
                 booking.PhoneNumber = "firmenphonenr";
-
                 booking.Resources = new List<Resource>();
-                Resource rsb = new Resource();
-                rsb.Name = "eine ressource";
-                rsb.Description = "description einer ressource";
-                _context.Resources.Add(rsb);
-                booking.Resources.Add(rsb);
+                booking.Resources.Add(resource);
 
                 ResourceBooking rb = new ResourceBooking();
                 rb.Booking = booking;
-                rb.Amount = 2;
-                rb.Resource = rsb;
+                rb.Amount = 1;
+                rb.Resource = resource;
 
                 _context.ResourceBookings.Add(rb);
 
@@ -312,24 +328,15 @@ namespace StoreService.Persistence
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
             }
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
 
-
-            var res = _context.Bookings
-                              .Include(p => p.Event)
-                              .Include(p => p.Branches)
-                              .Include(p => p.FitPackage)
-                              .Include(p => p.Company)
-                              .Include(p => p.Location)
-                              .Include(p => p.Representatives)
-                              .Include(p => p.Resources);
-
-            foreach (var emp in res)
-            {
-                Console.WriteLine("Testdaten eingefügt! \n" +
-                                  "Firma: " + emp.Company.Name +
-                                  "\nPackage: " + emp.FitPackage.Name +
-                                  "\nAdditionalInfo: " + emp.AdditionalInfo);
-            }
+            string elapsedTime = String.Format("{0:00}:{1:00}.{2:00}",ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
+            Console.WriteLine("=====================================================================================================================");
+            Console.WriteLine("========================= DATABASE OPERATION SUCCESFULL TOOK " + elapsedTime+ " ===============================================");
+            Console.WriteLine("=====================================================================================================================\n\n");
         }
     }
 }
