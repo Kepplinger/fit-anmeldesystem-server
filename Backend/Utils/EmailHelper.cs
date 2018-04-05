@@ -4,22 +4,26 @@ using Backend.Core.Entities;
 using System;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
+using System.Linq;
 
 namespace Backend.Utils
 {
     public static class EmailHelper
     {
-        public static string[] emailTemplates = new
-            string[]{"isPendingGottenCompany", "isPendingGottenAdmin",
-                    "isPendingAcceptedCompany", "isPendingDeniedCompany",
-            "SendBookingAcceptedMail", "SendForgotten", "AssignedCompany"};
 
-        public static void isPendingGottenCompany(Company comp)
+        // isPendingGottenCompany
+        // isPendingGottenAdmin
+        // IsPendingAcceptedCompany
+        // IsPendingDeniedCompany
+        // CompanyAssigned
+        // SendBookingAcceptedMail
+        // SendForgotten
+
+        public static void SendMail(Email mail, object param, string reciever)
         {
-            Company company = comp;
             MailMessage objeto_mail = new MailMessage();
 
-            //client config
+            //client config 
             SmtpClient client = new SmtpClient();
             client.Host = "smtp.gmail.com";
             client.Port = 587;
@@ -29,20 +33,27 @@ namespace Backend.Utils
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
 
-            //message config
-            objeto_mail.Subject = "";
+            //message config 
+            objeto_mail.Subject = mail.Subject;
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
+            objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
             client.SendMailAsync(objeto_mail);
+            objeto_mail.Body = mail.Template;
         }
 
-        public static void isPendingGottenAdmin(Company comp)
+        public static void SendMailByName(String mailName, object param, string reciever)
         {
-            Company company = comp;
+            Email mail;
+
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                mail = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(mailName.ToLower())).FirstOrDefault();
+            }
+
             MailMessage objeto_mail = new MailMessage();
 
-            //client config
+            //Client config
             SmtpClient client = new SmtpClient();
             client.Host = "smtp.gmail.com";
             client.Port = 587;
@@ -52,205 +63,37 @@ namespace Backend.Utils
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
 
-            //message config
-            objeto_mail.Subject = "t";
+            //Message config 
+            objeto_mail.Subject = mail.Subject;
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress("andi.sakal15@gmail.com"));
+            objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
-
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Es wurde ein neuer Antrag eingereicht von der Firma: " + comp.Name +
-                                             "</p></body>" +
-                                             "</html>");
             client.SendMailAsync(objeto_mail);
+            objeto_mail.Body = replaceParamsWithValues(param, mail.Template);
         }
 
-        public static void IsPendingAcceptedCompany(Company comp)
+        public static string replaceParamsWithValues(object param, string template)
         {
-            Company company = comp;
-            MailMessage objeto_mail = new MailMessage();
+            for (int i = 0; i < template.Length - 2; i++)
+            {
+                String paramName = "";
+                String temp = "";
+                if (template.Substring(i, i + 2).Equals("{{") == true)
+                {
+                    // von {{ bis ende kürzen
+                    temp = template.Substring(i + 2, template.Length);
+                    paramName = temp.Substring(i + 2, temp.IndexOf("}}"));
 
-            //client config
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+                    // per reflection value von dem param holen
 
-            //message config
-            objeto_mail.Subject = "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
-            objeto_mail.IsBodyHtml = true;
+                    if (param.GetType().Name.Equals(nameof(Company)))
+                    {
+                        // reflection nested param
+                    }
 
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Ihr Firmenantrag wurde akzeptiert!" +
-                                             "<br>Hier ist der Zugangstoken: " + comp.RegistrationToken +
-                                             "</p></body>" +
-                                             "</html>");
-            client.SendMailAsync(objeto_mail);
-        }
-
-        public static void IsPendingDeniedCompany(Company comp)
-        {
-            Company company = comp;
-            MailMessage objeto_mail = new MailMessage();
-
-            //client config
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
-
-            //message config
-            objeto_mail.Subject = "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress("andi.sakal15@gmail.com"));
-            objeto_mail.IsBodyHtml = true;
-
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Ihr Firmenantrag wurde abgelehnt!" +
-                                             "</p></body>" +
-                                             "</html>");
-            client.SendMailAsync(objeto_mail);
-        }
-
-        public static void SendBookingAcceptedMail(Booking succBooking)
-        {
-            Booking succBooking2 = succBooking;
-            MailMessage objeto_mail = new MailMessage();
-
-            //client config
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
-
-            //message config
-            objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(succBooking.Company.Contact.Email));
-            objeto_mail.IsBodyHtml = true;
-
-            //objeto_mail.Attachments.Add(new Attachment());
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<div>" +
-                                             "<img src=\"https://www.htl-leonding.at/uploads/pics/HTL_Abteilungsicons_mit_Textbalken_rgb_01.jpg\" align=\"left\" alt=\"Abteilung Logo\" height=\"90px\" width=\"360px\"/>" +
-                                             "<img src=\"http://www.htl-leonding.at/fileadmin/config/main/img/htlleondinglogo.png\" align=\"right\" alt=\"HTL Leonding Logo\"/></center>" +
-                                             "<br><br><br><br><br><br><br><br>" +
-                                             "</div>" +
-                                             "<div>" +
-                                             "<p>Sehr geehrte(r) Frau/Herr " + succBooking.Company.Contact.LastName + "," +
-                                             "<br><br>" +
-                                             "Ihre Anmeldung ist bei uns eingetroffen! Wir freuen uns sehr, dass Sie sich dazu entschieden " +
-                                             "haben beim diesjährigen <b>Firmeninformationstag</b> in der <b><a href=\"http://www.htl-leonding.at/\">HTL Leonding</a></b> Ihr Unternehmen vorzustellen!<br>" +
-                                             "</p>" +
-                                             "<p>Bei Fragen oder Anregungen können Sie uns jederzeit unter der Nr.: <a href=\"tel:+439999999\">+43123456789</a> oder per E-Mail <a href=\"mailto:andi.sakal15@gmail.com\">andi.sakal15@gmail.com</a> erreichen" +
-                                             "<br><br>" +
-                                             "<p> Mit freundlichen Grüßen <br><br> FirstName LastName - Ihr Ansprechpartner" +
-                                             "<br><br></div><img src=\"http://www.absleo.at/typo3temp/processed/csm_absleo_logo_ohne_Rahmen_ba0c412e5a.png\" alt=\"ABSLEO Logo\"/>" +
-                                             "</body>" +
-                                             "</html>");
-
-            client.SendMailAsync(objeto_mail);
-
-        }
-
-        public static void SendForgotten(Company comp)
-        {
-            Company company = comp;
-            MailMessage objeto_mail = new MailMessage();
-
-            //client config
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
-
-            //message config
-            objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
-            objeto_mail.IsBodyHtml = true;
-
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Ihr Token: " + comp.RegistrationToken +
-                                             "</body>" +
-                                             "</html>");
-            client.SendMailAsync(objeto_mail);
-        }
-
-        public static void AssignedCompany(Company comp)
-        {
-            Company company = comp;
-            MailMessage objeto_mail = new MailMessage();
-
-            //client config
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
-
-            //message config
-            objeto_mail.Subject = "Bestätigung Ihrer Buchung - ABSLEO HTL Leonding FIT";
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(comp.Contact.Email));
-            objeto_mail.IsBodyHtml = true;
-
-            //template config
-            objeto_mail.Body = string.Format("<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Firma bereits vorhanden wurde " + comp.RegistrationToken +
-                                             "</body>" +
-                                             "</html>");
-            client.SendMailAsync(objeto_mail);
+                }
+            }
+            return "";
         }
 
         public static void InitializeEmails()
@@ -274,22 +117,96 @@ namespace Backend.Utils
                                              "<head>" +
                                              "</head>" +
                                              "<body>" +
-                                                   "<p>Es wurde ein neuer Antrag eingereicht von der Firma: {{comp.Name}}" +
+                                                   "<p>Es wurde ein neuer Antrag eingereicht von der Firma: {{Company.Name}}" +
                                              "</p></body>" +
                                              "</html>",
                                "Ein neuer Firmenantrag wurde eingereich");
 
+
+            Email IsPendingAcceptedCompany = new Email("IsPendingAcceptedCompany",
+                                "Diese Email wird versendet wenn ein Firmenantrag akzeptiert wurde",
+                                                       "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<p>Ihr Firmenantrag wurde akzeptiert!" +
+                                                       "<br>Hier ist der Zugangstoken: {{Company.RegistrationToken}}" +
+                                                       "</p></body>" +
+                                             "</html>",
+                               "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding FIT");
+
+            Email IsPendingDeniedCompany = new Email("IsPendingDeniedCompany",
+                                "Diese Email wird versendet wenn ein Firmenantrag abgelehnt wurde",
+                                                     "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<p>Ihr Firmenantrag wurde abgelehnt!" +
+                                             "</p></body>" +
+                                             "</html>",
+                               "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT");
+
+            Email CompanyAssigned = new Email("CompanyAssigned",
+                                "Diese Email wird an die Firma verschickt wenn es die Firma bereits gibt und Sie dieser zugewiesen wurde",
+                                            "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<p>Firma bereits vorhanden wurde {{Company.RegistrationToken}}" +
+                                             "</body>" +
+                                             "</html>",
+                               "Firma bereits vorhande - ABSLEO HTL Leonding FIT");
+
+            Email SendBookingAcceptedMail = new Email("SendBookingAcceptedMail",
+                                "Diese Email wird an die Firma versendet wenn die FIT-Buchung akzeptiert wurde",
+                                                      "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                             "<div>" +
+                                             "<img src=\"https://www.htl-leonding.at/uploads/pics/HTL_Abteilungsicons_mit_Textbalken_rgb_01.jpg\" align=\"left\" alt=\"Abteilung Logo\" height=\"90px\" width=\"360px\"/>" +
+                                             "<img src=\"http://www.htl-leonding.at/fileadmin/config/main/img/htlleondinglogo.png\" align=\"right\" alt=\"HTL Leonding Logo\"/></center>" +
+                                             "<br><br><br><br><br><br><br><br>" +
+                                             "</div>" +
+                                             "<div>" +
+                                                      "<p>Sehr geehrte(r) Frau/Herr {{Booking.Company.Contact.LastName}}, " +
+                                             "<br><br>" +
+                                             "Ihre Anmeldung ist bei uns eingetroffen! Wir freuen uns sehr, dass Sie sich dazu entschieden " +
+                                             "haben beim diesjährigen <b>Firmeninformationstag</b> in der <b><a href=\"http://www.htl-leonding.at/\">HTL Leonding</a></b> Ihr Unternehmen vorzustellen!<br>" +
+                                             "</p>" +
+                                             "<p>Bei Fragen oder Anregungen können Sie uns jederzeit unter der Nr.: <a href=\"tel:+439999999\">+43123456789</a> oder per E-Mail <a href=\"mailto:andi.sakal15@gmail.com\">andi.sakal15@gmail.com</a> erreichen" +
+                                             "<br><br>" +
+                                             "<p> Mit freundlichen Grüßen <br><br> FirstName LastName - Ihr Ansprechpartner" +
+                                             "<br><br></div><img src=\"http://www.absleo.at/typo3temp/processed/csm_absleo_logo_ohne_Rahmen_ba0c412e5a.png\" alt=\"ABSLEO Logo\"/>" +
+                                             "</body>" +
+                                             "</html>",
+                               "FIT-Buchung wurde akzeptiert - ABSLEO HTL Leonding FIT");
+
+            Email SendForgotten = new Email("SendForgotten",
+                                "Dies ist eine FirmenCode vergessen Email",
+                                            "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                            "<p>Ihr Token: {{Company.RegistrationToken}}" +
+                                             "</body>" +
+                                             "</html>",
+                               "FIT-Anmeldung - ABSLEO HTL Leonding FIT");
+
             using (IUnitOfWork uow = new UnitOfWork())
             {
+                uow.EmailRepository.Insert(CompanyAssigned);
+                uow.EmailRepository.Insert(IsPendingAcceptedCompany);
+                uow.EmailRepository.Insert(IsPendingDeniedCompany);
+                uow.EmailRepository.Insert(isPendingGottenAdmin);
                 uow.EmailRepository.Insert(isPendingGottenCompany);
-            }
-
-
-
-
-            using (IUnitOfWork uow = new UnitOfWork())
-            {
-                uow.EmailRepository.Insert(isPendingGottenCompany);
+                uow.EmailRepository.Insert(SendBookingAcceptedMail);
+                uow.EmailRepository.Insert(SendForgotten);
             }
         }
     }
