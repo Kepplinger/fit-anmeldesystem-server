@@ -52,7 +52,6 @@ namespace Backend.Controllers
             return new BadRequestResult();
         }
 
-
         [HttpPut("revert")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
         public IActionResult revertChange([FromBody] int id)
@@ -91,7 +90,6 @@ namespace Backend.Controllers
                             _unitOfWork.Save();
 
                             return new OkObjectResult(change);
-                            break;
                         case "Company":
                             Company company = _unitOfWork.CompanyRepository.Get(p => p.Id == change.CompanyId, includeProperties: "Address").FirstOrDefault();
 
@@ -105,10 +103,8 @@ namespace Backend.Controllers
                             _unitOfWork.Save();
 
                             return new OkObjectResult(change);
-                            break;
                         default:
                             return new BadRequestResult();
-
                     }
                 }
             }

@@ -7,12 +7,16 @@ using Backend.Utils;
 using StoreService.Persistence;
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Backend.Controllers
 {
+    [Route("api/[controller]")]
+    [Produces("application/json", "application/xml")]
     public class EmailController : Controller
     {
         [HttpGet]
+        [ProducesResponseType(typeof(Email), StatusCodes.Status200OK)]
         public IActionResult GetAllEmail()
         {
             using (IUnitOfWork uow = new UnitOfWork())
@@ -28,7 +32,7 @@ namespace Backend.Controllers
                 }
             }
         }
-        [HttpGet("byName/{paramName}")]
+        [HttpGet("byName")]
         public IActionResult GetEmailByName(string name)
         {
             using (IUnitOfWork uow = new UnitOfWork())
@@ -45,12 +49,12 @@ namespace Backend.Controllers
             }
         }
 
-        [HttpGet("byId/{paramName}")]
-        public IActionResult GetEmailById(long id)
+        [HttpGet("byId/{emailId:int}")]
+        public IActionResult GetEmailById(long emailId)
         {
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                Email email = uow.EmailRepository.Get(m => m.Id == id).FirstOrDefault();
+                Email email = uow.EmailRepository.Get(m => m.Id == emailId).FirstOrDefault();
                 if (email != null)
                 {
                     return new OkObjectResult(email);
