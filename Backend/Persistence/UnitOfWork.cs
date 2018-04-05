@@ -34,6 +34,7 @@ namespace StoreService.Persistence
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         public IGenericRepository<Address> AddressRepository { get; }
+        public IGenericRepository<Email> EmailRepository { get; }
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
@@ -73,6 +74,8 @@ namespace StoreService.Persistence
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
 
             EventRepository = new EventRepository(_context);
+
+            EmailRepository = new GenericRepository<Email>(_context);
 
         }
 

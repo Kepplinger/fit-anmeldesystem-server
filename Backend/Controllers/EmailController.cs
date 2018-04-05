@@ -13,7 +13,5 @@ namespace Backend.Controllers
         {
             return new OkObjectResult(EmailHelper.emailTemplates);
         }
-
-        public void
     }
 }

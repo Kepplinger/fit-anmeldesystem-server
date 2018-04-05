@@ -13,7 +13,7 @@ namespace Backend.Utils
     public class ImageHelper
     {
         /// <summary>
-        /// My utils
+        /// Imaage Utils (for parsing from base64 to image and from image to base64 string)
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
@@ -32,6 +32,8 @@ namespace Backend.Utils
                 dataFormat = ".jpg";
             else if (start.ToLower().Contains("jpeg"))
                 dataFormat = ".jpeg";
+            else if (start.ToLower().Contains("gif"))
+                dataFormat = ".gif";
 
             //Read filepath from appsetting.json
             var builder = new ConfigurationBuilder()
