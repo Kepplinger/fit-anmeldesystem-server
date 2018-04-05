@@ -15,6 +15,8 @@ namespace Backend.Utils
 {
     public class DocumentBuilder
     {
+        private char cchecked ='\u221A';
+        private char unccecked ='\u00A8';
         public const string DOCUMENT_DESTINATION = "./";
 
         private PdfWriter writer;
@@ -26,6 +28,21 @@ namespace Backend.Utils
 
         public string CreatePdfOfBooking(Booking booking)
         {
+            string[] internationalArray = booking.EstablishmentsInt.Split(';');
+            string[] autArray = booking.EstablishmentsAut.Split(';');
+
+            string beautyInternational = "";
+            string beautyNational = "";
+
+            foreach (string tmp in internationalArray)
+            {
+                beautyInternational = beautyInternational + tmp + " ";
+            }
+
+            foreach(string tmp in autArray){
+                beautyNational = beautyNational + tmp + " ";
+            }
+
             string file = DOCUMENT_DESTINATION + $"FIT-Anmeldung_{booking.Company.Name}_{DateTime.Now.ToString("ddMMyyyy")}.pdf";
             writer = new PdfWriter(file);
 
@@ -41,15 +58,143 @@ namespace Backend.Utils
 
             // Initialize document
             Document document = new Document(pdf);
+
+            Image imageHeader = new Image(iText.IO.Image.ImageDataFactory.Create("./Header.png"));
+            imageHeader.ScaleToFit(595,80);
+            imageHeader.SetFixedPosition(0,785);
+
+            Image imageFooter = new Image(iText.IO.Image.ImageDataFactory.Create("./Footer.png"));
+            imageFooter.ScaleToFit(595, 90);
+            imageFooter.SetFixedPosition(0, 0);
+
+            document.Add(imageHeader);
+            document.Add(imageFooter);
+
+            document.Add(
+                new Paragraph(booking.Company.Name)
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetFontSize(30)
+            .SetBold()
+                .SetFont(font).SetMarginTop(50)
+            );
             //Add paragraph to the document
             document.Add(
-                new Paragraph("Anmeldung zum FIT")
+                new Paragraph("Buchungsübersicht zum FIT")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(24)
+                .SetFontSize(20)
                 .SetBold()
                 .SetFont(font)
                 );
 
+
+                Cell cell = new Cell();
+                Table table = new Table(2);
+                table.UseAllAvailableWidth();
+
+            cell.Add(new Paragraph("Stammdaten").SetBold());
+            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.AddCell(cell);
+            cell = new Cell();
+            cell.Add(new Paragraph("").SetBold());
+            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.AddCell(cell);
+            cell = new Cell();
+
+                table.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.WHITE);
+                table.SetFontColor(iText.Kernel.Colors.ColorConstants.BLACK);
+                table.AddCell("Firmen Name");
+                table.AddCell(booking.Company.Name);
+            table.AddCell("Ihr gewähltes Paket");
+            table.AddCell(booking.FitPackage.Name);
+            table.AddCell("Ihr Standplatz");
+            table.AddCell(booking.Location.Number);
+            table.AddCell("Adresse");
+            table.AddCell(booking.Company.Address.Street + "." + booking.Company.Address.StreetNumber + ", " + booking.Company.Address.ZipCode + " " + booking.Company.Address.City);
+
+            table.AddCell("Kontaktperson");
+            table.AddCell(booking.Company.Contact.FirstName + " " + booking.Company.Contact.LastName);
+            table.AddCell(" - Telefonnummer");
+            table.AddCell(booking.Company.Contact.PhoneNumber);
+            table.AddCell(" - Email");
+            table.AddCell(booking.Company.Contact.Email);
+            document.Add(table);
+
+            table = new Table(2);
+            table.UseAllAvailableWidth();
+            table.SetMarginTop(10);
+            cell.Add(new Paragraph("Buchungsdaten").SetBold());
+            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.AddCell(cell);
+            cell = new Cell();
+            cell.Add(new Paragraph("").SetBold());
+            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.AddCell(cell);
+            cell = new Cell();
+
+            Image imageYes = new Image(iText.IO.Image.ImageDataFactory.Create("./checkedcheckbox.png"));
+            imageYes.ScaleToFit(15, 15);
+            Image imageNo = new Image(iText.IO.Image.ImageDataFactory.Create("./checkboxemptry.png"));
+            imageNo.ScaleToFit(18, 18);
+
+
+            table.AddCell("Firmen Telefonnummer");
+            table.AddCell(booking.PhoneNumber);
+            table.AddCell("Firemen Email");
+            table.AddCell(booking.Email);
+            table.AddCell("Firmen Homepage");
+            table.AddCell(booking.Homepage);
+            table.AddCell("Branche");
+            table.AddCell(booking.Branch);
+
+            table.AddCell("Sie vergeben Praktika?");
+            if (booking.ProvidesSummerJob)
+                table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));
+            else
+                table.AddCell(imageNo.SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+            table.AddCell("Sie vergeben Diplomarbeiten?");
+            if (booking.ProvidesThesis)
+                table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));
+            else
+                table.AddCell(imageNo.SetHorizontalAlignment(HorizontalAlignment.CENTER));
+
+            table.AddCell("Standorte Österreich");
+            table.AddCell(booking.EstablishmentsCountAut + ", " + beautyNational);
+            table.AddCell("Standorte International");
+            table.AddCell(booking.EstablishmentsCountInt + ", " + beautyInternational);
+
+
+            document.Add(table);
+
+            table = new Table(2);
+            table.UseAllAvailableWidth();
+            table.SetMarginTop(10);
+            cell.Add(new Paragraph("Kontaktperson für den Fit").SetBold());
+            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.AddCell(cell);
+            cell = new Cell();
+            cell.Add(new Paragraph("").SetBold());
+            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.AddCell(cell);
+            cell = new Cell();
+
+            table.AddCell("Name");
+            table.AddCell(booking.Company.Contact.Gender + " " + booking.Company.Contact.FirstName + " " + booking.Company.Contact.LastName);
+            table.AddCell("Email");
+            table.AddCell(booking.Company.Contact.Email);
+            table.AddCell("Telefonnummer");
+            table.AddCell(booking.Company.Contact.PhoneNumber);
+            document.Add(table);
+
+            document.Close();
+            
+            // ignored by
             Table topTable = new Table(UnitValue.CreatePercentArray(new float[] { 100f }), true);
 
             Table nameAndClassTable = new Table(2, true);
