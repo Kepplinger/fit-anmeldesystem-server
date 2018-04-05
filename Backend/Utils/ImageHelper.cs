@@ -12,7 +12,6 @@ namespace Backend.Utils
 {
     public class ImageHelper
     {
-
         /// <summary>
         /// My utils
         /// </summary>
@@ -58,14 +57,11 @@ namespace Backend.Utils
         public object Base64ToImage(string basestr, string filepath)
         {
             byte[] imageBytes = Convert.FromBase64String(basestr);
-            //MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
-            //ms.Write(imageBytes, 0, imageBytes.Length);
             using (var imageFile = new FileStream(filepath, FileMode.Create))
             {
                 imageFile.Write(imageBytes, 0, imageBytes.Length);
                 imageFile.Flush();
                 return imageFile;
-                //images/name.jpg
             }
         }
         public string GetHash()

@@ -1,11 +1,17 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using Backend.Core.Entities;
+using System;
 
 namespace Backend.Utils
 {
     public static class EmailHelper
     {
+        public static string[] emailTemplates = new
+            string[]{"isPendingGottenCompany", "isPendingGottenAdmin",
+                    "isPendingAcceptedCompany", "isPendingDeniedCompany",
+            "SendBookingAcceptedMail", "SendForgotten", "AssignedCompany"};
+
         public static void isPendingGottenCompany(Company comp)
         {
             Company company = comp;
@@ -221,7 +227,6 @@ namespace Backend.Utils
                                              "</html>");
             client.SendMailAsync(objeto_mail);
         }
-
 
         public static void AssignedCompany(Company comp)
         {
