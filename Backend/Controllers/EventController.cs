@@ -65,9 +65,7 @@ namespace Backend.Controllers
                                 {
                                     if (l.Id > 0)
                                     {
-                                        Location toUpdate = _unitOfWork.LocationRepository.GetById(l.Id);
-                                        toUpdate = l;
-                                        _unitOfWork.LocationRepository.Update(toUpdate);
+                                        _unitOfWork.LocationRepository.Update(l);
                                         _unitOfWork.Save();
                                     }
                                     else
@@ -84,12 +82,12 @@ namespace Backend.Controllers
                                 }
                                 else
                                 {
+                                    area.FK_Event = jsonEvent.Id;
                                     _unitOfWork.AreaRepository.Insert(area);
                                     _unitOfWork.Save();
                                 }
                                 _unitOfWork.Save();
                             }
-                            
                         }
                         _unitOfWork.EventRepository.Update(jsonEvent);
                         _unitOfWork.Save();
@@ -199,7 +197,7 @@ namespace Backend.Controllers
                                        .EventRepository
                                        .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
                                        .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => (s = d.EventDate.Subtract(mynow)) <= (s1=f.EventDate
+                                       .Any(d => (s = d.EventDate.Subtract(mynow)) <= (s1 = f.EventDate
                                        .Subtract(mynow))))
                                        .OrderByDescending(q => q.EventDate.Subtract(mynow))
                                        .FirstOrDefault();
@@ -240,7 +238,7 @@ namespace Backend.Controllers
         public IActionResult GetLatestEvent()
         {
             Event e;
-            if ((e=this.GetCurrentEventLogic()) != null)
+            if ((e = this.GetCurrentEventLogic()) != null)
             {
                 return new OkObjectResult(e);
             }
@@ -251,5 +249,3 @@ namespace Backend.Controllers
         }
     }
 }
-                    if (jsonEvent != null && jsonEvent.Areas != null && jsonEvent.Areas.Count > 0 && jsonEvent.Areas.ElementAt(0).Locations != null
-                        && jsonEvent.Areas.ElementAt(0).Locations.Count > 0)
