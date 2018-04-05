@@ -69,7 +69,8 @@ namespace Backend.Utils
             objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
             client.SendMailAsync(objeto_mail);
-            objeto_mail.Body = replaceParamsWithValues(param, mail.Template);
+            //objeto_mail.Body = replaceParamsWithValues(param, mail.Template);
+            objeto_mail.Body = mail.Template;
         }
 
         public static string replaceParamsWithValues(object param, string template)
@@ -207,6 +208,7 @@ namespace Backend.Utils
                 uow.EmailRepository.Insert(isPendingGottenCompany);
                 uow.EmailRepository.Insert(SendBookingAcceptedMail);
                 uow.EmailRepository.Insert(SendForgotten);
+                uow.Save();
             }
         }
     }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Backend.Core.Contracts;
+using Backend.Utils;
 
 namespace Backend
 {
@@ -18,6 +19,7 @@ namespace Backend
             using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
             {
                 uow.FillDb();
+                EmailHelper.InitializeEmails();
             }
 
             var builder = new ConfigurationBuilder()
