@@ -19,8 +19,7 @@ namespace Backend.Core.Entities
         [JsonIgnore]
         [IgnoreDataMember]
         [ForeignKey("FK_Event")]
-
-        public Event Event { get; set; }
+        public virtual Event Event { get; set; }
 
 
         [Required]
