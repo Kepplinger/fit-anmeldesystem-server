@@ -5,6 +5,7 @@ using System;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
 using System.Linq;
+using System.Reflection;
 
 namespace Backend.Utils
 {
@@ -39,7 +40,7 @@ namespace Backend.Utils
             objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
             client.SendMailAsync(objeto_mail);
-            objeto_mail.Body = mail.Template;
+            //objeto_mail.Body = replaceParamsWithValue(mail.Template, ;
         }
 
         public static void SendMailByName(String mailName, object param, string reciever)
@@ -89,12 +90,36 @@ namespace Backend.Utils
 
                     if (param.GetType().Name.Equals(nameof(Company)))
                     {
-                        // reflection nested param
+                        Company c = new Company();
+                        paramName = paramName.ToLower().Replace("company.","");
+
+                        var variable = GetPropValue(param, paramName);
                     }
 
                 }
             }
             return "";
+        }
+
+        public static Object GetPropValue(this Object obj, String propName)
+        {
+            string[] nameParts = propName.Split('.');
+            if (nameParts.Length == 1)
+            {
+                return obj.GetType().GetProperty(propName).GetValue(obj, null);
+            }
+
+            foreach (String part in nameParts)
+            {
+                if (obj == null) { return null; }
+
+                Type type = obj.GetType();
+                PropertyInfo info = type.GetProperty(part);
+                if (info == null) { return null; }
+
+                obj = info.GetValue(obj, null);
+            }
+            return obj;
         }
 
         public static void InitializeEmails()
