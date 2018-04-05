@@ -15,7 +15,7 @@ namespace Backend.Controllers
     public class GraduateController : Controller
     {
         [HttpPut]
-        public IActionResult updateGraduate(Graduate graduate)
+        public IActionResult updateGraduate([FromBody] Graduate graduate)
         {
             using(IUnitOfWork uow = new UnitOfWork())
             {
@@ -23,6 +23,7 @@ namespace Backend.Controllers
 
                 if (toUpdate != null)
                 {
+                    graduate.RegistrationToken = toUpdate.RegistrationToken;
                     uow.GraduateRepository.Update(graduate);
                     uow.Save();
                     return new OkObjectResult(graduate);
