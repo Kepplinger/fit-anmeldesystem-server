@@ -39,9 +39,19 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-                string error = string.Format("*********************\n\nDbUpdateException Message: {0}\n\n*********************\n\nInnerExceptionMessage: {1}", ex.Message, ex.InnerException.Message);
-                System.Console.WriteLine(error);
-                return new BadRequestObjectResult(error);
+                transaction.Rollback();
+                if (ex.InnerException != null)
+                {
+                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
+                    System.Console.WriteLine(error);
+                    return new BadRequestObjectResult(error);
+                }
+                else
+                {
+                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
+                    System.Console.WriteLine(error);
+                    return new BadRequestObjectResult(error);
+                }
             }
             return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
