@@ -192,7 +192,7 @@ namespace Backend.Controllers
                     _unitOfWork.Dispose();
 
                     //Senden der Bestätigungs E-Mail
-                    EmailHelper.SendBookingAcceptedMail(jsonBooking);
+                    //EmailHelper.SendBookingAcceptedMail(jsonBooking);
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
 

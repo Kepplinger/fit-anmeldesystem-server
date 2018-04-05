@@ -81,8 +81,8 @@ namespace Backend.Controllers
 
                 _unitOfWork.CompanyRepository.Insert(storeCompany);
                 _unitOfWork.Save();
-                EmailHelper.IsPendingGottenAdmin(storeCompany);
-                EmailHelper.IsPendingGottenCompany(storeCompany);
+                //EmailHelper.IsPendingGottenAdmin(storeCompany);
+                //EmailHelper.IsPendingGottenCompany(storeCompany);
                 return new ObjectResult(storeCompany);
             }
             return new BadRequestResult();
@@ -95,7 +95,7 @@ namespace Backend.Controllers
             if (c != null)
             {
                 c.IsPending = false;
-                EmailHelper.IsPendingAcceptedCompany(c);
+                //EmailHelper.IsPendingAcceptedCompany(c);
                 return new OkResult();
             }
             return new BadRequestResult();
@@ -253,12 +253,12 @@ namespace Backend.Controllers
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email))
             {
-                EmailHelper.AssignedCompany(existingCompany);
+                //EmailHelper.AssignedCompany(existingCompany);
             }
             else
             {
-                EmailHelper.AssignedCompany(existingCompany);
-                EmailHelper.AssignedCompany(pendingCompany);
+                //EmailHelper.AssignedCompany(existingCompany);
+                //EmailHelper.AssignedCompany(pendingCompany);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);
