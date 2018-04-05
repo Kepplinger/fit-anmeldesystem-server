@@ -36,6 +36,8 @@ namespace StoreService.Persistence
         public IGenericRepository<Address> AddressRepository { get; }
         public IGenericRepository<Email> EmailRepository { get; }
 
+        public IGenericRepository<Graduate> GraduateRepository { get; }
+
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
         /// </summary>
@@ -77,6 +79,7 @@ namespace StoreService.Persistence
 
             EmailRepository = new GenericRepository<Email>(_context);
 
+            GraduateRepository = new GenericRepository<Graduate>(_context);
         }
 
         /// <summary>

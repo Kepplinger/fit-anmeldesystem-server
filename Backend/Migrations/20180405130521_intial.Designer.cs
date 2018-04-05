@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180405062547_refactor area")]
-    partial class refactorarea
+    [Migration("20180405130521_intial")]
+    partial class intial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,7 +61,7 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
-                    b.Property<int?>("FK_Event");
+                    b.Property<int?>("EventId");
 
                     b.Property<string>("GraphicUrl");
 
@@ -71,7 +71,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Event");
+                    b.HasIndex("EventId");
 
                     b.ToTable("Areas");
                 });
@@ -455,9 +455,9 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
                 {
-                    b.HasOne("Backend.Core.Entities.Event", "Event")
+                    b.HasOne("Backend.Core.Entities.Event")
                         .WithMany("Areas")
-                        .HasForeignKey("FK_Event")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

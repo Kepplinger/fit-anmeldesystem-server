@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180315092126_event_without_picture")]
-    partial class event_without_picture
+    [Migration("20180405131132_email")]
+    partial class email
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,9 +61,9 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
-                    b.Property<int?>("EventId");
+                    b.Property<int?>("FK_Event");
 
-                    b.Property<string>("GraphicURL");
+                    b.Property<string>("GraphicUrl");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -71,7 +71,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("FK_Event");
 
                     b.ToTable("Areas");
                 });
@@ -84,9 +84,26 @@ namespace Backend.Migrations
                     b.Property<string>("AdditionalInfo")
                         .HasMaxLength(500);
 
+                    b.Property<string>("Branch")
+                        .IsRequired()
+                        .HasMaxLength(20);
+
                     b.Property<string>("CompanyDescription");
 
                     b.Property<DateTime>("CreationDate");
+
+                    b.Property<string>("Email")
+                        .IsRequired();
+
+                    b.Property<string>("EstablishmentsAut")
+                        .HasMaxLength(30);
+
+                    b.Property<int>("EstablishmentsCountAut");
+
+                    b.Property<int>("EstablishmentsCountInt");
+
+                    b.Property<string>("EstablishmentsInt")
+                        .HasMaxLength(30);
 
                     b.Property<int>("FK_Company");
 
@@ -96,7 +113,15 @@ namespace Backend.Migrations
 
                     b.Property<int?>("FK_Presentation");
 
+                    b.Property<string>("Homepage")
+                        .IsRequired();
+
                     b.Property<int?>("LocationId");
+
+                    b.Property<string>("Logo");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired();
 
                     b.Property<bool>("ProvidesSummerJob");
 
@@ -176,6 +201,10 @@ namespace Backend.Migrations
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
+                    b.Property<bool>("isAdminChange");
+
+                    b.Property<bool>("isReverted");
+
                     b.HasKey("Id");
 
                     b.ToTable("ChangeProtocols");
@@ -189,8 +218,6 @@ namespace Backend.Migrations
                     b.Property<int>("FK_Address");
 
                     b.Property<int>("FK_Contact");
-
-                    b.Property<int?>("FolderInfoId");
 
                     b.Property<bool>("IsPending");
 
@@ -210,8 +237,6 @@ namespace Backend.Migrations
                     b.HasIndex("FK_Address");
 
                     b.HasIndex("FK_Contact");
-
-                    b.HasIndex("FolderInfoId");
 
                     b.ToTable("Companies");
                 });
@@ -245,6 +270,33 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.Email", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(25);
+
+                    b.Property<string>("Subject")
+                        .IsRequired();
+
+                    b.Property<string>("Template")
+                        .IsRequired();
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Event", b =>
@@ -292,45 +344,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Packages");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.FolderInfo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Branch")
-                        .IsRequired()
-                        .HasMaxLength(20);
-
-                    b.Property<string>("Email")
-                        .IsRequired();
-
-                    b.Property<string>("EstablishmentsAut")
-                        .HasMaxLength(30);
-
-                    b.Property<int>("EstablishmentsCountAut");
-
-                    b.Property<int>("EstablishmentsCountInt");
-
-                    b.Property<string>("EstablishmentsInt")
-                        .HasMaxLength(30);
-
-                    b.Property<string>("Homepage")
-                        .IsRequired();
-
-                    b.Property<string>("Logo");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired();
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FolderInfos");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Location", b =>
@@ -402,7 +415,7 @@ namespace Backend.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<string>("Image")
+                    b.Property<string>("ImageUrl")
                         .IsRequired();
 
                     b.Property<string>("Name")
@@ -469,9 +482,9 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
                 {
-                    b.HasOne("Backend.Core.Entities.Event")
+                    b.HasOne("Backend.Core.Entities.Event", "Event")
                         .WithMany("Areas")
-                        .HasForeignKey("EventId")
+                        .HasForeignKey("FK_Event")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -526,11 +539,6 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Contact", "Contact")
                         .WithMany()
                         .HasForeignKey("FK_Contact")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.FolderInfo", "FolderInfo")
-                        .WithMany()
-                        .HasForeignKey("FolderInfoId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180402150234_booking ref")]
-    partial class bookingref
+    [Migration("20180405130607_refactored area")]
+    partial class refactoredarea
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -61,9 +61,9 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
-                    b.Property<int?>("EventId");
+                    b.Property<int?>("FK_Event");
 
-                    b.Property<string>("GraphicURL");
+                    b.Property<string>("GraphicUrl");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -71,7 +71,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("FK_Event");
 
                     b.ToTable("Areas");
                 });
@@ -455,9 +455,9 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
                 {
-                    b.HasOne("Backend.Core.Entities.Event")
+                    b.HasOne("Backend.Core.Entities.Event", "Event")
                         .WithMany("Areas")
-                        .HasForeignKey("EventId")
+                        .HasForeignKey("FK_Event")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

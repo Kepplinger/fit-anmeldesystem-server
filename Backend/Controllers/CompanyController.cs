@@ -81,8 +81,9 @@ namespace Backend.Controllers
 
                 _unitOfWork.CompanyRepository.Insert(storeCompany);
                 _unitOfWork.Save();
-                //EmailHelper.IsPendingGottenAdmin(storeCompany);
-                //EmailHelper.IsPendingGottenCompany(storeCompany);
+                EmailHelper.SendMailByName("IsPendingGottenCompany", storeCompany, storeCompany.Contact.Email);
+                EmailHelper.SendMailByName("IsPendingGottenAdmin", storeCompany, storeCompany.Contact.Email);
+
                 return new ObjectResult(storeCompany);
             }
             return new BadRequestResult();
@@ -95,7 +96,8 @@ namespace Backend.Controllers
             if (c != null)
             {
                 c.IsPending = false;
-                //EmailHelper.IsPendingAcceptedCompany(c);
+                EmailHelper.SendMailByName("IsPendingAcceptedCompany", c, c.Contact.Email);
+
                 return new OkResult();
             }
             return new BadRequestResult();
@@ -122,7 +124,6 @@ namespace Backend.Controllers
             }
             return new OkObjectResult(pres);
         }
-
 
         [HttpPut]
         [Consumes("application/json")]
@@ -253,12 +254,12 @@ namespace Backend.Controllers
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email))
             {
-                //EmailHelper.AssignedCompany(existingCompany);
+                EmailHelper.SendMailByName("AssignedCompany",existingCompany,existingCompany.Contact.Email);
             }
             else
             {
-                //EmailHelper.AssignedCompany(existingCompany);
-                //EmailHelper.AssignedCompany(pendingCompany);
+                EmailHelper.SendMailByName("AssignedCompany", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("AssignedCompany", pendingCompany, existingCompany.Contact.Email);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);

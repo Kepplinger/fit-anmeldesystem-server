@@ -277,8 +277,7 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(300);
+                        .IsRequired();
 
                     b.Property<string>("Name")
                         .IsRequired()

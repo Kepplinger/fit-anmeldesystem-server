@@ -24,6 +24,8 @@ namespace Backend.Persistence
         public DbSet<Representative> Rerpresentatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
+        public DbSet<Email> Emails { get; set; }
+        public DbSet<Graduate> Graduates { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

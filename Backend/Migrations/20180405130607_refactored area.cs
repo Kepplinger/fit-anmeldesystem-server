@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class refactorarea : Migration
+    public partial class refactoredarea : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

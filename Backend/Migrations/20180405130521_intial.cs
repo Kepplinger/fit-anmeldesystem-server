@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class initial : Migration
+    public partial class intial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,11 +34,16 @@ namespace Backend.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ChangeDate = table.Column<DateTime>(nullable: false),
-                    ColumName = table.Column<string>(nullable: true),
+                    ColumnName = table.Column<string>(nullable: true),
+                    CompanyId = table.Column<int>(nullable: false),
+                    IsPending = table.Column<bool>(nullable: false),
                     NewValue = table.Column<string>(nullable: true),
                     OldValue = table.Column<string>(nullable: true),
+                    RowId = table.Column<int>(nullable: false),
                     TableName = table.Column<string>(nullable: true),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    isAdminChange = table.Column<bool>(nullable: false),
+                    isReverted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,28 +87,6 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FolderInfos",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Branch = table.Column<string>(maxLength: 20, nullable: false),
-                    Email = table.Column<string>(nullable: false),
-                    EstablishmentsAut = table.Column<string>(maxLength: 30, nullable: true),
-                    EstablishmentsCountAut = table.Column<int>(nullable: false),
-                    EstablishmentsCountInt = table.Column<int>(nullable: false),
-                    EstablishmentsInt = table.Column<string>(maxLength: 30, nullable: true),
-                    Homepage = table.Column<string>(nullable: false),
-                    Logo = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: false),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FolderInfos", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Packages",
                 columns: table => new
                 {
@@ -140,28 +123,6 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Areas",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Designation = table.Column<string>(nullable: false),
-                    EventId = table.Column<int>(nullable: true),
-                    GraphicURL = table.Column<string>(nullable: false),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Areas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Areas_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Companies",
                 columns: table => new
                 {
@@ -169,7 +130,6 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     FK_Address = table.Column<int>(nullable: false),
                     FK_Contact = table.Column<int>(nullable: false),
-                    FolderInfoId = table.Column<int>(nullable: true),
                     IsPending = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 30, nullable: false),
                     RegistrationToken = table.Column<string>(nullable: false),
@@ -190,10 +150,26 @@ namespace Backend.Migrations
                         principalTable: "Contacts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Areas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Designation = table.Column<string>(nullable: false),
+                    EventId = table.Column<int>(nullable: true),
+                    GraphicUrl = table.Column<string>(nullable: true),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Areas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Companies_FolderInfos_FolderInfoId",
-                        column: x => x.FolderInfoId,
-                        principalTable: "FolderInfos",
+                        name: "FK_Areas_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -230,13 +206,22 @@ namespace Backend.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AdditionalInfo = table.Column<string>(maxLength: 500, nullable: true),
+                    Branch = table.Column<string>(maxLength: 20, nullable: false),
                     CompanyDescription = table.Column<string>(nullable: true),
-                    CompanyId = table.Column<int>(nullable: false),
                     CreationDate = table.Column<DateTime>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    EstablishmentsAut = table.Column<string>(maxLength: 30, nullable: true),
+                    EstablishmentsCountAut = table.Column<int>(nullable: false),
+                    EstablishmentsCountInt = table.Column<int>(nullable: false),
+                    EstablishmentsInt = table.Column<string>(maxLength: 30, nullable: true),
+                    FK_Company = table.Column<int>(nullable: false),
                     FK_Event = table.Column<int>(nullable: false),
+                    FK_FitPackage = table.Column<int>(nullable: false),
                     FK_Presentation = table.Column<int>(nullable: true),
-                    FitPackageId = table.Column<int>(nullable: true),
+                    Homepage = table.Column<string>(nullable: false),
                     LocationId = table.Column<int>(nullable: true),
+                    Logo = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: false),
                     ProvidesSummerJob = table.Column<bool>(nullable: false),
                     ProvidesThesis = table.Column<bool>(nullable: false),
                     Remarks = table.Column<string>(maxLength: 500, nullable: true),
@@ -247,8 +232,8 @@ namespace Backend.Migrations
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bookings_Companies_CompanyId",
-                        column: x => x.CompanyId,
+                        name: "FK_Bookings_Companies_FK_Company",
+                        column: x => x.FK_Company,
                         principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -259,15 +244,15 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Bookings_Presentations_FK_Presentation",
-                        column: x => x.FK_Presentation,
-                        principalTable: "Presentations",
+                        name: "FK_Bookings_Packages_FK_FitPackage",
+                        column: x => x.FK_FitPackage,
+                        principalTable: "Packages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Bookings_Packages_FitPackageId",
-                        column: x => x.FitPackageId,
-                        principalTable: "Packages",
+                        name: "FK_Bookings_Presentations_FK_Presentation",
+                        column: x => x.FK_Presentation,
+                        principalTable: "Presentations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -284,8 +269,8 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BookingId = table.Column<int>(nullable: true),
                     FK_Branch = table.Column<int>(nullable: true),
-                    FK_Branches = table.Column<int>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
@@ -293,15 +278,15 @@ namespace Backend.Migrations
                 {
                     table.PrimaryKey("PK_Branches", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Branches_Presentations_FK_Branch",
-                        column: x => x.FK_Branch,
-                        principalTable: "Presentations",
+                        name: "FK_Branches_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Branches_Bookings_FK_Branches",
-                        column: x => x.FK_Branches,
-                        principalTable: "Bookings",
+                        name: "FK_Branches_Presentations_FK_Branch",
+                        column: x => x.FK_Branch,
+                        principalTable: "Presentations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -314,7 +299,7 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     BookingId = table.Column<int>(nullable: true),
                     Email = table.Column<string>(nullable: false),
-                    Image = table.Column<string>(nullable: false),
+                    ImageUrl = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
@@ -335,8 +320,8 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BookingId = table.Column<int>(nullable: true),
                     Description = table.Column<string>(nullable: false),
-                    FK_Resources = table.Column<int>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
@@ -344,8 +329,8 @@ namespace Backend.Migrations
                 {
                     table.PrimaryKey("PK_Resources", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Resources_Bookings_FK_Resources",
-                        column: x => x.FK_Resources,
+                        name: "FK_Resources_Bookings_BookingId",
+                        column: x => x.BookingId,
                         principalTable: "Bookings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -385,9 +370,9 @@ namespace Backend.Migrations
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bookings_CompanyId",
+                name: "IX_Bookings_FK_Company",
                 table: "Bookings",
-                column: "CompanyId");
+                column: "FK_Company");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_FK_Event",
@@ -395,14 +380,14 @@ namespace Backend.Migrations
                 column: "FK_Event");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_FK_FitPackage",
+                table: "Bookings",
+                column: "FK_FitPackage");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_FK_Presentation",
                 table: "Bookings",
                 column: "FK_Presentation");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Bookings_FitPackageId",
-                table: "Bookings",
-                column: "FitPackageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_LocationId",
@@ -410,14 +395,14 @@ namespace Backend.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Branches_BookingId",
+                table: "Branches",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Branches_FK_Branch",
                 table: "Branches",
                 column: "FK_Branch");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Branches_FK_Branches",
-                table: "Branches",
-                column: "FK_Branches");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Companies_FK_Address",
@@ -428,11 +413,6 @@ namespace Backend.Migrations
                 name: "IX_Companies_FK_Contact",
                 table: "Companies",
                 column: "FK_Contact");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Companies_FolderInfoId",
-                table: "Companies",
-                column: "FolderInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_AreaId",
@@ -455,9 +435,9 @@ namespace Backend.Migrations
                 column: "FK_Resource");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Resources_FK_Resources",
+                name: "IX_Resources_BookingId",
                 table: "Resources",
-                column: "FK_Resources");
+                column: "BookingId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -484,10 +464,10 @@ namespace Backend.Migrations
                 name: "Companies");
 
             migrationBuilder.DropTable(
-                name: "Presentations");
+                name: "Packages");
 
             migrationBuilder.DropTable(
-                name: "Packages");
+                name: "Presentations");
 
             migrationBuilder.DropTable(
                 name: "Locations");
@@ -497,9 +477,6 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Contacts");
-
-            migrationBuilder.DropTable(
-                name: "FolderInfos");
 
             migrationBuilder.DropTable(
                 name: "Areas");
