@@ -314,18 +314,22 @@ namespace StoreService.Persistence
                 booking.Homepage = "www.fit.com";
                 booking.Logo = "logo";
                 booking.PhoneNumber = "firmenphonenr";
-                booking.Resources = new List<Resource>();
-                booking.Resources.Add(resource);
 
+                _context.Bookings.Add(booking);
+                _context.SaveChanges();
+
+
+                // ressourceBookingCreaten
+                booking.Resources = new List<ResourceBooking>();
                 ResourceBooking rb = new ResourceBooking();
                 rb.Booking = booking;
                 rb.Amount = 1;
                 rb.Resource = resource;
-
                 _context.ResourceBookings.Add(rb);
+                _context.SaveChanges();
 
-
-                _context.Bookings.Add(booking);
+                booking.Resources.Add(rb);
+                _context.Bookings.Update(booking);
                 _context.SaveChanges();
             }
             stopWatch.Stop();
