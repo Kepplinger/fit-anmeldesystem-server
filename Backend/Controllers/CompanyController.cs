@@ -81,8 +81,8 @@ namespace Backend.Controllers
 
                 _unitOfWork.CompanyRepository.Insert(storeCompany);
                 _unitOfWork.Save();
-                EmailHelper.isPendingGottenAdmin(storeCompany);
-                EmailHelper.isPendingGottenCompany(storeCompany);
+                EmailHelper.IsPendingGottenAdmin(storeCompany);
+                EmailHelper.IsPendingGottenCompany(storeCompany);
                 return new ObjectResult(storeCompany);
             }
             return new BadRequestResult();
@@ -112,7 +112,6 @@ namespace Backend.Controllers
                     company = bookings.ElementAt(i).Company,
                     presentation = bookings.ElementAt(i).Presentation,
                 };*/
-
                 var companyPresentations = new
                 {
                     companyName = "company Name: " + i,
