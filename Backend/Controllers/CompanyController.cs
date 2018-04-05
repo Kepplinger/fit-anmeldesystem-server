@@ -242,5 +242,29 @@ namespace Backend.Controllers
             }
                 
         }
+
+        [HttpDelete("assign")]
+        [Consumes("application/json")]
+        public IActionResult CompanyAssign(int pendingCompanyId, int existingCompanyId)
+        {
+
+            Company existingCompany = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
+            Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
+
+
+            if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email))
+            {
+                EmailHelper.AssignedCompany(existingCompany);
+            }
+            else
+            {
+                EmailHelper.AssignedCompany(existingCompany);
+                EmailHelper.AssignedCompany(pendingCompany);
+            }
+
+            _unitOfWork.CompanyRepository.Delete(pendingCompany);
+            _unitOfWork.Save();
+            return new NoContentResult();
+        }
     }
 }
