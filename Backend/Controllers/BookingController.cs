@@ -40,8 +40,7 @@ namespace Backend.Controllers
                 this.Update(jsonBooking);
             else if (jsonBooking != null && jsonBooking.Company.Id == 0)
             {
-                string compImgPath = new ImageHelper().BookingImages(jsonBooking);
-                Console.WriteLine("bilder zum Booking befinden sich unter" + compImgPath);
+                
                 return this.Insert(jsonBooking);
             }
 
@@ -155,6 +154,10 @@ namespace Backend.Controllers
                     _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);
                     _unitOfWork.Save();
 
+                    //Generate Pictures 
+                    string compImgPath = new ImageHelper().BookingImages(jsonBooking);
+                    //Console.WriteLine("bilder zum Booking befinden sich unter" + compImgPath);
+
                     // Get the entity from the DB and give reference to it
                     //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
                     //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
@@ -213,6 +216,9 @@ namespace Backend.Controllers
 
                     transaction.Commit();
                     _unitOfWork.Dispose();
+
+                   
+
 
                     //Senden der Bestätigungs E-Mail
                     EmailHelper.SendMailByName("SendBookingAcceptedMail",jsonBooking, jsonBooking.Company.Contact.Email);
