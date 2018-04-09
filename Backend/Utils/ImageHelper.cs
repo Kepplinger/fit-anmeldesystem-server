@@ -70,5 +70,61 @@ namespace Backend.Utils
         {
             return Guid.NewGuid().ToString();
         }
+
+
+        public string BookingImages(Booking booking)
+        {
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json");
+            var configuration = builder.Build();
+            string filepath = configuration["ImageFilePaths:SakalWindows"];
+            filepath = filepath + booking.Company.Name;
+            string baseurl = configuration["Urls:DefaultUrl"];
+
+            System.IO.Directory.CreateDirectory(filepath);
+
+
+            int logoIndexOf = booking.Logo.IndexOf("base64,");
+            string logoStart = booking.Logo.Substring(0, logoIndexOf);
+            string logoBaseString = booking.Logo.Substring(logoIndexOf + 7);
+            string logoDataFormat = checkDataFormat(logoStart);
+
+            string logoFilePath = filepath + "companyLogo" + logoDataFormat;
+
+            this.Base64ToImage(logoBaseString, logoFilePath);
+
+
+            for (int i = 0; i < booking.Representatives.Count; i++)
+            {
+                int represIndexOf = booking.Representatives[i].ImageUrl.IndexOf("base64,");
+                string represStart = booking.Representatives[i].ImageUrl.Substring(0, logoIndexOf);
+                string represBaseString = booking.Representatives[i].ImageUrl.Substring(logoIndexOf + 7);
+                string represDataFormat = checkDataFormat(represStart);
+                string represFilePath = filepath + "contact" + Convert.ToString(i) + represDataFormat;
+                this.Base64ToImage(represBaseString, represFilePath);
+            }
+
+
+            return baseurl + "/images/" + booking.Company.Name;
+        }
+
+
+
+        public string checkDataFormat(string start)
+        {
+            string dataFormat = String.Empty;
+            if (start.ToLower().Contains("png"))
+                dataFormat = ".png";
+            else if (start.ToLower().Contains("jpg"))
+                dataFormat = ".jpg";
+            else if (start.ToLower().Contains("jpeg"))
+                dataFormat = ".jpeg";
+            else if (start.ToLower().Contains("gif"))
+                dataFormat = ".gif";
+
+
+            return dataFormat;
+        }
     }
 }
