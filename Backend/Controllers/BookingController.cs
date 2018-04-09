@@ -38,7 +38,11 @@ namespace Backend.Controllers
             if (jsonBooking != null && jsonBooking.Company.Id != 0)
                 this.Update(jsonBooking);
             else if (jsonBooking != null && jsonBooking.Company.Id == 0)
+            {
+                string compImgPath = new ImageHelper().BookingImages(jsonBooking);
+                Console.WriteLine("bilder zum Booking befinden sich unter" + compImgPath);
                 return this.Insert(jsonBooking);
+            }
 
             Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
             return new BadRequestObjectResult(jsonBooking);
