@@ -150,9 +150,8 @@ namespace Backend.Controllers
                         {
                             if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
-                                if (jsonCompany.Address != null && toUpdate.Address != null)
+                                if (p != null && jsonCompany.Address != null && toUpdate.Address != null)
                                 {
-
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonCompany.Address).ToString();
@@ -168,7 +167,6 @@ namespace Backend.Controllers
                                 Console.WriteLine("No Update for" + change.ColumnName);
                                 change = new ChangeProtocol();
                                 }
-
                             }
                         }
                         _unitOfWork.AddressRepository.Update(jsonCompany.Address);

@@ -89,10 +89,10 @@ namespace Backend.Controllers
                                 _unitOfWork.Save();
                             }
                         }
-                        _unitOfWork.EventRepository.Update(jsonEvent);
-                        _unitOfWork.Save();
-                        jsonEvent.IsCurrent = eventToUpdate.IsCurrent;
-                        _unitOfWork.EventRepository.Update(jsonEvent);
+                        //_unitOfWork.EventRepository.Update(jsonEvent);
+                        //_unitOfWork.Save();
+                        //jsonEvent.IsCurrent = eventToUpdate.IsCurrent;
+                        //_unitOfWork.EventRepository.Update(jsonEvent);
                         for (int i = 0; i < jsonEvent.Areas.Count; i++)
                         {
                             jsonEvent.Areas.ElementAt(i).FK_Event = jsonEvent.Id;
