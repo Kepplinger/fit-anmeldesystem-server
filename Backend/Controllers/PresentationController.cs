@@ -20,6 +20,18 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
+        public IActionResult Get()
+        {
+            List<Presentation> pres = _unitOfWork.PresentationRepository.Get().ToList<Presentation>();
+            if (pres != null && pres.Count > 0)
+            {
+                return new OkObjectResult(pres);
+            }
+            return new NoContentResult();
+        }
+
         [HttpGet("presentationId:int")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult Get(int presentationId)

@@ -270,12 +270,12 @@ namespace Backend.Controllers
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email))
             {
-                EmailHelper.SendMailByName("AssignedCompany",existingCompany,existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("CompanyAssigned", existingCompany,existingCompany.Contact.Email);
             }
             else
             {
-                EmailHelper.SendMailByName("AssignedCompany", existingCompany, existingCompany.Contact.Email);
-                EmailHelper.SendMailByName("AssignedCompany", pendingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("CompanyAssigned", pendingCompany, existingCompany.Contact.Email);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);

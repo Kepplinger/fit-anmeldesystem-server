@@ -269,5 +269,21 @@ namespace Backend.Controllers
             var bookings = _unitOfWork.BookingRepository.Get(p => p.Company.Id == id);
             return new ObjectResult(bookings);
         }
+
+        /// <response code="200">Returns the available bookings by event id</response>
+        /// <summary>
+        /// Getting all bookings by event id
+        /// </summary>
+        [HttpGet("getBookingByEventId/{id}")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
+        public IActionResult GetBookingByEventId(int id)
+        {
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
+            if (bookings != null && bookings.Count > 0)
+            {
+                return new ObjectResult(bookings);
+            }
+            return new NoContentResult();
+        }
     }
 }

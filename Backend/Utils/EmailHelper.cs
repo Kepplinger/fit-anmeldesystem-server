@@ -41,10 +41,10 @@ namespace Backend.Utils
             objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
             client.SendMailAsync(objeto_mail);
-            //objeto_mail.Body = replaceParamsWithValue(mail.Template, ;
+            objeto_mail.Body = mail.Template;
         }
 
-        public static void SendMailByName(String mailName, object param, string reciever)
+        public static bool SendMailByName(String mailName, object param, string reciever)
         {
             Email mail;
 
@@ -52,32 +52,38 @@ namespace Backend.Utils
             {
                 mail = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(mailName.ToLower())).FirstOrDefault();
             }
-
-            MailMessage objeto_mail = new MailMessage();
-
-            //Client config
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
-
-            //Message config 
-            objeto_mail.Subject = mail.Subject;
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(reciever));
-            objeto_mail.IsBodyHtml = true;
-            if (mailName.Equals("SendBookingAcceptedMail"))
+            if (mail == null)
             {
-                byte[] bytes = System.IO.File.ReadAllBytes("<pdfFile>");
-                objeto_mail.Attachments.Add(new Attachment(new MemoryStream(bytes), ""));
+                return false;
             }
-            client.SendMailAsync(objeto_mail);
-            //objeto_mail.Body = replaceParamsWithValues(param, mail.Template);
-            objeto_mail.Body = mail.Template;
+            else
+            {
+                MailMessage objeto_mail = new MailMessage();
+
+                // Client config
+                SmtpClient client = new SmtpClient();
+                client.Host = "smtp.gmail.com";
+                client.Port = 587;
+                client.Timeout = 10000;
+                client.UseDefaultCredentials = false;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.EnableSsl = true;
+                client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+
+                // Message config 
+                objeto_mail.Subject = mail.Subject;
+                objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
+                objeto_mail.To.Add(new MailAddress(reciever));
+                objeto_mail.IsBodyHtml = true;
+                if (mailName.Equals("SendBookingAcceptedMail"))
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes("<pdfFile>");
+                    objeto_mail.Attachments.Add(new Attachment(new MemoryStream(bytes), ""));
+                }
+                client.SendMailAsync(objeto_mail);
+                objeto_mail.Body = mail.Template;
+                return true;
+            }
         }
 
         public static string replaceParamsWithValues(object param, string template)
