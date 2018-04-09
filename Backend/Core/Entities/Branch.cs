@@ -11,7 +11,8 @@ namespace Backend.Core.Entities
 
 
         [ForeignKey("FK_Presentation")]
-        public Presentation Presentation { get; set; }
+        public virtual Presentation Presentation { get; set; }
 
-        public int FK_Presentation{get; set;}
+        public int? FK_Presentation { get; set; }
+    }
 }

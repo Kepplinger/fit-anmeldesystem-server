@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using Backend.Utils;
 using System.Diagnostics.Contracts;
+using System.Reflection;
 
 namespace Backend.Controllers
 {
@@ -183,15 +184,28 @@ namespace Backend.Controllers
 
                     // Finales Inserten des Booking Repositorys
                     jsonBooking.Resources = null;
-                    _unitOfWork.BookingRepository.Insert(jsonBooking);
+                    Booking insert = jsonBooking;
+
+                    //initialising s with the same values as 
+                    foreach (var property in jsonBooking.GetType().GetProperties())
+                    {
+                        PropertyInfo propertyS = insert.GetType().GetProperty(property.Name);
+                        var value = property.GetValue(jsonBooking, null);
+                        propertyS.SetValue(insert, property.GetValue(jsonBooking, null), null);
+                    }
+
+                    _unitOfWork.BookingRepository.Insert(insert);
                     _unitOfWork.Save();
 
-                    /*foreach (ResourceBooking item in jsonBooking.Resources)
+                    foreach (ResourceBooking item in jsonBooking.Resources)
                     {
-                        item.FK_Booking = jsonBooking.Id;
+                        item.FK_Booking = insert.Id;
                         _unitOfWork.ResourceBookingRepository.Update(item);
                         _unitOfWork.Save();
-                    }*/
+                        _unitOfWork.BookingRepository.Update(insert);
+                        _unitOfWork.Save();
+
+                    }
 
                     transaction.Commit();
                     _unitOfWork.Dispose();

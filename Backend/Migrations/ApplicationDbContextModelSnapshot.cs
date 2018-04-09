@@ -157,7 +157,7 @@ namespace Backend.Migrations
 
                     b.Property<int?>("BookingId");
 
-                    b.Property<int?>("FK_Branch");
+                    b.Property<int?>("FK_Presentation");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -170,7 +170,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("FK_Branch");
+                    b.HasIndex("FK_Presentation");
 
                     b.ToTable("Branches");
                 });
@@ -420,8 +420,6 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500);
 
-                    b.Property<int>("FK_Branch");
-
                     b.Property<string>("FileURL");
 
                     b.Property<bool>("IsAccepted");
@@ -473,8 +471,6 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("BookingId");
-
                     b.Property<string>("Description")
                         .IsRequired();
 
@@ -487,8 +483,6 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId");
-
                     b.ToTable("Resources");
                 });
 
@@ -499,7 +493,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("Amount");
 
-                    b.Property<int>("FK_Booking");
+                    b.Property<int?>("FK_Booking");
 
                     b.Property<int>("FK_Resource");
 
@@ -559,9 +553,9 @@ namespace Backend.Migrations
                         .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Backend.Core.Entities.Presentation")
+                    b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany("Branches")
-                        .HasForeignKey("FK_Branch")
+                        .HasForeignKey("FK_Presentation")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -602,18 +596,10 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Resource", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Booking")
-                        .WithMany("Resources")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("Backend.Core.Entities.ResourceBooking", b =>
                 {
                     b.HasOne("Backend.Core.Entities.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("Resources")
                         .HasForeignKey("FK_Booking")
                         .OnDelete(DeleteBehavior.Restrict);
 
