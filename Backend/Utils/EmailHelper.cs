@@ -6,6 +6,7 @@ using Backend.Core.Contracts;
 using StoreService.Persistence;
 using System.Linq;
 using System.Reflection;
+using System.IO;
 
 namespace Backend.Utils
 {
@@ -69,6 +70,11 @@ namespace Backend.Utils
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
+            if (mailName.Equals("SendBookingAcceptedMail"))
+            {
+                byte[] bytes = System.IO.File.ReadAllBytes("<pdfFile>");
+                objeto_mail.Attachments.Add(new Attachment(new MemoryStream(bytes), ""));
+            }
             client.SendMailAsync(objeto_mail);
             //objeto_mail.Body = replaceParamsWithValues(param, mail.Template);
             objeto_mail.Body = mail.Template;
