@@ -474,6 +474,8 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
+                    b.Property<int?>("FK_Booking");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -482,6 +484,8 @@ namespace Backend.Migrations
                         .ValueGeneratedOnAddOrUpdate();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FK_Booking");
 
                     b.ToTable("Resources");
                 });
@@ -596,10 +600,18 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.ResourceBooking", b =>
+            modelBuilder.Entity("Backend.Core.Entities.Resource", b =>
                 {
                     b.HasOne("Backend.Core.Entities.Booking", "Booking")
                         .WithMany("Resources")
+                        .HasForeignKey("FK_Booking")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.ResourceBooking", b =>
+                {
+                    b.HasOne("Backend.Core.Entities.Booking", "Booking")
+                        .WithMany()
                         .HasForeignKey("FK_Booking")
                         .OnDelete(DeleteBehavior.Restrict);
 

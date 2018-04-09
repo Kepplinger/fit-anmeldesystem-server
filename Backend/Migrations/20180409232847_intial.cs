@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class initial : Migration
+    public partial class intial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -136,21 +136,6 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Presentations", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Resources",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Resources", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -372,6 +357,28 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Resources",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: false),
+                    FK_Booking = table.Column<int>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Resources", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Resources_Bookings_FK_Booking",
+                        column: x => x.FK_Booking,
+                        principalTable: "Bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ResourceBookings",
                 columns: table => new
                 {
@@ -473,6 +480,11 @@ namespace Backend.Migrations
                 name: "IX_ResourceBookings_FK_Resource",
                 table: "ResourceBookings",
                 column: "FK_Resource");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Resources_FK_Booking",
+                table: "Resources",
+                column: "FK_Booking");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -496,10 +508,10 @@ namespace Backend.Migrations
                 name: "ResourceBookings");
 
             migrationBuilder.DropTable(
-                name: "Bookings");
+                name: "Resources");
 
             migrationBuilder.DropTable(
-                name: "Resources");
+                name: "Bookings");
 
             migrationBuilder.DropTable(
                 name: "Companies");

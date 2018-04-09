@@ -207,6 +207,7 @@ namespace StoreService.Persistence
             resource2.Name = "Strom";
             resource2.Description = "Die Firma braucht Strom";
             _context.Resources.Add(resource2);
+            _context.SaveChanges();
 
 
             //Representatives
@@ -265,12 +266,32 @@ namespace StoreService.Persistence
             _context.Branches.Add(bio);
             _context.SaveChanges();
 
+            Location l = new Location();
+            l.Category = "A";
+            l.Number = "31";
+            l.XCoordinate = 1.0;
+            l.XCoordinate = 1.0;
+
+            _context.Locations.Add(l);
+            _context.SaveChanges();
+
+            // AREA
+            Area a = new Area();
+            a.Designation = "Erdgeschoss";
+            a.Locations = new List<Location>();
+            a.Locations.Add(l);
+
+            _context.Areas.Add(a);
+            _context.SaveChanges();
+
             Event e = new Event();
             e.EventDate = DateTime.Now;
             e.RegistrationEnd = DateTime.Now.AddMonths(2);
             e.RegistrationStart = DateTime.Now.AddMonths(-2);
             e.IsLocked = false;
             e.IsCurrent = true;
+            e.Areas = new List<Area>();
+            e.Areas.Add(a);
 
             _context.Events.Add(e);
             _context.SaveChanges();
@@ -320,7 +341,7 @@ namespace StoreService.Persistence
 
 
                 // ressourceBookingCreaten
-                booking.Resources = new List<ResourceBooking>();
+                booking.Resources = new List<Resource>();
                 ResourceBooking rb = new ResourceBooking();
                 rb.Booking = booking;
                 rb.Amount = 1;
@@ -328,7 +349,7 @@ namespace StoreService.Persistence
                 _context.ResourceBookings.Add(rb);
                 _context.SaveChanges();
 
-                booking.Resources.Add(rb);
+                booking.Resources.Add(resource);
                 _context.Bookings.Update(booking);
                 _context.SaveChanges();
             }

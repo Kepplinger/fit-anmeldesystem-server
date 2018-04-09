@@ -151,9 +151,18 @@ namespace Backend.Controllers
                     c.RegistrationToken = Guid.NewGuid().ToString();
                     _unitOfWork.CompanyRepository.Insert(c);
                     _unitOfWork.Save();
-
-                    _unitOfWork.RepresentativeRepository.InsertMany(jsonBooking.Representatives);
-                    _unitOfWork.Save();
+                    for (int i = 0; i < jsonBooking.Representatives.Count; i++)
+                    {
+                        if (jsonBooking.Representatives.ElementAt(i).Id > 0)
+                        {
+                            _unitOfWork.RepresentativeRepository.Update(jsonBooking.Representatives.ElementAt(i));
+                        }
+                        else
+                        {
+                            _unitOfWork.RepresentativeRepository.Insert(jsonBooking.Representatives.ElementAt(i));
+                        }
+                        _unitOfWork.Save();
+                    }
 
                     // Get the entity from the DB and give reference to it
                     //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
@@ -187,28 +196,20 @@ namespace Backend.Controllers
                     }
 
                     // Finales Inserten des Booking Repositorys
-                    jsonBooking.Resources = null;
-                    Booking insert = jsonBooking;
 
-                    //initialising s with the same values as 
-                    foreach (var property in jsonBooking.GetType().GetProperties())
-                    {
-                        PropertyInfo propertyS = insert.GetType().GetProperty(property.Name);
-                        var value = property.GetValue(jsonBooking, null);
-                        propertyS.SetValue(insert, property.GetValue(jsonBooking, null), null);
-                    }
-
-                    _unitOfWork.BookingRepository.Insert(insert);
+                    //Booking insert = jsonBooking;
+                    _unitOfWork.ResourceRepository.InsertMany(jsonBooking.Resources);
+                    _unitOfWork.Save();
+                    _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
-                    foreach (ResourceBooking item in jsonBooking.Resources)
+                    foreach (Resource item in jsonBooking.Resources)
                     {
-                        item.FK_Booking = insert.Id;
-                        _unitOfWork.ResourceBookingRepository.Update(item);
+                        ResourceBooking rsb = new ResourceBooking();
+                        rsb.FK_Booking = jsonBooking.Id;
+                        rsb.FK_Resource = item.Id;
+                        _unitOfWork.ResourceBookingRepository.Update(rsb);
                         _unitOfWork.Save();
-                        _unitOfWork.BookingRepository.Update(insert);
-                        _unitOfWork.Save();
-
                     }
 
                     transaction.Commit();
@@ -292,7 +293,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all bookings by event id
         /// </summary>
-        [HttpGet("getBookingByEventId/{id}")]
+        [HttpGet("/{id}")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingByEventId(int id)
         {

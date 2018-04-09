@@ -95,7 +95,7 @@ namespace Backend.Utils
             this.Base64ToImage(logoBaseString, logoFilePath);
 
 
-            for (int i = 0; i < booking.Representatives.Count; i++)
+            /*for (int i = 0; i < booking.Representatives.Count; i++)
             {
                 int represIndexOf = booking.Representatives[i].ImageUrl.IndexOf("base64,");
                 string represStart = booking.Representatives[i].ImageUrl.Substring(0, logoIndexOf);
@@ -103,7 +103,7 @@ namespace Backend.Utils
                 string represDataFormat = checkDataFormat(represStart);
                 string represFilePath = filepath + "contact" + Convert.ToString(i) + represDataFormat;
                 this.Base64ToImage(represBaseString, represFilePath);
-            }
+            }*/
 
 
             return baseurl + "/images/" + booking.Company.Name;

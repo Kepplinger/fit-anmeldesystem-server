@@ -33,7 +33,7 @@ namespace Backend.Persistence.Repositories
                          .Include(p => p.Representatives)
                          .Include(p => p.Event).ThenInclude(p => p.Areas)
                          .Include(p => p.Event).ThenInclude(p => p.Areas).ThenInclude(p => p.Locations)
-                         .Include(p => p.Resources).ThenInclude(p => p.Resource);
+                         .Include(p => p.Resources);
             if (orderBy != null)
             {
                 return orderBy(query).ToArray();
