@@ -182,15 +182,16 @@ namespace Backend.Controllers
                     }
 
                     // Finales Inserten des Booking Repositorys
+                    jsonBooking.Resources = null;
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
-                    foreach (ResourceBooking item in jsonBooking.Resources)
+                    /*foreach (ResourceBooking item in jsonBooking.Resources)
                     {
                         item.FK_Booking = jsonBooking.Id;
                         _unitOfWork.ResourceBookingRepository.Update(item);
                         _unitOfWork.Save();
-                    }
+                    }*/
 
                     transaction.Commit();
                     _unitOfWork.Dispose();
