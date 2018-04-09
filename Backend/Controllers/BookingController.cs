@@ -278,10 +278,10 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingByEventId(int id)
         {
-            Booking booking = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).FirstOrDefault();
-            if (booking != null)
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
+            if (bookings != null && bookings.Count > 0)
             {
-                return new ObjectResult(booking);
+                return new ObjectResult(bookings);
             }
             return new NoContentResult();
         }

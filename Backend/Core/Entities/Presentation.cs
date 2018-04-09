@@ -5,9 +5,7 @@ namespace Backend.Core.Entities
 {
     public class Presentation : EntityObject
     {
-        [ForeignKey("FK_Branch")]
         public List<Branch> Branches { get; set; }
-        public int FK_Branch { get; set; }
 
         public string RoomNumber { get; set; }
 
