@@ -169,7 +169,7 @@ namespace Backend.Controllers
                                 change = new ChangeProtocol();
                             }
                         }
-                        _unitOfWork.PackageRepository.Update(jsonBooking.FitPackage);
+                        _unitOfWork.PackageRepository.Update(jsonBooking.FitPackage );
                         _unitOfWork.Save();
                     }
 
@@ -230,9 +230,10 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
 
                     }
+                    _unitOfWork.Save();
+                    change = new ChangeProtocol();
 
-
-
+                    transaction.Commit();
 
                     return new OkObjectResult(jsonBooking);
                 }
