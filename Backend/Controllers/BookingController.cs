@@ -40,7 +40,7 @@ namespace Backend.Controllers
                 this.Update(jsonBooking);
             else if (jsonBooking != null && jsonBooking.Company.Id == 0)
             {
-                
+
                 return this.Insert(jsonBooking);
             }
 
@@ -218,11 +218,11 @@ namespace Backend.Controllers
                     transaction.Commit();
                     _unitOfWork.Dispose();
 
-                   
+
 
 
                     //Senden der Bestätigungs E-Mail
-                    EmailHelper.SendMailByName("SendBookingAcceptedMail",jsonBooking, jsonBooking.Company.Contact.Email);
+                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Company.Contact.Email);
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
 
@@ -299,7 +299,7 @@ namespace Backend.Controllers
         /// <summary>
         /// Getting all bookings by event id
         /// </summary>
-        [HttpGet("/{id}")]
+        [HttpGet("event/{id}")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingByEventId(int id)
         {
