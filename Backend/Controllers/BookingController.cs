@@ -326,13 +326,13 @@ namespace Backend.Controllers
                         transaction.Rollback();
                     }
 
-                    //insert ressource bookings
+                    /*//insert ressource bookings
                     foreach (ResourceBooking item in jsonBooking.Resources)
                     {
 
                         _unitOfWork.ResourceBookingRepository.Update(item);
                         _unitOfWork.Save();
-                    }
+                    }*/
                     // Finales Inserten des Booking Repositorys
 
                     //Booking insert = jsonBooking;
