@@ -341,15 +341,15 @@ namespace StoreService.Persistence
 
 
                 // ressourceBookingCreaten
-                booking.Resources = new List<Resource>();
+                booking.Resources = new List<ResourceBooking>();
                 ResourceBooking rb = new ResourceBooking();
                 rb.Booking = booking;
-                rb.Amount = 1;
+                
                 rb.Resource = resource;
                 _context.ResourceBookings.Add(rb);
                 _context.SaveChanges();
 
-                booking.Resources.Add(resource);
+                booking.Resources.Add(rb);
                 _context.Bookings.Update(booking);
                 _context.SaveChanges();
             }

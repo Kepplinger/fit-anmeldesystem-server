@@ -17,7 +17,5 @@ namespace Backend.Core.Entities
         public Resource Resource { get; set; }
         public int FK_Resource { get; set; }
 
-        [Required]
-        public int Amount { get; set; }
     }
 }

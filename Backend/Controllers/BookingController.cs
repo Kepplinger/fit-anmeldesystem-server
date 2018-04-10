@@ -300,6 +300,9 @@ namespace Backend.Controllers
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
 
+                    //adding contact
+                    _unitOfWork.ContactRepository.Insert(jsonBooking.Contact);
+                    _unitOfWork.Save();
 
                     // Fill up the list
                     List<Branch> branchjsonBooking = new List<Branch>();
@@ -323,27 +326,27 @@ namespace Backend.Controllers
                         transaction.Rollback();
                     }
 
+                    //insert ressource bookings
+                    foreach (ResourceBooking item in jsonBooking.Resources)
+                    {
+
+                        _unitOfWork.ResourceBookingRepository.Update(item);
+                        _unitOfWork.Save();
+                    }
                     // Finales Inserten des Booking Repositorys
 
                     //Booking insert = jsonBooking;
-                    _unitOfWork.ResourceRepository.InsertMany(jsonBooking.Resources);
+                    _unitOfWork.ResourceBookingRepository.InsertMany(jsonBooking.Resources);
                     _unitOfWork.Save();
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
-                    foreach (Resource item in jsonBooking.Resources)
-                    {
-                        ResourceBooking rsb = new ResourceBooking();
-                        rsb.FK_Booking = jsonBooking.Id;
-                        rsb.FK_Resource = item.Id;
-                        _unitOfWork.ResourceBookingRepository.Update(rsb);
-                        _unitOfWork.Save();
-                    }
+                 
 
                     transaction.Commit();
                     _unitOfWork.Dispose();
 
-
+                    
 
 
                     //Senden der Bestätigungs E-Mail
@@ -381,7 +384,7 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation").ToList();
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation,Contact").ToList();
             if (bookings != null && bookings.Count > 0)
             {
                 return new OkObjectResult(bookings);
