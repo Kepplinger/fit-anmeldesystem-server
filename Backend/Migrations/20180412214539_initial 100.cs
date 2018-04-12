@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class intial : Migration
+    public partial class initial100 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -139,6 +139,21 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Resources",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Resources", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Graduates",
                 columns: table => new
                 {
@@ -257,6 +272,7 @@ namespace Backend.Migrations
                     EstablishmentsCountInt = table.Column<int>(nullable: false),
                     EstablishmentsInt = table.Column<string>(maxLength: 30, nullable: true),
                     FK_Company = table.Column<int>(nullable: false),
+                    FK_Contact = table.Column<int>(nullable: true),
                     FK_Event = table.Column<int>(nullable: false),
                     FK_FitPackage = table.Column<int>(nullable: false),
                     FK_Presentation = table.Column<int>(nullable: true),
@@ -277,6 +293,12 @@ namespace Backend.Migrations
                         name: "FK_Bookings_Companies_FK_Company",
                         column: x => x.FK_Company,
                         principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Contacts_FK_Contact",
+                        column: x => x.FK_Contact,
+                        principalTable: "Contacts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -357,34 +379,11 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Resources",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(nullable: false),
-                    FK_Booking = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(nullable: false),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Resources", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Resources_Bookings_FK_Booking",
-                        column: x => x.FK_Booking,
-                        principalTable: "Bookings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ResourceBookings",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Amount = table.Column<int>(nullable: false),
                     FK_Booking = table.Column<int>(nullable: true),
                     FK_Resource = table.Column<int>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
@@ -415,6 +414,11 @@ namespace Backend.Migrations
                 name: "IX_Bookings_FK_Company",
                 table: "Bookings",
                 column: "FK_Company");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_FK_Contact",
+                table: "Bookings",
+                column: "FK_Contact");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_FK_Event",
@@ -480,11 +484,6 @@ namespace Backend.Migrations
                 name: "IX_ResourceBookings_FK_Resource",
                 table: "ResourceBookings",
                 column: "FK_Resource");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Resources_FK_Booking",
-                table: "Resources",
-                column: "FK_Booking");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -508,10 +507,10 @@ namespace Backend.Migrations
                 name: "ResourceBookings");
 
             migrationBuilder.DropTable(
-                name: "Resources");
+                name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "Bookings");
+                name: "Resources");
 
             migrationBuilder.DropTable(
                 name: "Companies");

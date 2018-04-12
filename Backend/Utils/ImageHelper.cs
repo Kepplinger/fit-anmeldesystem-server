@@ -1,5 +1,7 @@
-﻿using Backend.Core.Entities;
+﻿using Backend.Core.Contracts;
+using Backend.Core.Entities;
 using Microsoft.Extensions.Configuration;
+using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,42 +76,50 @@ namespace Backend.Utils
 
         public string BookingImages(Booking booking)
         {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json");
-            var configuration = builder.Build();
-            string filepath = configuration["ImageFilePaths:SakalWindows"];
-            filepath = filepath + booking.Company.Name;
-            string baseurl = configuration["Urls:DefaultUrl"];
-
-            System.IO.Directory.CreateDirectory(filepath);
-
-
-            int logoIndexOf = booking.Logo.IndexOf("base64,");
-            string logoStart = booking.Logo.Substring(0, logoIndexOf);
-            string logoBaseString = booking.Logo.Substring(logoIndexOf + 7);
-            string logoDataFormat = checkDataFormat(logoStart);
-
-            string logoFilePath = filepath + "companyLogo" + logoDataFormat;
-
-            this.Base64ToImage(logoBaseString, logoFilePath);
-
-
-            /*for (int i = 0; i < booking.Representatives.Count; i++)
+            if (booking.Logo != null && booking.Logo.Contains("base64,"))
             {
-                int represIndexOf = booking.Representatives[i].ImageUrl.IndexOf("base64,");
-                string represStart = booking.Representatives[i].ImageUrl.Substring(0, logoIndexOf);
-                string represBaseString = booking.Representatives[i].ImageUrl.Substring(logoIndexOf + 7);
-                string represDataFormat = checkDataFormat(represStart);
-                string represFilePath = filepath + "contact" + Convert.ToString(i) + represDataFormat;
-                this.Base64ToImage(represBaseString, represFilePath);
-            }*/
+                Company c = null;
+                using (IUnitOfWork uow = new UnitOfWork())
+                {
+                    c = uow.CompanyRepository.Get(comp => comp.Id == booking.FK_Company).FirstOrDefault();
+                }
+                var builder = new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory())
+                   .AddJsonFile("appsettings.json");
+                var configuration = builder.Build();
+                string filepath = configuration["ImageFilePaths:SakalWindows"];
+                filepath = filepath + c.Name;
+                string baseurl = configuration["Urls:DefaultUrl"];
+
+                System.IO.Directory.CreateDirectory(filepath);
 
 
-            return baseurl + "/images/" + booking.Company.Name;
+
+                int logoIndexOf = booking.Logo.IndexOf("base64,");
+                string logoStart = booking.Logo.Substring(0, logoIndexOf);
+                string logoBaseString = booking.Logo.Substring(logoIndexOf + 7);
+                string logoDataFormat = checkDataFormat(logoStart);
+
+                string logoFilePath = filepath + "companyLogo" + logoDataFormat;
+
+                this.Base64ToImage(logoBaseString, logoFilePath);
+
+
+                /*for (int i = 0; i < booking.Representatives.Count; i++)
+                {
+                    int represIndexOf = booking.Representatives[i].ImageUrl.IndexOf("base64,");
+                    string represStart = booking.Representatives[i].ImageUrl.Substring(0, logoIndexOf);
+                    string represBaseString = booking.Representatives[i].ImageUrl.Substring(logoIndexOf + 7);
+                    string represDataFormat = checkDataFormat(represStart);
+                    string represFilePath = filepath + "contact" + Convert.ToString(i) + represDataFormat;
+                    this.Base64ToImage(represBaseString, represFilePath);
+                }*/
+
+
+                return baseurl + "/images/" + c.Name;
+            }
+            else return "noImageAdded";
         }
-
-
 
         public string checkDataFormat(string start)
         {

@@ -266,6 +266,17 @@ namespace StoreService.Persistence
             _context.Branches.Add(bio);
             _context.SaveChanges();
 
+            Presentation p = new Presentation();
+            p.Branches = new List<Branch>();
+            p.Branches.Add(it);
+            p.Description = "zad mi nimma";
+            p.IsAccepted = false;
+            p.RoomNumber = "nrofroom";
+            p.Title = "title";
+            p.FileURL = "http://";
+
+            _context.Presentations.Add(p);
+            _context.SaveChanges();
             Location l = new Location();
             l.Category = "A";
             l.Number = "31";

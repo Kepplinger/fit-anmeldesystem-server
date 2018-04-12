@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180409232847_intial")]
-    partial class intial
+    [Migration("20180412214539_initial 100")]
+    partial class initial100
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -107,6 +107,8 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_Company");
 
+                    b.Property<int?>("FK_Contact");
+
                     b.Property<int>("FK_Event");
 
                     b.Property<int>("FK_FitPackage");
@@ -139,6 +141,8 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FK_Company");
+
+                    b.HasIndex("FK_Contact");
 
                     b.HasIndex("FK_Event");
 
@@ -475,8 +479,6 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
-                    b.Property<int?>("FK_Booking");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -486,8 +488,6 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Booking");
-
                     b.ToTable("Resources");
                 });
 
@@ -495,8 +495,6 @@ namespace Backend.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Amount");
 
                     b.Property<int?>("FK_Booking");
 
@@ -528,6 +526,11 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Company", "Company")
                         .WithMany()
                         .HasForeignKey("FK_Company")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("FK_Contact")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Event", "Event")
@@ -601,18 +604,10 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Backend.Core.Entities.Resource", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Booking", "Booking")
-                        .WithMany("Resources")
-                        .HasForeignKey("FK_Booking")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
             modelBuilder.Entity("Backend.Core.Entities.ResourceBooking", b =>
                 {
                     b.HasOne("Backend.Core.Entities.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("Resources")
                         .HasForeignKey("FK_Booking")
                         .OnDelete(DeleteBehavior.Restrict);
 
