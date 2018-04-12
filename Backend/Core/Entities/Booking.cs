@@ -70,6 +70,7 @@ namespace Backend.Core.Entities
 
         public int EstablishmentsCountAut { get; set; }
 
+        [ForeignKey("FK_Contact")]
         public Contact Contact { get; set; }
 
         [MaxLength(30)]

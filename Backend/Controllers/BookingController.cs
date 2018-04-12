@@ -36,13 +36,10 @@ namespace Backend.Controllers
         public IActionResult Create([FromBody] Booking jsonBooking)
         {
 
-            if (jsonBooking != null && jsonBooking.Company.Id != 0)
+            if (jsonBooking != null && this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault() != null)
                 this.Update(jsonBooking);
-            else if (jsonBooking != null && jsonBooking.Company.Id == 0)
-            {
-
+            else if (jsonBooking != null)
                 return this.Insert(jsonBooking);
-            }
 
             Console.WriteLine("Bad Request 400: Possible Problem Json Serialization: " + jsonBooking.ToString());
             return new BadRequestObjectResult(jsonBooking);
@@ -259,56 +256,34 @@ namespace Backend.Controllers
         [NonAction]
         public IActionResult Insert(Booking jsonBooking)
         {
-
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
                 try
                 {
-                    // Insert new Company and Booking ----------------------
-                    _unitOfWork.AddressRepository.Insert(jsonBooking.Company.Address);
-                    _unitOfWork.Save();
-
-                    _unitOfWork.ContactRepository.Insert(jsonBooking.Company.Contact);
-                    _unitOfWork.Save();
-
-                    Company c = jsonBooking.Company;
-                    c.RegistrationToken = Guid.NewGuid().ToString();
-                    _unitOfWork.CompanyRepository.Insert(c);
-                    _unitOfWork.Save();
                     for (int i = 0; i < jsonBooking.Representatives.Count; i++)
                     {
                         if (jsonBooking.Representatives.ElementAt(i).Id > 0)
-                        {
                             _unitOfWork.RepresentativeRepository.Update(jsonBooking.Representatives.ElementAt(i));
-                        }
                         else
-                        {
                             _unitOfWork.RepresentativeRepository.Insert(jsonBooking.Representatives.ElementAt(i));
-                        }
                         _unitOfWork.Save();
                     }
 
                     //Generate Pictures 
                     string compImgPath = new ImageHelper().BookingImages(jsonBooking);
-                    //Console.WriteLine("bilder zum Booking befinden sich unter" + compImgPath);
-
-                    // Get the entity from the DB and give reference to it
-                    //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
-                    //jsonBooking.Location = _unitOfWork.LocationRepository.Get(filter: p => p.Id == jsonBooking.Location.Id).FirstOrDefault();
-                    //_unitOfWork.Save();
+                    jsonBooking.Logo = compImgPath;
 
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
-                    _unitOfWork.Save();
-
-                    //adding contact
-                    _unitOfWork.ContactRepository.Insert(jsonBooking.Contact);
                     _unitOfWork.Save();
 
                     // Fill up the list
                     List<Branch> branchjsonBooking = new List<Branch>();
                     for (int i = 0; i < jsonBooking.Branches.Count(); i++)
                     {
-                        branchjsonBooking.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == jsonBooking.Branches.ElementAt(i).Id).FirstOrDefault());
+                        if (branchjsonBooking.ElementAt(i).Id > 0)
+                            _unitOfWork.BranchRepository.Update(jsonBooking.Branches.ElementAt(i));
+                        else 
+                            branchjsonBooking.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == jsonBooking.Branches.ElementAt(i).Id).FirstOrDefault());
                     }
                     jsonBooking.Branches = branchjsonBooking;
                     _unitOfWork.Save();
@@ -326,36 +301,32 @@ namespace Backend.Controllers
                         transaction.Rollback();
                     }
 
-                    /*//insert ressource bookings
-                    foreach (ResourceBooking item in jsonBooking.Resources)
-                    {
+                    ResourceBooking bk = new ResourceBooking();
 
-                        _unitOfWork.ResourceBookingRepository.Update(item);
-                        _unitOfWork.Save();
-                    }*/
-                    // Finales Inserten des Booking Repositorys
-
-                    //Booking insert = jsonBooking;
-                    _unitOfWork.ResourceBookingRepository.InsertMany(jsonBooking.Resources);
-                    _unitOfWork.Save();
+                    bk.FK_Resource = jsonBooking.Resources.ElementAt(0).FK_Resource;
+                    jsonBooking.Resources = null;
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
-                 
+                    jsonBooking.Resources = new List<ResourceBooking>();
+                    bk.FK_Booking = jsonBooking.Id;
+
+                    _unitOfWork.ResourceBookingRepository.Insert(bk);
+                    _unitOfWork.Save();
+
+                    jsonBooking.Location.isOccupied = true;
+                    _unitOfWork.LocationRepository.Update(jsonBooking.Location);
+                    _unitOfWork.Save();
 
                     transaction.Commit();
                     _unitOfWork.Dispose();
 
-                    
-
-
                     //Senden der Bestätigungs E-Mail
-                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Company.Contact.Email);
+                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
 
                     return new OkObjectResult(jsonBooking);
-
                 }
                 catch (DbUpdateException ex)
                 {
@@ -386,13 +357,9 @@ namespace Backend.Controllers
         {
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation,Contact").ToList();
             if (bookings != null && bookings.Count > 0)
-            {
                 return new OkObjectResult(bookings);
-            }
             else
-            {
                 return new NoContentResult();
-            }
         }
 
         /// <response code="200">Returning Booking by id</response>
