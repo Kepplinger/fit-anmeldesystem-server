@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Backend.Persistence
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
 
         public DbSet<Address> Addresses { get; set; }
@@ -26,7 +27,7 @@ namespace Backend.Persistence
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
         public DbSet<Email> Emails { get; set; }
         public DbSet<Graduate> Graduates { get; set; }
-
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var builder = new ConfigurationBuilder()

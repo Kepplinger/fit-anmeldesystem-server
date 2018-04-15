@@ -7,6 +7,9 @@ using StoreService.Persistence;
 using Swashbuckle.AspNetCore.Swagger;
 //using RazorLight;
 using System;
+using Backend.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Backend.Persistence;
 
 namespace Backend
 {
@@ -21,13 +24,17 @@ namespace Backend
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            services.Configure<IdentityOptions>(options => {});
+            
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v2", new Info { Title = "FIT Anmelde System - V2.0", Version = "v2" });
             });
+
 
         }
 
@@ -40,7 +47,7 @@ namespace Backend
             {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             });
-
+            app.UseAuthentication();
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
