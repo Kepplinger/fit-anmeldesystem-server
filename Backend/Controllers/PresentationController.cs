@@ -33,20 +33,20 @@ namespace Backend.Controllers
         }
 
 
-        [HttpGet("{eventId:int")]
-        [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
-        public IActionResult GetByEvent(int eventID)
-        {
-            //List<Presentation> pres = _unitOfWork.BookingRepository.Get(p => p.Id == eventID).Select(f => f.Pre).ToList<Presentation>();
-            if (pres != null && pres.Count > 0)
-            {
-                return new OkObjectResult(pres);
-            }
-            return new NoContentResult();
-        }
+        //[HttpGet("{eventId:int")]
+        //[ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
+        //public IActionResult GetByEvent(int eventID)
+        //{
+        //    List<Presentation> pres = _unitOfWork.BookingRepository.Get(p => p.Id == eventID).Select(f => f.Pre).ToList<Presentation>();
+        //    if (pres != null && pres.Count > 0)
+        //    {
+        //        return new OkObjectResult(pres);
+        //    }
+        //    return new NoContentResult();
+        //}
 
         
-    }
+
 
     [HttpGet("presentationId:int")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
