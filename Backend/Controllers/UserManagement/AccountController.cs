@@ -1,8 +1,10 @@
-﻿using Backend.Core.Entities;
+﻿using Backend.Core.Contracts;
+using Backend.Core.Entities;
 using Backend.Core.Entities.UserManagement;
 using Backend.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +16,14 @@ namespace Backend.Controllers.UserManagement
 
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _appDbContext;
+        private IUnitOfWork uow;
+        ApplicationDbContext _appDbContext;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public AccountController(UserManager<IdentityUser> userManager, ApplicationDbContext appDbContext)
+        public AccountController(UserManager<IdentityUser> userManager, IUnitOfWork uow)
         {
             _userManager = userManager;
-            _appDbContext = appDbContext;
+            this.uow = uow;
         }
 
         // POST api/accounts
@@ -37,7 +40,7 @@ namespace Backend.Controllers.UserManagement
 
             if (!result.Succeeded) return new BadRequestObjectResult(result);
 
-            await _appDbContext.SaveChangesAsync();
+            uow.Save();
 
             return new OkObjectResult("Account created");
         }

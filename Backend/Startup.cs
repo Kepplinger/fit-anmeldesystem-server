@@ -10,11 +10,21 @@ using System;
 using Backend.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Backend.Persistence;
+using Backend.Core.Entities.UserManagement;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Backend.Controllers.UserManagement;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Backend
 {
     public class Startup
     {
+        //aus einer text file laden ode enviroment variable und zufällige zeichenkette (secretkey)
+        private const string SecretKey = "needtogetthisfromenvironment";
+        private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -24,15 +34,53 @@ namespace Backend
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-            services.Configure<IdentityOptions>(options => {});
-            
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddUserManager<UserManager<IdentityUser>>();
+            services.Configure<IdentityOptions>(options => { });
+            services.AddSingleton<IJwtFactory, JwtFactory>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireClaim("rol", "admin"));
+                //options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).
+
+            });
+            //services.AddAuthentication(o => {
+            //    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    o.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //}).AddJwtBearer();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options => {
+                        options.TokenValidationParameters =
+                             new TokenValidationParameters
+                             {
+                                 ValidateIssuer = false,
+                                 ValidateAudience = false,
+                                 ValidateLifetime = true,
+                                 ValidateIssuerSigningKey = true,
+
+                                IssuerSigningKey = _signingKey
+                             };
+                    });
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v2", new Info { Title = "FIT Anmelde System - V2.0", Version = "v2" });
+            });
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            var configuration = builder.Build();
+            string connectionString = configuration["Urls:ServerUrl"];
+
+            // Configure JwtIssuerOptions
+            services.Configure<JwtIssuerOptions>(options =>
+            {
+                options.Issuer = "FIT-Backend";
+                options.Audience = connectionString;
+                options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
             });
 
 

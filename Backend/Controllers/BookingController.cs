@@ -10,9 +10,11 @@ using System.Collections.Generic;
 using Backend.Utils;
 using System.Diagnostics.Contracts;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class BookingController : Controller

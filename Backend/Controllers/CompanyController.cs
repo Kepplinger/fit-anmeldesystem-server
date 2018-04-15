@@ -1,6 +1,7 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Backend.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
