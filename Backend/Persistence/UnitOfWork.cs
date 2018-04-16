@@ -37,6 +37,7 @@ namespace StoreService.Persistence
         public IGenericRepository<Address> AddressRepository { get; }
         public IGenericRepository<Email> EmailRepository { get; }
 
+        public IGenericRepository<Tag> TagRepository { get; }
         public IGenericRepository<Graduate> GraduateRepository { get; }
 
         /// <summary>

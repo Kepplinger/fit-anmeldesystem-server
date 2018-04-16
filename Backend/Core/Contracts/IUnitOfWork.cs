@@ -26,6 +26,7 @@ namespace Backend.Core.Contracts
         IGenericRepository<ChangeProtocol> ChangeRepository { get; }
         IGenericRepository<Email> EmailRepository { get; }
         IGenericRepository<Graduate> GraduateRepository { get; }
+        IGenericRepository<Tag> TagRepository { get; }
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>

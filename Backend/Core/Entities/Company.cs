@@ -24,5 +24,10 @@ namespace Backend.Core.Entities
         [Required, JsonIgnore]
         public string RegistrationToken { get; set; }
 
+        public double MemberPaymentAmount { get; set; }
+
+        public int MemberSince { get; set; }
+
+        public int MemberStatus { get; set; } // 0 nichts, 1 interessiert, 2 kla, 3 groß
     }
 }
