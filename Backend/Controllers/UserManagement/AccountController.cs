@@ -19,6 +19,7 @@ namespace Backend.Controllers.UserManagement
         private IUnitOfWork uow;
         ApplicationDbContext _appDbContext;
         private readonly UserManager<IdentityUser> _userManager;
+       
 
         public AccountController(UserManager<IdentityUser> userManager, IUnitOfWork uow)
         {

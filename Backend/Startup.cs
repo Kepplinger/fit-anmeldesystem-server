@@ -17,6 +17,7 @@ using Backend.Controllers.UserManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace Backend
 {
@@ -34,7 +35,7 @@ namespace Backend
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddUserManager<UserManager<IdentityUser>>();
@@ -42,7 +43,7 @@ namespace Backend
             services.AddSingleton<IJwtFactory, JwtFactory>();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin", policy => policy.RequireClaim("rol", "admin"));
+                options.AddPolicy(nameof(IdentityUser), policy => policy.RequireClaim("rol", "admin"));
                 //options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).
 
             });
@@ -104,6 +105,25 @@ namespace Backend
             });
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
+
+
+        }
+
+        private async void createRoles(IServiceProvider provider)
+        {
+
+            using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    IdentityRole newRole = new IdentityRole() { Name = "Admin" };
+                    await roleManager.CreateAsync(newRole);
+                    await roleManager.AddClaimAsync(newRole, new Claim("rol", "admin"));
+                }
+
+            }
         }
     }
 }

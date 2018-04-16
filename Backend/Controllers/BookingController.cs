@@ -11,10 +11,10 @@ using Backend.Utils;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class BookingController : Controller
@@ -354,6 +354,7 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
         [HttpGet]
+        [Authorize(Policy = nameof(IdentityUser))]
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
