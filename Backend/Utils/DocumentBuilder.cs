@@ -18,7 +18,7 @@ namespace Backend.Utils
     {
         private char cchecked ='\u221A';
         private char unccecked ='\u00A8';
-        public const string DOCUMENT_DESTINATION = "./";
+        public const string DOCUMENT_DESTINATION = "./Pdfs";
 
         private PdfWriter writer;
 
@@ -55,18 +55,18 @@ namespace Backend.Utils
                 .SetCreator("FIT Anmelde-System")
                 .SetTitle($"Anmeldung zum FIT");
 
-            string fontPath = "./Roboto-Regular.ttf";
+            string fontPath = "./ImagesPdf/Roboto-Regular.ttf";
 
             PdfFont font = PdfFontFactory.CreateFont(fontPath, iText.IO.Font.PdfEncodings.IDENTITY_H, true);
 
             // Initialize document
             Document document = new Document(pdf);
 
-            Image imageHeader = new Image(iText.IO.Image.ImageDataFactory.Create("./Header.png"));
+            Image imageHeader = new Image(iText.IO.Image.ImageDataFactory.Create("./ImagesPdf/Header.png"));
             imageHeader.ScaleToFit(595,80);
             imageHeader.SetFixedPosition(0,785);
 
-            Image imageFooter = new Image(iText.IO.Image.ImageDataFactory.Create("./Footer.png"));
+            Image imageFooter = new Image(iText.IO.Image.ImageDataFactory.Create("./ImagesPdf/Footer.png"));
             imageFooter.ScaleToFit(595, 90);
             imageFooter.SetFixedPosition(0, 0);
 
@@ -93,7 +93,7 @@ namespace Backend.Utils
                 Cell cell = new Cell();
                 Table table = new Table(2);
                 table.UseAllAvailableWidth();
-
+            float[] fuck = { 0, 123, 255, 100 };
             cell.Add(new Paragraph("Stammdaten").SetBold());
             cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
@@ -138,9 +138,9 @@ namespace Backend.Utils
             table.AddCell(cell);
             cell = new Cell();
 
-            Image imageYes = new Image(iText.IO.Image.ImageDataFactory.Create("./checkedcheckbox.png"));
+            Image imageYes = new Image(iText.IO.Image.ImageDataFactory.Create("./ImagesPdf/checkedcheckbox.png"));
             imageYes.ScaleToFit(15, 15);
-            Image imageNo = new Image(iText.IO.Image.ImageDataFactory.Create("./checkboxemptry.png"));
+            Image imageNo = new Image(iText.IO.Image.ImageDataFactory.Create("./ImagesPdf/checkboxemptry.png"));
             imageNo.ScaleToFit(18, 18);
 
 
@@ -152,6 +152,11 @@ namespace Backend.Utils
             table.AddCell(booking.Homepage);
             table.AddCell("Branche");
             table.AddCell(booking.Branch);
+
+            table.AddCell("Standorte Österreich");
+            table.AddCell(booking.EstablishmentsCountAut + ", " + beautyNational);
+            table.AddCell("Standorte International");
+            table.AddCell(booking.EstablishmentsCountInt + ", " + beautyInternational);
 
             table.AddCell("Sie vergeben Praktika?");
             if (booking.ProvidesSummerJob)
@@ -165,10 +170,12 @@ namespace Backend.Utils
             else
                 table.AddCell(imageNo.SetHorizontalAlignment(HorizontalAlignment.CENTER));
 
-            table.AddCell("Standorte Österreich");
-            table.AddCell(booking.EstablishmentsCountAut + ", " + beautyNational);
-            table.AddCell("Standorte International");
-            table.AddCell(booking.EstablishmentsCountInt + ", " + beautyInternational);
+            foreach(Branch branch in booking.Branches){
+                table.AddCell("Sie vergeben "+branch.Name+"?");
+                    table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));
+            }
+
+      
 
 
             document.Add(table);
