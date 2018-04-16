@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,6 +18,8 @@ namespace Backend.Core.Entities
         [ForeignKey("FK_Contact"), Required]
         public Contact Contact { get; set; }
         public int FK_Contact { get; set; }
+
+        public List<Tag> tags { get; set; }
 
         [Required]
         public bool IsPending { get; set; }
