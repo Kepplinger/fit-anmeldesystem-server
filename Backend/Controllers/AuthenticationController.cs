@@ -117,12 +117,12 @@ namespace Backend.Controllers
             }
         }
 
-        [HttpPost("company/token")]
+        [HttpPost("token")]
         [Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult BookingLogin([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Graduate actGraduate = this._unitOfWork.GraduateRepository.Get(g => g.RegistrationToken.Equals(token)).FirstOrDefault();
+            Graduate actGraduate = this._unitOfWork.GraduateRepository.Get(g => g.RegistrationToken.Equals(token), includeProperties: "Address").FirstOrDefault();
 
             if (actGraduate != null)
             {

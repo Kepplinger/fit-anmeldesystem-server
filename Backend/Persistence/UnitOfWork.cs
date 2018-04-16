@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using SQLitePCL;
 using Backend.Core.Contracts.Repositories;
+using System.Diagnostics;
 
 namespace StoreService.Persistence
 {
@@ -138,10 +139,15 @@ namespace StoreService.Persistence
 
         public void FillDb()
         {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            Console.WriteLine("Delete Database ...");
             DeleteDatabase();
+            Console.WriteLine("Make Migrations ...");
             MigrateDatabase();
 
 
+            Console.WriteLine("Search for Companies who want to join FIT ...");
             // Set up Company
             Company company = new Company();
             company.Name = "Kepplinger IT";
@@ -179,6 +185,7 @@ namespace StoreService.Persistence
 
             _context.SaveChanges();
 
+            Console.WriteLine("Search for Resources in the HTL Leonding ...");
             //Set up Ressources
             Resource resource = new Resource();
             resource.Name = "Stuhl";
@@ -200,6 +207,7 @@ namespace StoreService.Persistence
             resource2.Name = "Strom";
             resource2.Description = "Die Firma braucht Strom";
             _context.Resources.Add(resource2);
+            _context.SaveChanges();
 
 
             //Representatives
@@ -258,19 +266,64 @@ namespace StoreService.Persistence
             _context.Branches.Add(bio);
             _context.SaveChanges();
 
+            Presentation p = new Presentation();
+            p.Branches = new List<Branch>();
+            p.Branches.Add(it);
+            p.Description = "zad mi nimma";
+            p.IsAccepted = false;
+            p.RoomNumber = "nrofroom";
+            p.Title = "title";
+            p.FileURL = "http://";
+
+            _context.Presentations.Add(p);
+            _context.SaveChanges();
+            Location l = new Location();
+            l.Category = "A";
+            l.Number = "31";
+            l.XCoordinate = 1.0;
+            l.XCoordinate = 1.0;
+
+            _context.Locations.Add(l);
+            _context.SaveChanges();
+
+            // AREA
+            Area a = new Area();
+            a.Designation = "Erdgeschoss";
+            a.Locations = new List<Location>();
+            a.Locations.Add(l);
+
+            _context.Areas.Add(a);
+            _context.SaveChanges();
+
             Event e = new Event();
             e.EventDate = DateTime.Now;
             e.RegistrationEnd = DateTime.Now.AddMonths(2);
             e.RegistrationStart = DateTime.Now.AddMonths(-2);
             e.IsLocked = false;
             e.IsCurrent = true;
+            e.Areas = new List<Area>();
+            e.Areas.Add(a);
 
             _context.Events.Add(e);
             _context.SaveChanges();
 
 
+            Console.WriteLine("Set up some students in the database ...");
+            Graduate g = new Graduate();
+            g.LastName = "Kepplinger";
+            g.FirstName = "Simon";
+            g.Gender = "M";
+            g.Email = "simon.kepplinger@gmail.com";
+            g.PhoneNumber = "seiFlammenTelNr";
+            g.RegistrationToken = "GraduateToken1";
+            g.Address = address;
+
+            _context.Graduates.Add(g);
+            _context.SaveChanges();
+
             for (int i = 0; i < 11; i++)
             {
+
                 // Set up Booking
                 Booking booking = new Booking();
                 booking.AdditionalInfo = "Here is some Additional Info";
@@ -294,42 +347,32 @@ namespace StoreService.Persistence
                 booking.Logo = "logo";
                 booking.PhoneNumber = "firmenphonenr";
 
-                booking.Resources = new List<Resource>();
-                Resource rsb = new Resource();
-                rsb.Name = "eine ressource";
-                rsb.Description = "description einer ressource";
-                _context.Resources.Add(rsb);
-                booking.Resources.Add(rsb);
-
-                ResourceBooking rb = new ResourceBooking();
-                rb.Booking = booking;
-                rb.Amount = 2;
-                rb.Resource = rsb;
-
-                _context.ResourceBookings.Add(rb);
-
-
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
+
+
+                // ressourceBookingCreaten
+                booking.Resources = new List<ResourceBooking>();
+                ResourceBooking rb = new ResourceBooking();
+                rb.Booking = booking;
+                
+                rb.Resource = resource;
+                _context.ResourceBookings.Add(rb);
+                _context.SaveChanges();
+
+                booking.Resources.Add(rb);
+                _context.Bookings.Update(booking);
+                _context.SaveChanges();
             }
+            stopWatch.Stop();
+            TimeSpan ts = stopWatch.Elapsed;
 
-
-            var res = _context.Bookings
-                              .Include(p => p.Event)
-                              .Include(p => p.Branches)
-                              .Include(p => p.FitPackage)
-                              .Include(p => p.Company)
-                              .Include(p => p.Location)
-                              .Include(p => p.Representatives)
-                              .Include(p => p.Resources);
-
-            foreach (var emp in res)
-            {
-                Console.WriteLine("Testdaten eingefügt! \n" +
-                                  "Firma: " + emp.Company.Name +
-                                  "\nPackage: " + emp.FitPackage.Name +
-                                  "\nAdditionalInfo: " + emp.AdditionalInfo);
-            }
+            string elapsedTime = String.Format("{0:00}:{1:00}.{2:00}",ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+            Console.WriteLine("RunTime " + elapsedTime);
+            Console.WriteLine("=====================================================================================================================");
+            Console.WriteLine("========================= DATABASE OPERATION SUCCESFULL TOOK " + elapsedTime+ " ===============================================");
+            Console.WriteLine("=====================================================================================================================\n\n");
         }
     }
 }

@@ -39,7 +39,6 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-                transaction.Rollback();
                 if (ex.InnerException != null)
                 {
                     String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;

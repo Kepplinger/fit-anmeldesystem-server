@@ -51,11 +51,12 @@ namespace Backend.Controllers
                 if (jsonEvent.Id > 0)
                 {
                     Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == jsonEvent.Id, includeProperties: "Areas").FirstOrDefault();
-                    jsonEvent.IsCurrent = eventToUpdate.IsCurrent;
                     if (eventToUpdate != null)
                     {
-                        foreach (Area area in jsonEvent.Areas)
+                        int cnt = jsonEvent.Areas.Count;
+                        for (int i = 0; i < cnt; i++)
                         {
+                            Area area = jsonEvent.Areas.ElementAt(i);
                             if (area.GraphicUrl.Contains("base64,"))
                             {
                                 string filename = new ImageHelper().ImageParsing(area);
@@ -88,7 +89,16 @@ namespace Backend.Controllers
                                 _unitOfWork.Save();
                             }
                         }
-                        _unitOfWork.EventRepository.Update(jsonEvent);
+                        //_unitOfWork.EventRepository.Update(jsonEvent);
+                        //_unitOfWork.Save();
+                        //jsonEvent.IsCurrent = eventToUpdate.IsCurrent;
+                        //_unitOfWork.EventRepository.Update(jsonEvent);
+                        for (int i = 0; i < jsonEvent.Areas.Count; i++)
+                        {
+                            jsonEvent.Areas.ElementAt(i).FK_Event = jsonEvent.Id;
+                            _unitOfWork.EventRepository.Update(jsonEvent);
+                            _unitOfWork.Save();
+                        }
                         _unitOfWork.Save();
                         return new OkObjectResult(jsonEvent);
                     }

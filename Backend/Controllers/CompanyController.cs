@@ -54,6 +54,10 @@ namespace Backend.Controllers
             if (jsonComp != null)
             {
                 Company storeCompany = jsonComp;
+                if (jsonComp.Address.Addition == null)
+                {
+                    jsonComp.Address.Addition = "";
+                }
 
                 string finalCode = "";
                 string encoded = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
@@ -146,6 +150,8 @@ namespace Backend.Controllers
                         {
                             if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
                             {
+                                if (p != null && jsonCompany.Address != null && toUpdate.Address != null)
+                                {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonCompany.Address).ToString();
@@ -160,6 +166,7 @@ namespace Backend.Controllers
                                 _unitOfWork.Save();
                                 Console.WriteLine("No Update for" + change.ColumnName);
                                 change = new ChangeProtocol();
+                                }
                             }
                         }
                         _unitOfWork.AddressRepository.Update(jsonCompany.Address);
@@ -263,12 +270,12 @@ namespace Backend.Controllers
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email))
             {
-                EmailHelper.SendMailByName("AssignedCompany",existingCompany,existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("CompanyAssigned", existingCompany,existingCompany.Contact.Email);
             }
             else
             {
-                EmailHelper.SendMailByName("AssignedCompany", existingCompany, existingCompany.Contact.Email);
-                EmailHelper.SendMailByName("AssignedCompany", pendingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByName("CompanyAssigned", pendingCompany, existingCompany.Contact.Email);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);

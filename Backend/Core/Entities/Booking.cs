@@ -26,7 +26,7 @@ namespace Backend.Core.Entities
         [Required]
         public List<Representative> Representatives { get; set; }
 
-        public List<Resource> Resources { get; set; }
+        public List<ResourceBooking> Resources { get; set; }
 
         [Required]
         public bool isAccepted { get; set; }
@@ -69,6 +69,9 @@ namespace Backend.Core.Entities
         public string EstablishmentsInt { get; set; }
 
         public int EstablishmentsCountAut { get; set; }
+
+        [ForeignKey("FK_Contact")]
+        public Contact Contact { get; set; }
 
         [MaxLength(30)]
         public string EstablishmentsAut { get; set; }

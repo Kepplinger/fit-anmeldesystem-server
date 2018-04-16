@@ -10,6 +10,7 @@ using iText.Kernel.Font;
 using iText.Layout.Borders;
 using System.IO;
 using Backend.Core.Entities;
+using iText.Kernel.Colors;
 
 namespace Backend.Utils
 {
@@ -28,6 +29,8 @@ namespace Backend.Utils
 
         public string CreatePdfOfBooking(Booking booking)
         {
+            Color myColor = new DeviceRgb(0, 123, 255);
+
             string[] internationalArray = booking.EstablishmentsInt.Split(';');
             string[] autArray = booking.EstablishmentsAut.Split(';');
 
@@ -92,12 +95,12 @@ namespace Backend.Utils
                 table.UseAllAvailableWidth();
             float[] fuck = { 0, 123, 255, 100 };
             cell.Add(new Paragraph("Stammdaten").SetBold());
-            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
             table.AddCell(cell);
             cell = new Cell();
             cell.Add(new Paragraph("").SetBold());
-            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
             table.AddCell(cell);
             cell = new Cell();
@@ -125,12 +128,12 @@ namespace Backend.Utils
             table.UseAllAvailableWidth();
             table.SetMarginTop(10);
             cell.Add(new Paragraph("Buchungsdaten").SetBold());
-            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
             table.AddCell(cell);
             cell = new Cell();
             cell.Add(new Paragraph("").SetBold());
-            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
             table.AddCell(cell);
             cell = new Cell();
@@ -181,12 +184,12 @@ namespace Backend.Utils
             table.UseAllAvailableWidth();
             table.SetMarginTop(10);
             cell.Add(new Paragraph("Kontaktperson für den Fit").SetBold());
-            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
             table.AddCell(cell);
             cell = new Cell();
             cell.Add(new Paragraph("").SetBold());
-            cell.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.BLUE);
+            cell.SetBackgroundColor(myColor);
             cell.SetFontColor(iText.Kernel.Colors.ColorConstants.WHITE);
             table.AddCell(cell);
             cell = new Cell();
