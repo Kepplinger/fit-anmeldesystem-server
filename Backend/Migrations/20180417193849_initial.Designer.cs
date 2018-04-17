@@ -11,8 +11,8 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180412214539_initial 100")]
-    partial class initial100
+    [Migration("20180417193849_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -113,14 +113,16 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_FitPackage");
 
+                    b.Property<int?>("FK_Location");
+
                     b.Property<int?>("FK_Presentation");
 
                     b.Property<string>("Homepage")
                         .IsRequired();
 
-                    b.Property<int?>("LocationId");
-
                     b.Property<string>("Logo");
+
+                    b.Property<string>("PdfFilePath");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired();
@@ -148,9 +150,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("FK_FitPackage");
 
-                    b.HasIndex("FK_Presentation");
+                    b.HasIndex("FK_Location");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("FK_Presentation");
 
                     b.ToTable("Bookings");
                 });
@@ -224,6 +226,12 @@ namespace Backend.Migrations
                     b.Property<int>("FK_Contact");
 
                     b.Property<bool>("IsPending");
+
+                    b.Property<double>("MemberPaymentAmount");
+
+                    b.Property<int>("MemberSince");
+
+                    b.Property<int>("MemberStatus");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -513,6 +521,187 @@ namespace Backend.Migrations
                     b.ToTable("ResourceBookings");
                 });
 
+            modelBuilder.Entity("Backend.Core.Entities.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CompanyId");
+
+                    b.Property<bool>("IsArchive");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Tag");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ClaimType");
+
+                    b.Property<string>("ClaimValue");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AccessFailedCount");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("EmailConfirmed");
+
+                    b.Property<bool>("LockoutEnabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("PasswordHash");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<string>("SecurityStamp");
+
+                    b.Property<bool>("TwoFactorEnabled");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ClaimType");
+
+                    b.Property<string>("ClaimValue");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider");
+
+                    b.Property<string>("ProviderKey");
+
+                    b.Property<string>("ProviderDisplayName");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<string>("RoleId");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<string>("LoginProvider");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens");
+                });
+
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
                 {
                     b.HasOne("Backend.Core.Entities.Event", "Event")
@@ -543,14 +732,14 @@ namespace Backend.Migrations
                         .HasForeignKey("FK_FitPackage")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Backend.Core.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("FK_Location")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany()
                         .HasForeignKey("FK_Presentation")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -615,6 +804,59 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("FK_Resource")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.Tag", b =>
+                {
+                    b.HasOne("Backend.Core.Entities.Company")
+                        .WithMany("tags")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

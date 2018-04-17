@@ -520,6 +520,28 @@ namespace Backend.Migrations
                     b.ToTable("ResourceBookings");
                 });
 
+            modelBuilder.Entity("Backend.Core.Entities.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CompanyId");
+
+                    b.Property<bool>("IsArchive");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Tag");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -780,6 +802,14 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("FK_Resource")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.Tag", b =>
+                {
+                    b.HasOne("Backend.Core.Entities.Company")
+                        .WithMany("tags")
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

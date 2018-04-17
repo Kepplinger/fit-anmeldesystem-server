@@ -370,7 +370,6 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
         [HttpGet]
-        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
@@ -414,6 +413,7 @@ namespace Backend.Controllers
         /// Getting all bookings by event id
         /// </summary>
         [HttpGet("event/{id}")]
+        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingByEventId(int id)
         {

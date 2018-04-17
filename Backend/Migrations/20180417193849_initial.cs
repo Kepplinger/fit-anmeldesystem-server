@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class initial100 : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,6 +25,45 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Addresses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,6 +219,112 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    RoleId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
+                    ProviderDisplayName = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    RoleId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Companies",
                 columns: table => new
                 {
@@ -188,6 +333,9 @@ namespace Backend.Migrations
                     FK_Address = table.Column<int>(nullable: false),
                     FK_Contact = table.Column<int>(nullable: false),
                     IsPending = table.Column<bool>(nullable: false),
+                    MemberPaymentAmount = table.Column<double>(nullable: false),
+                    MemberSince = table.Column<int>(nullable: false),
+                    MemberStatus = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 30, nullable: false),
                     RegistrationToken = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
@@ -227,6 +375,28 @@ namespace Backend.Migrations
                         name: "FK_Areas_Events_FK_Event",
                         column: x => x.FK_Event,
                         principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tag",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CompanyId = table.Column<int>(nullable: true),
+                    IsArchive = table.Column<bool>(nullable: false),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tag", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tag_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -275,10 +445,11 @@ namespace Backend.Migrations
                     FK_Contact = table.Column<int>(nullable: true),
                     FK_Event = table.Column<int>(nullable: false),
                     FK_FitPackage = table.Column<int>(nullable: false),
+                    FK_Location = table.Column<int>(nullable: true),
                     FK_Presentation = table.Column<int>(nullable: true),
                     Homepage = table.Column<string>(nullable: false),
-                    LocationId = table.Column<int>(nullable: true),
                     Logo = table.Column<string>(nullable: true),
+                    PdfFilePath = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: false),
                     ProvidesSummerJob = table.Column<bool>(nullable: false),
                     ProvidesThesis = table.Column<bool>(nullable: false),
@@ -314,15 +485,15 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Bookings_Presentations_FK_Presentation",
-                        column: x => x.FK_Presentation,
-                        principalTable: "Presentations",
+                        name: "FK_Bookings_Locations_FK_Location",
+                        column: x => x.FK_Location,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Bookings_Locations_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Locations",
+                        name: "FK_Bookings_Presentations_FK_Presentation",
+                        column: x => x.FK_Presentation,
+                        principalTable: "Presentations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -411,6 +582,45 @@ namespace Backend.Migrations
                 column: "FK_Event");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_FK_Company",
                 table: "Bookings",
                 column: "FK_Company");
@@ -431,14 +641,14 @@ namespace Backend.Migrations
                 column: "FK_FitPackage");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Bookings_FK_Location",
+                table: "Bookings",
+                column: "FK_Location");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_FK_Presentation",
                 table: "Bookings",
                 column: "FK_Presentation");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Bookings_LocationId",
-                table: "Bookings",
-                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Branches_BookingId",
@@ -484,10 +694,30 @@ namespace Backend.Migrations
                 name: "IX_ResourceBookings_FK_Resource",
                 table: "ResourceBookings",
                 column: "FK_Resource");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tag_CompanyId",
+                table: "Tag",
+                column: "CompanyId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
             migrationBuilder.DropTable(
                 name: "Branches");
 
@@ -507,6 +737,15 @@ namespace Backend.Migrations
                 name: "ResourceBookings");
 
             migrationBuilder.DropTable(
+                name: "Tag");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Bookings");
 
             migrationBuilder.DropTable(
@@ -519,10 +758,10 @@ namespace Backend.Migrations
                 name: "Packages");
 
             migrationBuilder.DropTable(
-                name: "Presentations");
+                name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "Locations");
+                name: "Presentations");
 
             migrationBuilder.DropTable(
                 name: "Addresses");
