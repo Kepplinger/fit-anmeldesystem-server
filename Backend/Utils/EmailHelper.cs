@@ -96,8 +96,8 @@ namespace Backend.Utils
                     }
                     
                 }
+                objeto_mail.Body = replaceParamsWithValues(new Company(), mail.Template);
                 client.SendMailAsync(objeto_mail);
-                objeto_mail.Body = mail.Template;
                 return true;
             }
         }
@@ -106,13 +106,18 @@ namespace Backend.Utils
         {
             for (int i = 0; i < template.Length - 2; i++)
             {
-                String paramName = "";
-                String temp = "";
-                if (template.Substring(i, i + 2).Equals("{{") == true)
+                string paramName = "";
+                string temp = "";
+                if (i == 569)
+                {
+                    Console.WriteLine();
+                }
+                string checker = template.Substring(i, 2);
+                if (checker.Equals("{{") == true)
                 {
                     // von {{ bis ende kürzen
-                    temp = template.Substring(i + 2, template.Length);
-                    paramName = temp.Substring(i + 2, temp.IndexOf("}}"));
+                    temp = template.Substring(i + 2);
+                    paramName = temp.Substring(i + 2, );
 
                     // per reflection value von dem param holen
 
@@ -125,6 +130,7 @@ namespace Backend.Utils
                     }
 
                 }
+                checker = "";
             }
             return "";
         }

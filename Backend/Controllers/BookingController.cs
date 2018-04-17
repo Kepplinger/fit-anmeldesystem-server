@@ -260,6 +260,8 @@ namespace Backend.Controllers
             {
                 try
                 {
+                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
+
                     for (int i = 0; i < jsonBooking.Representatives.Count; i++)
                     {
                         if (jsonBooking.Representatives.ElementAt(i).Id > 0)

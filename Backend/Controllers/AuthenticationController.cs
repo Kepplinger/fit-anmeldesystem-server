@@ -145,7 +145,7 @@ namespace Backend.Controllers
             }
 
             // Get Booking
-            Booking lastBooking = this._unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).FirstOrDefault();
+            List<Booking> lastBooking = _unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).ToList();
 
             // If there is no last Booking send just Company
             if (lastBooking == null)
@@ -158,11 +158,11 @@ namespace Backend.Controllers
             }
             else
             {
-                if (lastBooking.Event.IsCurrent)
+                if (lastBooking.ElementAt(0).Event.IsCurrent)
                 {
                     var booking = new
                     {
-                        currentBooking = lastBooking
+                        currentBooking = lastBooking.ElementAt(0)
                     };
                     return new OkObjectResult(booking);
                 }
