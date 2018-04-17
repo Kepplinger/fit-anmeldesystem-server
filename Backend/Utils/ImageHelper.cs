@@ -95,6 +95,7 @@ namespace Backend.Utils
 
 
 
+
                 int logoIndexOf = booking.Logo.IndexOf("base64,");
                 string logoStart = booking.Logo.Substring(0, logoIndexOf);
                 string logoBaseString = booking.Logo.Substring(logoIndexOf + 7);
