@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180417173531_pdf file for booking")]
+    partial class pdffileforbooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,12 +113,12 @@ namespace Backend.Migrations
 
                     b.Property<int>("FK_FitPackage");
 
-                    b.Property<int?>("FK_Location");
-
                     b.Property<int?>("FK_Presentation");
 
                     b.Property<string>("Homepage")
                         .IsRequired();
+
+                    b.Property<int?>("LocationId");
 
                     b.Property<string>("Logo");
 
@@ -149,9 +150,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("FK_FitPackage");
 
-                    b.HasIndex("FK_Location");
-
                     b.HasIndex("FK_Presentation");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Bookings");
                 });
@@ -572,14 +573,14 @@ namespace Backend.Migrations
                         .HasForeignKey("FK_FitPackage")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Backend.Core.Entities.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("FK_Location")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany()
                         .HasForeignKey("FK_Presentation")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
