@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
+    //[Authorize(Roles = "Admin")]
     [Produces("application/json", "application/xml")]
     public class BookingController : Controller
     {
@@ -354,7 +355,7 @@ namespace Backend.Controllers
         /// </summary>
         /// <response code="200">Returns all available Bookings</response>
         [HttpGet]
-        [Authorize(Policy = nameof(IdentityUser))]
+        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {

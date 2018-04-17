@@ -35,10 +35,10 @@ namespace Backend
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
             services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddUserManager<UserManager<IdentityUser>>();
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders().AddUserManager<UserManager<IdentityUser>>();
             services.Configure<IdentityOptions>(options => { });
             services.AddSingleton<IJwtFactory, JwtFactory>();
             services.AddAuthorization(options =>
@@ -52,7 +52,8 @@ namespace Backend
             //    o.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             //}).AddJwtBearer();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options => {
+                    .AddJwtBearer(options =>
+                    {
                         options.TokenValidationParameters =
                              new TokenValidationParameters
                              {
@@ -61,7 +62,7 @@ namespace Backend
                                  ValidateLifetime = true,
                                  ValidateIssuerSigningKey = true,
 
-                                IssuerSigningKey = _signingKey
+                                 IssuerSigningKey = _signingKey
                              };
                     });
             services.AddMvc();
@@ -87,7 +88,7 @@ namespace Backend
 
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider provider)
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
@@ -106,6 +107,7 @@ namespace Backend
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
+            createRoles(provider);
 
         }
 

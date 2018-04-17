@@ -38,6 +38,7 @@ namespace Backend.Controllers.UserManagement
 
             
             var result = await _userManager.CreateAsync(registered.User, registered.RegistrationPassword);
+            await _userManager.AddToRoleAsync(registered.User, "Admin");
 
             if (!result.Succeeded) return new BadRequestObjectResult(result);
 
