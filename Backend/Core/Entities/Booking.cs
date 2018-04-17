@@ -76,5 +76,7 @@ namespace Backend.Core.Entities
         [MaxLength(30)]
         public string EstablishmentsAut { get; set; }
 
+        public string PdfFilePath { get; set; }
+
     }
 }

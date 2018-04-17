@@ -77,8 +77,24 @@ namespace Backend.Utils
                 objeto_mail.IsBodyHtml = true;
                 if (mailName.Equals("SendBookingAcceptedMail"))
                 {
-                    //byte[] bytes = System.IO.File.ReadAllBytes("<pdfFile>");
-                    //objeto_mail.Attachments.Add(new Attachment(new MemoryStream(bytes), ""));
+                    if (param is Booking)
+                    {
+                        string file;
+
+                        Booking booking = param as Booking;
+
+                        using (IUnitOfWork uow = new UnitOfWork())
+                        {
+                            Booking boo = uow.BookingRepository.GetById(booking.Id);
+                            file = boo.PdfFilePath;
+
+                        }
+
+                        byte[] bytes = System.IO.File.ReadAllBytes(file);
+                        objeto_mail.Attachments.Add(new Attachment(new MemoryStream(bytes), ""));
+
+                    }
+                    
                 }
                 client.SendMailAsync(objeto_mail);
                 objeto_mail.Body = mail.Template;

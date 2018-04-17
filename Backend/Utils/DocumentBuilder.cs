@@ -11,6 +11,8 @@ using iText.Layout.Borders;
 using System.IO;
 using Backend.Core.Entities;
 using iText.Kernel.Colors;
+using Backend.Core.Contracts;
+using StoreService.Persistence;
 
 namespace Backend.Utils
 {
@@ -47,7 +49,14 @@ namespace Backend.Utils
             }
 
             string file = DOCUMENT_DESTINATION + $"FIT-Anmeldung_{booking.Company.Name}_{DateTime.Now.ToString("ddMMyyyy")}.pdf";
-            writer = new PdfWriter(file);
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                Booking boo = uow.BookingRepository.GetById(booking.Id);
+                boo.PdfFilePath = file;
+                uow.BookingRepository.Update(boo);
+                uow.Save();
+            }
+                writer = new PdfWriter(file);
 
             PdfDocument pdf = new PdfDocument(writer);
             pdf.GetDocumentInfo()
