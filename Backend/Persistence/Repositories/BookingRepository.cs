@@ -26,6 +26,7 @@ namespace Backend.Persistence.Repositories
             query = query.Include(p => p.Company)
                          .Include(p => p.Company.Address)
                          .Include(p => p.Company.Contact)
+                         .Include(p => p.Contact)
                          .Include(p => p.Presentation.Branches)
                          .Include(p => p.Location)
                          .Include(p => p.FitPackage)

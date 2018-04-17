@@ -15,7 +15,10 @@ namespace Backend.Core.Entities
         public Company Company { get; set; }
         public int FK_Company { get; set; }
 
+        [ForeignKey("FK_Location")]
         public Location Location { get; set; }
+
+        public int? FK_Location { get; set; }
 
         [ForeignKey("FK_Presentation")]
         public Presentation Presentation { get; set; }
