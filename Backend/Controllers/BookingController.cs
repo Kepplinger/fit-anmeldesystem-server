@@ -318,6 +318,19 @@ namespace Backend.Controllers
                     _unitOfWork.LocationRepository.Update(jsonBooking.Location);
                     _unitOfWork.Save();
 
+                    if (jsonBooking.Company == null)
+                    {
+                        jsonBooking.Company = _unitOfWork.CompanyRepository.Get(p => p.Id == jsonBooking.FK_Company).FirstOrDefault();
+                        if (jsonBooking.Company.Address == null)
+                        {
+                            jsonBooking.Company.Address = _unitOfWork.AddressRepository.Get(p => p.Id == jsonBooking.Company.FK_Address).FirstOrDefault();
+                        }
+                        if (jsonBooking.Company.Contact == null)
+                        {
+                            jsonBooking.Company.Contact = _unitOfWork.ContactRepository.Get(p => p.Id == jsonBooking.Company.FK_Contact).FirstOrDefault();
+                        }
+                    }
+
                     transaction.Commit();
                     _unitOfWork.Dispose();
 

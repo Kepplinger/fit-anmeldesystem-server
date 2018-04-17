@@ -100,7 +100,7 @@ namespace Backend.Utils
                 string logoBaseString = booking.Logo.Substring(logoIndexOf + 7);
                 string logoDataFormat = checkDataFormat(logoStart);
 
-                string logoFilePath = filepath + "companyLogo" + logoDataFormat;
+                string logoFilePath = filepath + "/companyLogo" + logoDataFormat;
 
                 this.Base64ToImage(logoBaseString, logoFilePath);
 
