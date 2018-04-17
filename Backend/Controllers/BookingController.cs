@@ -280,7 +280,7 @@ namespace Backend.Controllers
                     List<Branch> branchjsonBooking = new List<Branch>();
                     for (int i = 0; i < jsonBooking.Branches.Count(); i++)
                     {
-                        if (branchjsonBooking.ElementAt(i).Id > 0)
+                        if (jsonBooking.Branches.ElementAt(i).Id > 0)
                             _unitOfWork.BranchRepository.Update(jsonBooking.Branches.ElementAt(i));
                         else 
                             branchjsonBooking.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == jsonBooking.Branches.ElementAt(i).Id).FirstOrDefault());
