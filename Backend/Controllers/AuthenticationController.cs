@@ -148,7 +148,7 @@ namespace Backend.Controllers
             List<Booking> lastBooking = _unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).ToList();
 
             // If there is no last Booking send just Company
-            if (lastBooking == null)
+            if (lastBooking == null || lastBooking.Count() == 0)
             {
                 var companyJson = new
                 {

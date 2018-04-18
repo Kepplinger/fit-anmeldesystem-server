@@ -42,9 +42,9 @@ namespace Backend.Utils
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            string filepath = configuration["ImageFilePaths:SakalWindows"];
+            string filepath = configuration["ImageFilePaths:Hofmann"];
 
-            string baseurl = configuration["Urls:DefaultUrl"];
+            string baseurl = configuration["Urls:HofmannConn"];
 
             //set filepath name
             string filename = this.GetHash() + dataFormat;
@@ -87,9 +87,9 @@ namespace Backend.Utils
                    .SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json");
                 var configuration = builder.Build();
-                string filepath = configuration["ImageFilePaths:SakalWindows"];
+                string filepath = configuration["ImageFilePaths:Hofmann"];
                 filepath = filepath + c.Name;
-                string baseurl = configuration["Urls:DefaultUrl"];
+                string baseurl = configuration["Urls:HofmannConn"];
 
                 System.IO.Directory.CreateDirectory(filepath);
 

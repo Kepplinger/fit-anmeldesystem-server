@@ -20,13 +20,16 @@ namespace Backend.Utils
     {
         private char cchecked ='\u221A';
         private char unccecked ='\u00A8';
-        public const string DOCUMENT_DESTINATION = "./Pdfs";
-
+        public const string DOCUMENT_DESTINATION = "./Pdfs/";
+    
         private PdfWriter writer;
 
         public DocumentBuilder()
         {
-
+            if (!Directory.Exists(DOCUMENT_DESTINATION))
+            {
+                Directory.CreateDirectory(DOCUMENT_DESTINATION);
+            }
         }
 
         public string CreatePdfOfBooking(Booking booking)
@@ -47,8 +50,15 @@ namespace Backend.Utils
             foreach(string tmp in autArray){
                 beautyNational = beautyNational + tmp + " ";
             }
+            Company company = new Company();
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                company = uow.CompanyRepository.GetById(booking.FK_Company);
+            }
 
-            string file = DOCUMENT_DESTINATION + $"FIT-Anmeldung_{booking.Company.Name}_{DateTime.Now.ToString("ddMMyyyy")}.pdf";
+
+
+                string file = DOCUMENT_DESTINATION + $"FIT-Anmeldung_{company.Name}_{DateTime.Now.ToString("ddMMyyyy")}.pdf";
             using (IUnitOfWork uow = new UnitOfWork())
             {
                 Booking boo = uow.BookingRepository.GetById(booking.Id);

@@ -263,7 +263,7 @@ namespace Backend.Controllers
             {
                 try
                 {
-                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
+                    
 
                     for (int i = 0; i < jsonBooking.Representatives.Count; i++)
                     {
@@ -340,9 +340,11 @@ namespace Backend.Controllers
                     _unitOfWork.Dispose();
 
                     //Senden der Bestätigungs E-Mail
-                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
+
+
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
+                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
 
                     return new OkObjectResult(jsonBooking);
                 }

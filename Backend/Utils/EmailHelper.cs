@@ -91,7 +91,7 @@ namespace Backend.Utils
                         }
 
                         byte[] bytes = System.IO.File.ReadAllBytes(file);
-                        objeto_mail.Attachments.Add(new Attachment(new MemoryStream(bytes), ""));
+                        objeto_mail.Attachments.Add(new Attachment(file));
 
                     }
                     
@@ -117,7 +117,7 @@ namespace Backend.Utils
                 {
                     // von {{ bis ende kürzen
                     temp = template.Substring(i + 2);
-                    paramName = temp.Substring(i + 2, );
+                    //paramName = temp.Substring(i + 2, );
 
                     // per reflection value von dem param holen
 
@@ -126,7 +126,7 @@ namespace Backend.Utils
                         Company c = new Company();
                         paramName = paramName.ToLower().Replace("company.","");
 
-                        var variable = GetPropValue(param, paramName);
+                        //var variable = GetPropValue(param, paramName);
                     }
 
                 }

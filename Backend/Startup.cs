@@ -75,7 +75,7 @@ namespace Backend
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
-            string connectionString = configuration["Urls:ServerUrl"];
+            string connectionString = configuration["Urls:HofmannConn"];
 
             // Configure JwtIssuerOptions
             services.Configure<JwtIssuerOptions>(options =>
