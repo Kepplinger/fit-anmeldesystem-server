@@ -165,7 +165,7 @@ namespace Backend.Utils
 
             table.AddCell("Firmen Telefonnummer");
             table.AddCell(booking.PhoneNumber);
-            table.AddCell("Firemen Email");
+            table.AddCell("Firmen Email");
             table.AddCell(booking.Email);
             table.AddCell("Firmen Homepage");
             table.AddCell(booking.Homepage);

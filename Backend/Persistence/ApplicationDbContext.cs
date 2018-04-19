@@ -27,14 +27,15 @@ namespace Backend.Persistence
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
         public DbSet<Email> Emails { get; set; }
         public DbSet<Graduate> Graduates { get; set; }
-        
+        public DbSet<Tag> Tags { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
-            string connectionString = configuration["ConnectionStrings:DefaultConnection"];
+            string connectionString = configuration["ConnectionStrings:ServerConnection"];
             optionsBuilder.UseSqlServer(connectionString);
         }
 

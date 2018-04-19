@@ -17,22 +17,20 @@ namespace Backend.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public IActionResult Get()
         {
-            List<Tag> tags = new List<Tag>();
-
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                tags = uow.TagRepository.Get().ToList();
-            }
-            if (tags.Count > 0)
-            {
-                return new OkObjectResult(tags);
-            }
-            else
-            {
-                return new BadRequestResult();
+                List<Tag> tags = uow.TagRepository.Get().ToList();
+                if (tags != null)
+                {
+                    return new OkObjectResult(tags);
+                }
+                else
+                {
+                    return new NoContentResult();
+                }
             }
         }
 
@@ -40,32 +38,24 @@ namespace Backend.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-        public IActionResult Put(Tag tagToUpdate)
+        public IActionResult Put(List<Tag> tagToUpdate)
         {
             if (tagToUpdate != null)
             {
                 using (IUnitOfWork uow = new UnitOfWork())
                 {
-                    uow.TagRepository.Update(tagToUpdate);
-                    return new OkObjectResult(tagToUpdate);
-                }
-            }
-            else
-            {
-                return new BadRequestResult();
-            }
-        }
-
-        [HttpPost]
-        [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
-        public IActionResult Post(Tag tagToUpdate)
-        {
-            if (tagToUpdate != null)
-            {
-                using (IUnitOfWork uow = new UnitOfWork())
-                {
-                    uow.TagRepository.Insert(tagToUpdate);
+                    for (int i = 0; i < tagToUpdate.Count; i++)
+                    {
+                        if (tagToUpdate.ElementAt(i).Id > 0)
+                        {
+                            uow.TagRepository.Update(tagToUpdate.ElementAt(i));
+                        }
+                        else
+                        {
+                            uow.TagRepository.Insert(tagToUpdate.ElementAt(i));
+                        }
+                    }
+                    uow.Save();
                     return new OkObjectResult(tagToUpdate);
                 }
             }

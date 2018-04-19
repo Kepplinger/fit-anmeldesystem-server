@@ -82,6 +82,8 @@ namespace StoreService.Persistence
             EmailRepository = new GenericRepository<Email>(_context);
 
             GraduateRepository = new GenericRepository<Graduate>(_context);
+
+            TagRepository = new GenericRepository<Tag>(_context);
         }
 
         /// <summary>

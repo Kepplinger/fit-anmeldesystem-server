@@ -96,7 +96,7 @@ namespace Backend.Utils
                     }
                     
                 }
-                objeto_mail.Body = replaceParamsWithValues(new Company(), mail.Template);
+                objeto_mail.Body = mail.Template; //replaceParamsWithValues(new Company(), mail.Template);
                 client.SendMailAsync(objeto_mail);
                 return true;
             }

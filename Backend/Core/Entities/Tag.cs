@@ -9,3 +9,4 @@ namespace Backend.Core.Entities
         public string Value { get; set; }
     }
 }
+

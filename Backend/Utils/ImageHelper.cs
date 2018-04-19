@@ -42,9 +42,9 @@ namespace Backend.Utils
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            string filepath = configuration["ImageFilePaths:Hofmann"];
+            string filepath = configuration["ImageFilePaths:ServerImages"];
 
-            string baseurl = configuration["Urls:HofmannConn"];
+            string baseurl = configuration["Urls:ServerUrl"];
 
             //set filepath name
             string filename = this.GetHash() + dataFormat;
@@ -87,9 +87,9 @@ namespace Backend.Utils
                    .SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json");
                 var configuration = builder.Build();
-                string filepath = configuration["ImageFilePaths:Hofmann"];
+                string filepath = configuration["ImageFilePaths:ServerImages"];
                 filepath = filepath + c.Name;
-                string baseurl = configuration["Urls:HofmannConn"];
+                string baseurl = configuration["Urls:ServerUrl"];
 
                 System.IO.Directory.CreateDirectory(filepath);
 
@@ -106,15 +106,15 @@ namespace Backend.Utils
                 this.Base64ToImage(logoBaseString, logoFilePath);
 
 
-                /*for (int i = 0; i < booking.Representatives.Count; i++)
+                for (int i = 0; i < booking.Representatives.Count; i++)
                 {
                     int represIndexOf = booking.Representatives[i].ImageUrl.IndexOf("base64,");
-                    string represStart = booking.Representatives[i].ImageUrl.Substring(0, logoIndexOf);
-                    string represBaseString = booking.Representatives[i].ImageUrl.Substring(logoIndexOf + 7);
+                    string represStart = booking.Representatives[i].ImageUrl.Substring(0, represIndexOf);
+                    string represBaseString = booking.Representatives[i].ImageUrl.Substring(represIndexOf + 7);
                     string represDataFormat = checkDataFormat(represStart);
-                    string represFilePath = filepath + "contact" + Convert.ToString(i) + represDataFormat;
+                    string represFilePath = filepath + "/contact" + Convert.ToString(i) + represDataFormat;
                     this.Base64ToImage(represBaseString, represFilePath);
-                }*/
+                }
 
 
                 return baseurl + "/images/" + c.Name;
