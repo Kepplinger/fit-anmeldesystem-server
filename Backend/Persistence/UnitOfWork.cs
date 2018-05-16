@@ -39,6 +39,7 @@ namespace StoreService.Persistence
 
         public IGenericRepository<Tag> TagRepository { get; }
         public IGenericRepository<Graduate> GraduateRepository { get; }
+        public IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
@@ -84,6 +85,9 @@ namespace StoreService.Persistence
             GraduateRepository = new GenericRepository<Graduate>(_context);
 
             TagRepository = new GenericRepository<Tag>(_context);
+
+            BookingBranchesRepository = new GenericRepository<BookingBranches>(_context);
+
         }
 
         /// <summary>
@@ -336,10 +340,10 @@ namespace StoreService.Persistence
                 booking.ProvidesThesis = false;
                 booking.Remarks = "Remark";
                 booking.CreationDate = DateTime.Now;
-                booking.FK_FitPackage = package.Id;
+                booking.fk_FitPackage = package.Id;
                 booking.Event = e;
                 booking.Representatives = repre;
-                booking.FK_Company = company.Id;
+                booking.fk_Company = company.Id;
                 booking.Email = "officemail@gmail.com";
                 booking.Branch = "Firmen Branche";
                 booking.EstablishmentsAut = "Linz";

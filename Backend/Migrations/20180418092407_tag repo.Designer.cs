@@ -61,7 +61,7 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
-                    b.Property<int?>("FK_Event");
+                    b.Property<int?>("fk_Event");
 
                     b.Property<string>("GraphicUrl");
 
@@ -71,7 +71,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Event");
+                    b.HasIndex("fk_Event");
 
                     b.ToTable("Areas");
                 });
@@ -105,17 +105,17 @@ namespace Backend.Migrations
                     b.Property<string>("EstablishmentsInt")
                         .HasMaxLength(30);
 
-                    b.Property<int>("FK_Company");
+                    b.Property<int>("fk_Company");
 
-                    b.Property<int?>("FK_Contact");
+                    b.Property<int?>("fk_Contact");
 
-                    b.Property<int>("FK_Event");
+                    b.Property<int>("fk_Event");
 
-                    b.Property<int>("FK_FitPackage");
+                    b.Property<int>("fk_FitPackage");
 
-                    b.Property<int?>("FK_Location");
+                    b.Property<int?>("fk_Location");
 
-                    b.Property<int?>("FK_Presentation");
+                    b.Property<int?>("fk_Presentation");
 
                     b.Property<string>("Homepage")
                         .IsRequired();
@@ -142,17 +142,17 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Company");
+                    b.HasIndex("fk_Company");
 
-                    b.HasIndex("FK_Contact");
+                    b.HasIndex("fk_Contact");
 
-                    b.HasIndex("FK_Event");
+                    b.HasIndex("fk_Event");
 
-                    b.HasIndex("FK_FitPackage");
+                    b.HasIndex("fk_FitPackage");
 
-                    b.HasIndex("FK_Location");
+                    b.HasIndex("fk_Location");
 
-                    b.HasIndex("FK_Presentation");
+                    b.HasIndex("fk_Presentation");
 
                     b.ToTable("Bookings");
                 });
@@ -164,7 +164,7 @@ namespace Backend.Migrations
 
                     b.Property<int?>("BookingId");
 
-                    b.Property<int?>("FK_Presentation");
+                    b.Property<int?>("fk_Presentation");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -177,7 +177,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("FK_Presentation");
+                    b.HasIndex("fk_Presentation");
 
                     b.ToTable("Branches");
                 });
@@ -221,9 +221,9 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("FK_Address");
+                    b.Property<int>("fk_Address");
 
-                    b.Property<int>("FK_Contact");
+                    b.Property<int>("fk_Contact");
 
                     b.Property<bool>("IsPending");
 
@@ -246,9 +246,9 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Address");
+                    b.HasIndex("fk_Address");
 
-                    b.HasIndex("FK_Contact");
+                    b.HasIndex("fk_Contact");
 
                     b.ToTable("Companies");
                 });
@@ -365,7 +365,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("Email");
 
-                    b.Property<int>("FK_Address");
+                    b.Property<int>("fk_Address");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -390,7 +390,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Address");
+                    b.HasIndex("fk_Address");
 
                     b.ToTable("Graduates");
                 });
@@ -504,9 +504,9 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("FK_Booking");
+                    b.Property<int?>("fk_Booking");
 
-                    b.Property<int>("FK_Resource");
+                    b.Property<int>("fk_Resource");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
@@ -514,9 +514,9 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FK_Booking");
+                    b.HasIndex("fk_Booking");
 
-                    b.HasIndex("FK_Resource");
+                    b.HasIndex("fk_Resource");
 
                     b.ToTable("ResourceBookings");
                 });
@@ -706,7 +706,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Event", "Event")
                         .WithMany("Areas")
-                        .HasForeignKey("FK_Event")
+                        .HasForeignKey("fk_Event")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -714,32 +714,32 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Company", "Company")
                         .WithMany()
-                        .HasForeignKey("FK_Company")
+                        .HasForeignKey("fk_Company")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Contact", "Contact")
                         .WithMany()
-                        .HasForeignKey("FK_Contact")
+                        .HasForeignKey("fk_Contact")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("FK_Event")
+                        .HasForeignKey("fk_Event")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.FitPackage", "FitPackage")
                         .WithMany()
-                        .HasForeignKey("FK_FitPackage")
+                        .HasForeignKey("fk_FitPackage")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("FK_Location")
+                        .HasForeignKey("fk_Location")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany()
-                        .HasForeignKey("FK_Presentation")
+                        .HasForeignKey("fk_Presentation")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -752,7 +752,7 @@ namespace Backend.Migrations
 
                     b.HasOne("Backend.Core.Entities.Presentation", "Presentation")
                         .WithMany("Branches")
-                        .HasForeignKey("FK_Presentation")
+                        .HasForeignKey("fk_Presentation")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -760,12 +760,12 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("FK_Address")
+                        .HasForeignKey("fk_Address")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Contact", "Contact")
                         .WithMany()
-                        .HasForeignKey("FK_Contact")
+                        .HasForeignKey("fk_Contact")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -773,7 +773,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("FK_Address")
+                        .HasForeignKey("fk_Address")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -797,12 +797,12 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Core.Entities.Booking", "Booking")
                         .WithMany("Resources")
-                        .HasForeignKey("FK_Booking")
+                        .HasForeignKey("fk_Booking")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Backend.Core.Entities.Resource", "Resource")
                         .WithMany()
-                        .HasForeignKey("FK_Resource")
+                        .HasForeignKey("fk_Resource")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

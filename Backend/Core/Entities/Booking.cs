@@ -7,24 +7,24 @@ namespace Backend.Core.Entities
 {
     public class Booking : EntityObject
     {
-        [ForeignKey("FK_Event"), Required]
+        [ForeignKey("fk_Event"), Required]
         public Event Event { get; set; }
-        public int FK_Event { get; set; }
+        public int fk_Event { get; set; }
 
-        [ForeignKey("FK_Company"), Required]
+        [ForeignKey("fk_Company"), Required]
         public Company Company { get; set; }
-        public int FK_Company { get; set; }
+        public int fk_Company { get; set; }
 
-        [ForeignKey("FK_Location")]
+        [ForeignKey("fk_Location")]
         public Location Location { get; set; }
 
-        public int? FK_Location { get; set; }
+        public int? fk_Location { get; set; }
 
-        [ForeignKey("FK_Presentation")]
+        [ForeignKey("fk_Presentation")]
         public Presentation Presentation { get; set; }
-        public int? FK_Presentation { get; set; }
+        public int? fk_Presentation { get; set; }
 
-        public List<Branch> Branches { get; set; }
+        public List<BookingBranches> Branches { get; set; }
 
         [Required]
         public List<Representative> Representatives { get; set; }
@@ -34,9 +34,9 @@ namespace Backend.Core.Entities
         [Required]
         public bool isAccepted { get; set; }
 
-        [ForeignKey("FK_FitPackage"), Required]
+        [ForeignKey("fk_FitPackage"), Required]
         public FitPackage FitPackage { get; set; }
-        public int FK_FitPackage { get; set; }
+        public int fk_FitPackage { get; set; }
 
         [MaxLength(500)]
         public string AdditionalInfo { get; set; }
@@ -73,7 +73,7 @@ namespace Backend.Core.Entities
 
         public int EstablishmentsCountAut { get; set; }
 
-        [ForeignKey("FK_Contact")]
+        [ForeignKey("fk_Contact")]
         public Contact Contact { get; set; }
 
         [MaxLength(30)]

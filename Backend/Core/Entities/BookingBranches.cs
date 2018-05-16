@@ -1,11 +1,14 @@
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 {
-    public class ResourceBooking : EntityObject
+    public class BookingBranches : EntityObject
     {
         [JsonIgnore]
         [IgnoreDataMember]
@@ -13,9 +16,8 @@ namespace Backend.Core.Entities
         public Booking Booking { get; set; }
         public int? fk_Booking { get; set; }
 
-        [ForeignKey("fk_Resource")]
-        public Resource Resource { get; set; }
-        public int fk_Resource { get; set; }
-
+        [ForeignKey("fk_Branch")]
+        public Branch Branch { get; set; }
+        public int fk_Branch { get; set; }
     }
 }

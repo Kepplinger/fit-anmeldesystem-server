@@ -82,7 +82,7 @@ namespace Backend.Controllers
                                 }
                                 else
                                 {
-                                    area.FK_Event = jsonEvent.Id;
+                                    area.fk_Event = jsonEvent.Id;
                                     _unitOfWork.AreaRepository.Insert(area);
                                     _unitOfWork.Save();
                                 }
@@ -95,7 +95,7 @@ namespace Backend.Controllers
                         //_unitOfWork.EventRepository.Update(jsonEvent);
                         for (int i = 0; i < jsonEvent.Areas.Count; i++)
                         {
-                            jsonEvent.Areas.ElementAt(i).FK_Event = jsonEvent.Id;
+                            jsonEvent.Areas.ElementAt(i).fk_Event = jsonEvent.Id;
                             _unitOfWork.EventRepository.Update(jsonEvent);
                             _unitOfWork.Save();
                         }

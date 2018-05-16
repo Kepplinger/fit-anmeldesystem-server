@@ -14,10 +14,10 @@ namespace Backend.Core.Entities
         [MaxLength(30)]
         public string LastName { get; set; }
 
-        [ForeignKey("FK_Address"), Required]
+        [ForeignKey("fk_Address"), Required]
         public Address Address { get; set; }
 
-        public int FK_Address { get; set; }
+        public int fk_Address { get; set; }
 
         public string Email { get; set; }
 

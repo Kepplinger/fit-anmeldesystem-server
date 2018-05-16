@@ -9,7 +9,7 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Tag_Companies_CompanyId",
+                name: "fk_Tag_Companies_CompanyId",
                 table: "Tag");
 
             migrationBuilder.DropPrimaryKey(
@@ -31,7 +31,7 @@ namespace Backend.Migrations
                 column: "Id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Tags_Companies_CompanyId",
+                name: "fk_Tags_Companies_CompanyId",
                 table: "Tags",
                 column: "CompanyId",
                 principalTable: "Companies",
@@ -42,7 +42,7 @@ namespace Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Tags_Companies_CompanyId",
+                name: "fk_Tags_Companies_CompanyId",
                 table: "Tags");
 
             migrationBuilder.DropPrimaryKey(
@@ -64,7 +64,7 @@ namespace Backend.Migrations
                 column: "Id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Tag_Companies_CompanyId",
+                name: "fk_Tag_Companies_CompanyId",
                 table: "Tag",
                 column: "CompanyId",
                 principalTable: "Companies",

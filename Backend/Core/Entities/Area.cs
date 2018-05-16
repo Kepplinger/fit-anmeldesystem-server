@@ -14,11 +14,11 @@ namespace Backend.Core.Entities
 
         public string GraphicUrl { get; set; }
 
-        public int? FK_Event { get; set; }
+        public int? fk_Event { get; set; }
 
         [JsonIgnore]
         [IgnoreDataMember]
-        [ForeignKey("FK_Event")]
+        [ForeignKey("fk_Event")]
         public virtual Event Event { get; set; }
 
 

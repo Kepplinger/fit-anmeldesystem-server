@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180516143408_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,13 +61,13 @@ namespace Backend.Migrations
                     b.Property<string>("Designation")
                         .IsRequired();
 
+                    b.Property<int?>("fk_Event");
+
                     b.Property<string>("GraphicUrl");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<int?>("fk_Event");
 
                     b.HasKey("Id");
 
@@ -106,6 +107,18 @@ namespace Backend.Migrations
                     b.Property<string>("EstablishmentsInt")
                         .HasMaxLength(30);
 
+                    b.Property<int>("fk_Company");
+
+                    b.Property<int?>("fk_Contact");
+
+                    b.Property<int>("fk_Event");
+
+                    b.Property<int>("fk_FitPackage");
+
+                    b.Property<int?>("fk_Location");
+
+                    b.Property<int?>("fk_Presentation");
+
                     b.Property<string>("Homepage")
                         .IsRequired();
 
@@ -126,18 +139,6 @@ namespace Backend.Migrations
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<int>("fk_Company");
-
-                    b.Property<int?>("fk_Contact");
-
-                    b.Property<int>("fk_Event");
-
-                    b.Property<int>("fk_FitPackage");
-
-                    b.Property<int?>("fk_Location");
-
-                    b.Property<int?>("fk_Presentation");
 
                     b.Property<bool>("isAccepted");
 
@@ -165,13 +166,13 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.Property<int?>("fk_Booking");
 
                     b.Property<int>("fk_Branch");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.HasKey("Id");
 
@@ -242,6 +243,10 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("fk_Address");
+
+                    b.Property<int>("fk_Contact");
+
                     b.Property<bool>("IsPending");
 
                     b.Property<double>("MemberPaymentAmount");
@@ -260,10 +265,6 @@ namespace Backend.Migrations
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<int>("fk_Address");
-
-                    b.Property<int>("fk_Contact");
 
                     b.HasKey("Id");
 
@@ -386,6 +387,8 @@ namespace Backend.Migrations
 
                     b.Property<string>("Email");
 
+                    b.Property<int>("fk_Address");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(30);
@@ -406,8 +409,6 @@ namespace Backend.Migrations
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<int>("fk_Address");
 
                     b.HasKey("Id");
 
@@ -525,13 +526,13 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.Property<int?>("fk_Booking");
 
                     b.Property<int>("fk_Resource");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.HasKey("Id");
 

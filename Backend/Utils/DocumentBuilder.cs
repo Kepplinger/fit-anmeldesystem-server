@@ -53,7 +53,7 @@ namespace Backend.Utils
             Company company = new Company();
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                company = uow.CompanyRepository.GetById(booking.FK_Company);
+                company = uow.CompanyRepository.GetById(booking.fk_Company);
             }
 
 
@@ -189,8 +189,8 @@ namespace Backend.Utils
             else
                 table.AddCell(imageNo.SetHorizontalAlignment(HorizontalAlignment.CENTER));
 
-            foreach(Branch branch in booking.Branches){
-                table.AddCell("Sie vergeben "+branch.Name+"?");
+            foreach(BookingBranches branch in booking.Branches){
+                table.AddCell("Sie vergeben "+branch.Branch.Name+"?");
                     table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));
             }
 

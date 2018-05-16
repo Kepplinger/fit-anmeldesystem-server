@@ -81,7 +81,7 @@ namespace Backend.Utils
                 Company c = null;
                 using (IUnitOfWork uow = new UnitOfWork())
                 {
-                    c = uow.CompanyRepository.Get(comp => comp.Id == booking.FK_Company).FirstOrDefault();
+                    c = uow.CompanyRepository.Get(comp => comp.Id == booking.fk_Company).FirstOrDefault();
                 }
                 var builder = new ConfigurationBuilder()
                    .SetBasePath(Directory.GetCurrentDirectory())

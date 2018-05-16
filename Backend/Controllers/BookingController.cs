@@ -62,7 +62,7 @@ namespace Backend.Controllers
                     // Update already persistent Entities ----------------------
                     Company toUpdate = this._unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
                     Booking btoUpdate = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
-                    if (jsonBooking.FK_Company != 0 && toUpdate != null)
+                    if (jsonBooking.fk_Company != 0 && toUpdate != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
                         {
@@ -90,7 +90,7 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                     }
                     change = new ChangeProtocol();
-                    if (jsonBooking.Company.FK_Address != 0 && toUpdate.Address != null)
+                    if (jsonBooking.Company.fk_Address != 0 && toUpdate.Address != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
                         {
@@ -119,7 +119,7 @@ namespace Backend.Controllers
 
 
                     change = new ChangeProtocol();
-                    if (jsonBooking.Company.FK_Contact != 0 && toUpdate.Contact != null)
+                    if (jsonBooking.Company.fk_Contact != 0 && toUpdate.Contact != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
                         {
@@ -146,7 +146,7 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                     }
                     change = new ChangeProtocol();
-                    if (jsonBooking.FK_FitPackage != 0 && btoUpdate.FitPackage != null)
+                    if (jsonBooking.fk_FitPackage != 0 && btoUpdate.FitPackage != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(FitPackage).GetProperties())
                         {
@@ -174,7 +174,7 @@ namespace Backend.Controllers
                     }
 
                     change = new ChangeProtocol();
-                    if (jsonBooking.FK_Presentation != 0 && btoUpdate.Presentation != null)
+                    if (jsonBooking.fk_Presentation != 0 && btoUpdate.Presentation != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Presentation).GetProperties())
                         {
@@ -281,18 +281,6 @@ namespace Backend.Controllers
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
 
-                    // Fill up the list
-                    List<Branch> branchjsonBooking = new List<Branch>();
-                    for (int i = 0; i < jsonBooking.Branches.Count(); i++)
-                    {
-                        if (jsonBooking.Branches.ElementAt(i).Id > 0)
-                            _unitOfWork.BranchRepository.Update(jsonBooking.Branches.ElementAt(i));
-                        else 
-                            branchjsonBooking.Add(_unitOfWork.BranchRepository.Get(filter: p => p.Id == jsonBooking.Branches.ElementAt(i).Id).FirstOrDefault());
-                    }
-                    jsonBooking.Branches = branchjsonBooking;
-                    _unitOfWork.Save();
-
                     // Get the current active Event (nimmt an das es nur 1 gibt)
                     if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
                     {
@@ -308,13 +296,13 @@ namespace Backend.Controllers
 
                     ResourceBooking bk = new ResourceBooking();
 
-                    bk.FK_Resource = jsonBooking.Resources.ElementAt(0).FK_Resource;
+                    bk.fk_Resource = jsonBooking.Resources.ElementAt(0).fk_Resource;
                     jsonBooking.Resources = null;
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
                     jsonBooking.Resources = new List<ResourceBooking>();
-                    bk.FK_Booking = jsonBooking.Id;
+                    bk.fk_Booking = jsonBooking.Id;
 
                     _unitOfWork.ResourceBookingRepository.Insert(bk);
                     _unitOfWork.Save();
@@ -325,14 +313,14 @@ namespace Backend.Controllers
 
                     if (jsonBooking.Company == null)
                     {
-                        jsonBooking.Company = _unitOfWork.CompanyRepository.Get(p => p.Id == jsonBooking.FK_Company).FirstOrDefault();
+                        jsonBooking.Company = _unitOfWork.CompanyRepository.Get(p => p.Id == jsonBooking.fk_Company).FirstOrDefault();
                         if (jsonBooking.Company.Address == null)
                         {
-                            jsonBooking.Company.Address = _unitOfWork.AddressRepository.Get(p => p.Id == jsonBooking.Company.FK_Address).FirstOrDefault();
+                            jsonBooking.Company.Address = _unitOfWork.AddressRepository.Get(p => p.Id == jsonBooking.Company.fk_Address).FirstOrDefault();
                         }
                         if (jsonBooking.Company.Contact == null)
                         {
-                            jsonBooking.Company.Contact = _unitOfWork.ContactRepository.Get(p => p.Id == jsonBooking.Company.FK_Contact).FirstOrDefault();
+                            jsonBooking.Company.Contact = _unitOfWork.ContactRepository.Get(p => p.Id == jsonBooking.Company.fk_Contact).FirstOrDefault();
                         }
                     }
 
