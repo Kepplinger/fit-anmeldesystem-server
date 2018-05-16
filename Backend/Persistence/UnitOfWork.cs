@@ -40,6 +40,7 @@ namespace StoreService.Persistence
         public IGenericRepository<Tag> TagRepository { get; }
         public IGenericRepository<Graduate> GraduateRepository { get; }
         public IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
+        public IGenericRepository<PresentationBranches> PresentationBranchesRepository { get; }
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
@@ -72,6 +73,8 @@ namespace StoreService.Persistence
 
             PackageRepository = new GenericRepository<FitPackage>(_context);
 
+            PresentationRepository = new GenericRepository<Presentation>(_context);
+
             ResourceRepository = new GenericRepository<Resource>(_context);
 
             ResourceBookingRepository = new GenericRepository<ResourceBooking>(_context);
@@ -87,6 +90,8 @@ namespace StoreService.Persistence
             TagRepository = new GenericRepository<Tag>(_context);
 
             BookingBranchesRepository = new GenericRepository<BookingBranches>(_context);
+
+            PresentationBranchesRepository = new GenericRepository<PresentationBranches>(_context);
 
         }
 
@@ -273,8 +278,9 @@ namespace StoreService.Persistence
             _context.Branches.Add(bio);
             _context.SaveChanges();
 
-            Presentation p = new Presentation();
-            p.Branches = new List<Branch>();
+            /*Presentation p = new Presentation();
+            p.Branches = new List<PresentationBranches>();
+
             p.Branches.Add(it);
             p.Description = "zad mi nimma";
             p.IsAccepted = false;
@@ -282,7 +288,7 @@ namespace StoreService.Persistence
             p.Title = "title";
             p.FileURL = "http://";
 
-            _context.Presentations.Add(p);
+            _context.Presentations.Add(p);*/
             _context.SaveChanges();
             Location l = new Location();
             l.Category = "A";

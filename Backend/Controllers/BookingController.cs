@@ -263,7 +263,20 @@ namespace Backend.Controllers
             {
                 try
                 {
-                    
+                    foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                    {
+                        _unitOfWork.PresentationBranchesRepository.Insert(item);
+                    }
+                    _unitOfWork.Save();
+                    _unitOfWork.PresentationRepository.Insert(jsonBooking.Presentation);
+                    _unitOfWork.Save();
+
+                    foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                    {
+                        item.fk_Presentation = jsonBooking.Presentation.Id;
+                        _unitOfWork.PresentationBranchesRepository.Update(item);
+                    }
+                    _unitOfWork.Save();
 
                     for (int i = 0; i < jsonBooking.Representatives.Count; i++)
                     {
@@ -281,7 +294,7 @@ namespace Backend.Controllers
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
 
-                    // Get the current active Event (nimmt an das es nur 1 gibt)
+                    // Get the current active E vent (nimmt an das es nur 1 gibt)
                     if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
                     {
                         jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault();
@@ -294,17 +307,44 @@ namespace Backend.Controllers
                         transaction.Rollback();
                     }
 
-                    ResourceBooking bk = new ResourceBooking();
+                    List<BookingBranches> bbranches = new List<BookingBranches>();
+                    foreach (BookingBranches item in jsonBooking.Branches)
+                    {
+                        BookingBranches br = new BookingBranches();
+                        br.fk_Branch = item.fk_Branch;
+                        bbranches.Add(br);
+                    }
+                    jsonBooking.Branches = null;
 
-                    bk.fk_Resource = jsonBooking.Resources.ElementAt(0).fk_Resource;
+                    List<ResourceBooking> rbooking = new List<ResourceBooking>();
+                    foreach (ResourceBooking item in jsonBooking.Resources)
+                    {
+                        ResourceBooking bk = new ResourceBooking();
+                        bk.fk_Resource = item.fk_Resource;
+                        rbooking.Add(bk);
+                    }
                     jsonBooking.Resources = null;
+
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
-                    jsonBooking.Resources = new List<ResourceBooking>();
-                    bk.fk_Booking = jsonBooking.Id;
+                    foreach (BookingBranches item in bbranches)
+                    {
+                        item.fk_Booking = jsonBooking.Id;
+                        item.Branch = _unitOfWork.BranchRepository.GetById(item.fk_Branch);
+                        _unitOfWork.BookingBranchesRepository.Insert(item);
+                        _unitOfWork.Save();
+                    }
 
-                    _unitOfWork.ResourceBookingRepository.Insert(bk);
+                    foreach (ResourceBooking item in rbooking)
+                    {
+                        item.fk_Booking = jsonBooking.Id;
+                        _unitOfWork.ResourceBookingRepository.Insert(item);
+                        _unitOfWork.Save();
+                    }
+
+                    jsonBooking.Resources = rbooking;
+                    jsonBooking.Branches = bbranches;
                     _unitOfWork.Save();
 
                     jsonBooking.Location.isOccupied = true;

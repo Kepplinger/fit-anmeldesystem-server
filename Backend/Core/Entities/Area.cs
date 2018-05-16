@@ -12,7 +12,7 @@ namespace Backend.Core.Entities
         public string Designation { get; set; }
 
 
-        public string GraphicUrl { get; set; }
+        public DataFile Graphic { get; set; }
 
         public int? fk_Event { get; set; }
 

@@ -11,7 +11,7 @@ namespace Backend.Core.Entities
         public string Email { get; set; }
 
         [Required]
-        public string ImageUrl { get; set; }
+        public DataFile Image { get; set; }
 
     }
 }

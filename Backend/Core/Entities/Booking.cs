@@ -61,7 +61,7 @@ namespace Backend.Core.Entities
         [Required, Url]
         public string Homepage { get; set; }
 
-        public string Logo { get; set; }
+        public DataFile Logo { get; set; }
 
         [Required, MaxLength(20)]
         public string Branch { get; set; }

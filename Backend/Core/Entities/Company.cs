@@ -19,7 +19,7 @@ namespace Backend.Core.Entities
         public Contact Contact { get; set; }
         public int fk_Contact { get; set; }
 
-        public List<Tag> tags { get; set; }
+        public List<Tag> Tags { get; set; }
 
         [Required]
         public bool IsPending { get; set; }

@@ -28,6 +28,7 @@ namespace Backend.Core.Contracts
         IGenericRepository<Graduate> GraduateRepository { get; }
         IGenericRepository<Tag> TagRepository { get; }
         IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
+        IGenericRepository<PresentationBranches> PresentationBranchesRepository { get; }
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
