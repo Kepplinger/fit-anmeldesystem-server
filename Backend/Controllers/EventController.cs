@@ -57,10 +57,10 @@ namespace Backend.Controllers
                         for (int i = 0; i < cnt; i++)
                         {
                             Area area = jsonEvent.Areas.ElementAt(i);
-                            if (area.GraphicUrl.Contains("base64,"))
+                            if (area.Graphic.DataUrl.Contains("base64,"))
                             {
-                                string filename = new ImageHelper().ImageParsing(area);
-                                area.GraphicUrl = filename;
+                                string filename = ImageHelper.ImageParsing(area);
+                                area.Graphic.DataUrl = filename;
 
                                 foreach (Location l in area.Locations)
                                 {
@@ -113,8 +113,8 @@ namespace Backend.Controllers
                         // Saving Areas and Locations for the Event
                         foreach (Area area in jsonEvent.Areas)
                         {
-                            string filename = new ImageHelper().ImageParsing(area);
-                            area.GraphicUrl = filename;
+                            string filepath = ImageHelper.ImageParsing(area);
+                            area.Graphic.DataUrl = filepath;
 
                             foreach (Location l in area.Locations)
                             {

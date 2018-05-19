@@ -90,6 +90,7 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                     }
                     change = new ChangeProtocol();
+
                     if (jsonBooking.Company.fk_Address != 0 && toUpdate.Address != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
@@ -116,7 +117,6 @@ namespace Backend.Controllers
                         _unitOfWork.AddressRepository.Update(jsonBooking.Company.Address);
                         _unitOfWork.Save();
                     }
-
 
                     change = new ChangeProtocol();
                     if (jsonBooking.Company.fk_Contact != 0 && toUpdate.Contact != null)
@@ -288,13 +288,13 @@ namespace Backend.Controllers
                     }
 
                     //Generate Pictures 
-                    string compImgPath = new ImageHelper().BookingImages(jsonBooking);
-                    jsonBooking.Logo = compImgPath;
+                    string compImgPath = ImageHelper.BookingImages(jsonBooking);
+                    jsonBooking.Logo.DataUrl = compImgPath;
 
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
 
-                    // Get the current active E vent (nimmt an das es nur 1 gibt)
+                    // Get the current active Event (nimmt an das es nur 1 gibt)
                     if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
                     {
                         jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault();
