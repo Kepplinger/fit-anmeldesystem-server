@@ -84,9 +84,10 @@ namespace Backend.Utils
         /// <returns></returns>
         public static void replaceParamsWithValues(Email email, object param)
         {
+            // replace every variable within double curly braces
             email.Template = Regex.Replace(
                 email.Template,
-                "{{.*}}",
+                "{{[^}}]*}}",
                 (Match m) => {
 
                     // remove all whitespaces and double curly braces
@@ -95,40 +96,6 @@ namespace Backend.Utils
                     return param.GetPropValue(variable).ToString();
                 }
             );
-
-            Console.WriteLine(email.Template);
-
-            //for (int i = 0; i < template.Length - 2; i++)
-            //{
-            //    string paramName = "";
-            //    string temp = "";
-
-            //    if (i == 569)
-            //    {
-            //        Console.WriteLine();
-            //    }
-
-            //    string checker = template.Substring(i, 2);
-            //    if (checker.Equals("{{") == true)
-            //    {
-            //        // von {{ bis ende kürzen
-            //        temp = template.Substring(i + 2);
-            //        //paramName = temp.Substring(i + 2, );
-
-            //        // per reflection value von dem param holen
-
-            //        if (param.GetType().Name.Equals(nameof(Company)))
-            //        {
-            //            Company c = new Company();
-            //            paramName = paramName.ToLower().Replace("company.", "");
-
-            //            //var variable = GetPropValue(param, paramName);
-            //        }
-
-            //    }
-            //    checker = "";
-            //}
-            //return "";
         }
 
         private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking)
