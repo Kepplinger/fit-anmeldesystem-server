@@ -24,8 +24,8 @@ namespace Backend.Core.Contracts
         IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         IGenericRepository<Address> AddressRepository { get; }
         IGenericRepository<ChangeProtocol> ChangeRepository { get; }
-        IGenericRepository<Email> EmailRepository { get; }
         IGenericRepository<EmailVariable> EmailVariableRepository { get; }
+        IGenericRepository<EmailVariableUsage> EmailVariableUsageRepository { get; }
         IGenericRepository<Graduate> GraduateRepository { get; }
         IGenericRepository<Tag> TagRepository { get; }
         IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
@@ -33,9 +33,9 @@ namespace Backend.Core.Contracts
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
+        IEmailRepository EmailRepository { get; }
         IBookingRepository BookingRepository { get; }
         IEventRepository EventRepository { get; }
-
 
         void Save();
 

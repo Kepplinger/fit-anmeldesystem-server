@@ -16,6 +16,5 @@ namespace Backend.Core.Entities
         [ForeignKey("fk_Resource")]
         public Resource Resource { get; set; }
         public int fk_Resource { get; set; }
-
     }
 }

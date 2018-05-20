@@ -8,6 +8,7 @@ using StoreService.Persistence;
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
+using Backend.Core;
 
 namespace Backend.Controllers
 {
@@ -21,10 +22,12 @@ namespace Backend.Controllers
         {
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                List<Email> emails = uow.EmailRepository.Get().ToList();
+                Email test = uow.EmailRepository.Get().FirstOrDefault();
+                List<Email> emails = uow.EmailRepository.Get(includeProperties: "AvailableVariables").ToList();
+
                 if (emails != null && emails.Count > 0)
                 {
-                    return new OkObjectResult(emails);
+                    return new OkObjectResult(emails.Select(e => mapEmailToDto(e)));
                 }
                 else
                 {
@@ -68,18 +71,57 @@ namespace Backend.Controllers
         //}
 
         [HttpPut]
-        public IActionResult UpdateMail([FromBody] Email email)
+        public IActionResult UpdateMail([FromBody] EmailDTO email)
         {
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                if (uow.EmailRepository.Get(m => m.Id == email.Id).FirstOrDefault() != null)
+                Email emailEntity = mapDtoToEmail(email, uow);
+
+                if (uow.EmailRepository.Get(m => m.Id == emailEntity.Id).FirstOrDefault() != null)
                 {
-                    uow.EmailRepository.Update(email);
+                    uow.EmailRepository.Update(emailEntity);
                     uow.Save();
                     return new OkResult();
                 }
                 return new BadRequestResult();
             }
         }
+
+        private Email mapDtoToEmail(EmailDTO emailTransfer, IUnitOfWork uow)
+        {
+            return new Email
+            {
+                Id = emailTransfer.Id,
+                Timestamp = emailTransfer.Timestamp,
+                Name = emailTransfer.Name,
+                Description = emailTransfer.Description,
+                Subject = emailTransfer.Subject,
+                Template = emailTransfer.Template,
+                AvailableVariables = uow.EmailVariableUsageRepository.Get(ev => ev.fk_Email == emailTransfer.Id).ToList()
+            };
+        }
+
+        private object mapEmailToDto(Email email)
+        {
+            return new EmailDTO
+            {
+                Id = email.Id,
+                Timestamp = email.Timestamp,
+                Name = email.Name,
+                Description = email.Description,
+                Template = email.Template,
+                Subject = email.Subject,
+                AvailableVariables = email.AvailableVariables.Select(v => v.EmailVariable).ToList()
+            };
+        }
     }
+}
+
+public class EmailDTO: EntityObject
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string Template { get; set; }
+    public string Subject { get; set; }
+    public List<EmailVariable> AvailableVariables { get; set; }
 }

@@ -239,14 +239,35 @@ namespace Backend.Utils
 
             List<EmailVariable> variables = new List<EmailVariable> {
                 new EmailVariable("Firma-Name", nameof(Company.Name), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Anrede", nameof(Company.Contact.Gender), nameof(Company)),
                 new EmailVariable("Firma-Kontakt-Vorname", nameof(Company.Contact.FirstName), nameof(Company)),
-                new EmailVariable("Firma-Kontakt-Nachname", nameof(Company.Contact.LastName), nameof(Company))
+                new EmailVariable("Firma-Kontakt-Nachname", nameof(Company.Contact.LastName), nameof(Company)),
+                new EmailVariable("Login-Token", nameof(Company.RegistrationToken), nameof(Company)),
+                new EmailVariable("Mitglied seit", nameof(Company.MemberSince), nameof(Company)),
+                new EmailVariable("Firma-Name", nameof(Booking.Company.Name), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Anrede", nameof(Booking.Company.Contact.Gender), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Vorname", nameof(Booking.Company.Contact.FirstName), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Nachname", nameof(Booking.Company.Contact.LastName), nameof(Booking)),
+                new EmailVariable("Login-Token", nameof(Booking.Company.RegistrationToken), nameof(Booking)),
+                new EmailVariable("Mitglied seit", nameof(Booking.Company.MemberSince), nameof(Booking)),
             };
 
             using (IUnitOfWork uow = new UnitOfWork())
             {
                 uow.EmailVariableRepository.InsertMany(variables);
                 uow.Save();
+
+                List<EmailVariable> companyVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Company)).ToList();
+                List<EmailVariable> bookingVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Booking)).ToList();
+
+                // mapping the variables to the resolve-entity EmailVariableUsage
+                CompanyAssigned.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(CompanyAssigned, v)).ToList();
+                IsPendingAcceptedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingAcceptedCompany, v)).ToList();
+                IsPendingDeniedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingDeniedCompany, v)).ToList();
+                isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).ToList();
+                isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).ToList();
+                SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).ToList();
+                SendForgotten.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgotten, v)).ToList();
 
                 uow.EmailRepository.Insert(CompanyAssigned);
                 uow.EmailRepository.Insert(IsPendingAcceptedCompany);
@@ -265,8 +286,7 @@ namespace Backend.Utils
 
             using (IUnitOfWork uow = new UnitOfWork())
             {
-                Booking boo = uow.BookingRepository.GetById(booking.Id);
-                file = boo.PdfFilePath;
+                file = uow.BookingRepository.GetById(booking.Id).PdfFilePath;
             }
 
             byte[] bytes = System.IO.File.ReadAllBytes(file);

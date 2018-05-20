@@ -36,10 +36,8 @@ namespace StoreService.Persistence
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         public IGenericRepository<Address> AddressRepository { get; }
-        public IGenericRepository<Email> EmailRepository { get; }
         public IGenericRepository<EmailVariable> EmailVariableRepository { get; }
-
-
+        public IGenericRepository<EmailVariableUsage> EmailVariableUsageRepository { get; }
         public IGenericRepository<Tag> TagRepository { get; }
         public IGenericRepository<Graduate> GraduateRepository { get; }
         public IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
@@ -48,6 +46,7 @@ namespace StoreService.Persistence
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
         /// </summary>
+        public IEmailRepository EmailRepository { get; }
 
         public IBookingRepository BookingRepository { get; }
 
@@ -86,9 +85,11 @@ namespace StoreService.Persistence
 
             EventRepository = new EventRepository(_context);
 
-            EmailRepository = new GenericRepository<Email>(_context);
+            EmailRepository = new EmailRepository(_context);
 
             EmailVariableRepository = new GenericRepository<EmailVariable>(_context);
+
+            EmailVariableUsageRepository = new GenericRepository<EmailVariableUsage>(_context);
 
             GraduateRepository = new GenericRepository<Graduate>(_context);
 
@@ -197,7 +198,6 @@ namespace StoreService.Persistence
             company.Address = address;
 
             _context.Companies.Add(company);
-
             _context.SaveChanges();
 
             Console.WriteLine("Search for Resources in the HTL Leonding ...");
@@ -382,11 +382,11 @@ namespace StoreService.Persistence
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
 
-            string elapsedTime = String.Format("{0:00}:{1:00}.{2:00}",ts.Minutes, ts.Seconds,
+            string elapsedTime = String.Format("{0:00}:{1:00}.{2:00}", ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
             Console.WriteLine("=====================================================================================================================");
-            Console.WriteLine("========================= DATABASE OPERATION SUCCESFULL TOOK " + elapsedTime+ " ===============================================");
+            Console.WriteLine("========================= DATABASE OPERATION SUCCESFULL TOOK " + elapsedTime + " ===============================================");
             Console.WriteLine("=====================================================================================================================\n\n");
         }
     }

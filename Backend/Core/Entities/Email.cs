@@ -18,7 +18,7 @@ namespace Backend.Core.Entities
         [Required]
         public string Subject { get; set; }
 
-        public List<EmailVariable> AvailableVariables { get; set; }
+        public List<EmailVariableUsage> AvailableVariables { get; set; }
 
         public Email() { }
 
