@@ -35,41 +35,7 @@ namespace Backend.Controllers
                 }
             }
         }
-
-        //[HttpGet("byName")]
-        //public IActionResult GetEmailByName(string name)
-        //{
-        //    using (IUnitOfWork uow = new UnitOfWork())
-        //    {
-        //        Email email = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
-        //        if (email != null)
-        //        {
-        //            return new OkObjectResult(email);
-        //        }
-        //        else
-        //        {
-        //            return new NoContentResult();
-        //        }
-        //    }
-        //}
-
-        //[HttpGet("byId/{emailId:int}")]
-        //public IActionResult GetEmailById(long emailId)
-        //{
-        //    using (IUnitOfWork uow = new UnitOfWork())
-        //    {
-        //        Email email = uow.EmailRepository.Get(m => m.Id == emailId).FirstOrDefault();
-        //        if (email != null)
-        //        {
-        //            return new OkObjectResult(email);
-        //        }
-        //        else
-        //        {
-        //            return new NoContentResult();
-        //        }
-        //    }
-        //}
-
+        
         [HttpPut]
         public IActionResult UpdateMail([FromBody] EmailDTO email)
         {
@@ -81,7 +47,7 @@ namespace Backend.Controllers
                 {
                     uow.EmailRepository.Update(emailEntity);
                     uow.Save();
-                    return new OkResult();
+                    return new OkObjectResult(mapEmailToDto(emailEntity));
                 }
                 return new BadRequestResult();
             }

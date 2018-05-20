@@ -23,7 +23,7 @@ namespace Backend.Core
         public EmailVariable(string name, string value, string entity)
         {
             Name = name;
-            Value = value;
+            Value = entity + "." + value;
             Entity = entity;
         }
     }

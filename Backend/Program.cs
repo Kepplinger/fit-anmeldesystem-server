@@ -16,11 +16,10 @@ namespace Backend
 
         public static void Main(string[] args)
         {
-            using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
-            {
-                uow.FillDb();
-                EmailHelper.InitializeEmails();
-            }
+            //using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
+            //{
+            //    uow.FillDb();
+            //}
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
