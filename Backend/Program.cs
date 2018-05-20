@@ -19,7 +19,6 @@ namespace Backend
             using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork())
             {
                 uow.FillDb();
-                EmailHelper.InitializeEmails();
             }
 
             var builder = new ConfigurationBuilder()
