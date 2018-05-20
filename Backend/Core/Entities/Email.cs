@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Core.Entities
@@ -16,6 +17,8 @@ namespace Backend.Core.Entities
 
         [Required]
         public string Subject { get; set; }
+
+        public List<EmailVariable> AvailableVariables { get; set; }
 
         public Email() { }
 

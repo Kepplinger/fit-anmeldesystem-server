@@ -107,6 +107,7 @@ namespace Backend
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
+            
             createRoles(provider);
 
         }

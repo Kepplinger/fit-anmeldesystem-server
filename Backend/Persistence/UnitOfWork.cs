@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using SQLitePCL;
 using Backend.Core.Contracts.Repositories;
 using System.Diagnostics;
+using Backend.Core;
 
 namespace StoreService.Persistence
 {
@@ -36,6 +37,8 @@ namespace StoreService.Persistence
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
         public IGenericRepository<Address> AddressRepository { get; }
         public IGenericRepository<Email> EmailRepository { get; }
+        public IGenericRepository<EmailVariable> EmailVariableRepository { get; }
+
 
         public IGenericRepository<Tag> TagRepository { get; }
         public IGenericRepository<Graduate> GraduateRepository { get; }
@@ -85,6 +88,8 @@ namespace StoreService.Persistence
 
             EmailRepository = new GenericRepository<Email>(_context);
 
+            EmailVariableRepository = new GenericRepository<EmailVariable>(_context);
+
             GraduateRepository = new GenericRepository<Graduate>(_context);
 
             TagRepository = new GenericRepository<Tag>(_context);
@@ -92,7 +97,6 @@ namespace StoreService.Persistence
             BookingBranchesRepository = new GenericRepository<BookingBranches>(_context);
 
             PresentationBranchesRepository = new GenericRepository<PresentationBranches>(_context);
-
         }
 
         /// <summary>
@@ -158,7 +162,6 @@ namespace StoreService.Persistence
             Console.WriteLine("Make Migrations ...");
             MigrateDatabase();
 
-
             Console.WriteLine("Search for Companies who want to join FIT ...");
             // Set up Company
             Company company = new Company();
@@ -221,12 +224,11 @@ namespace StoreService.Persistence
             _context.Resources.Add(resource2);
             _context.SaveChanges();
 
-
             //Representatives
             List<Representative> repre = new List<Representative>();
             Representative repr = new Representative();
             repr.Email = "andi.sakal15@gmail.com";
-            repr.ImageUrl = "iagendans";
+            repr.Image = null;
             repr.Name = "Andrej Sakal";
 
             _context.Rerpresentatives.Add(repr);
@@ -357,7 +359,7 @@ namespace StoreService.Persistence
                 booking.EstablishmentsCountInt = 0;
                 booking.EstablishmentsInt = "";
                 booking.Homepage = "www.fit.com";
-                booking.Logo = "logo";
+                booking.Logo = null;
                 booking.PhoneNumber = "firmenphonenr";
 
                 _context.Bookings.Add(booking);
@@ -368,7 +370,7 @@ namespace StoreService.Persistence
                 booking.Resources = new List<ResourceBooking>();
                 ResourceBooking rb = new ResourceBooking();
                 rb.Booking = booking;
-                
+
                 rb.Resource = resource;
                 _context.ResourceBookings.Add(rb);
                 _context.SaveChanges();

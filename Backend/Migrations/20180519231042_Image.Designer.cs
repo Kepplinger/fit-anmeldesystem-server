@@ -11,41 +11,15 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180519231042_Image")]
+    partial class Image
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Backend.Core.EmailVariable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("EmailId");
-
-                    b.Property<string>("Entity")
-                        .IsRequired();
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<string>("Value")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmailId");
-
-                    b.ToTable("EmailVariable");
-                });
 
             modelBuilder.Entity("Backend.Core.Entities.Address", b =>
                 {
@@ -552,7 +526,7 @@ namespace Backend.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
-                    b.Property<int?>("ImageId");
+                    b.Property<int>("ImageId");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -791,14 +765,6 @@ namespace Backend.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Backend.Core.EmailVariable", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Email")
-                        .WithMany("AvailableVariables")
-                        .HasForeignKey("EmailId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>

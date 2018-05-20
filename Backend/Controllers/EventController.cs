@@ -181,6 +181,20 @@ namespace Backend.Controllers
         //    return new OkObjectResult(events);
         //}
 
+        [HttpGet("current")]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        public IActionResult GetLatestEvent()
+        {
+            Event e;
+            if ((e = this.GetCurrentEventLogic()) != null)
+            {
+                return new OkObjectResult(e);
+            }
+            else
+            {
+                return new NoContentResult();
+            }
+        }
 
         public Event GetCurrentEventLogic()
         {
@@ -246,21 +260,6 @@ namespace Backend.Controllers
                 return null;
             }
             return null;
-        }
-
-        [HttpGet("current")]
-        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        public IActionResult GetLatestEvent()
-        {
-            Event e;
-            if ((e = this.GetCurrentEventLogic()) != null)
-            {
-                return new OkObjectResult(e);
-            }
-            else
-            {
-                return new NoContentResult();
-            }
         }
     }
 }

@@ -7,12 +7,13 @@ using StoreService.Persistence;
 using System.Linq;
 using System.Reflection;
 using System.IO;
+using System.Collections.Generic;
+using Backend.Core;
 
 namespace Backend.Utils
 {
     public static class EmailHelper
     {
-
         // isPendingGottenCompany
         // isPendingGottenAdmin
         // IsPendingAcceptedCompany
@@ -23,19 +24,11 @@ namespace Backend.Utils
 
         public static void SendMail(Email mail, object param, string reciever)
         {
-            MailMessage objeto_mail = new MailMessage();
-
             //client config 
-            SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
-            client.Timeout = 10000;
-            client.UseDefaultCredentials = false;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+            SmtpClient client = EmailHelper.GetSmtpClient();
 
             //message config 
+            MailMessage objeto_mail = new MailMessage();
             objeto_mail.Subject = mail.Subject;
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress(reciever));
@@ -52,66 +45,53 @@ namespace Backend.Utils
             {
                 mail = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(mailName.ToLower())).FirstOrDefault();
             }
-            if (mail == null)
-            {
-                return false;
-            }
-            else
-            {
-                MailMessage objeto_mail = new MailMessage();
 
+            if (mail != null)
+            {
                 // Client config
-                SmtpClient client = new SmtpClient();
-                client.Host = "smtp.gmail.com";
-                client.Port = 587;
-                client.Timeout = 10000;
-                client.UseDefaultCredentials = false;
-                client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.EnableSsl = true;
-                client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+                SmtpClient client = EmailHelper.GetSmtpClient();
 
                 // Message config 
+                MailMessage objeto_mail = new MailMessage();
                 objeto_mail.Subject = mail.Subject;
                 objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
                 objeto_mail.To.Add(new MailAddress(reciever));
                 objeto_mail.IsBodyHtml = true;
-                if (mailName.Equals("SendBookingAcceptedMail"))
+
+                // Add PDF-Attachment for Booking-Registrations
+                if (mailName.Equals("SendBookingAcceptedMail") && param is Booking)
                 {
-                    if (param is Booking)
-                    {
-                        string file;
-
-                        Booking booking = param as Booking;
-
-                        using (IUnitOfWork uow = new UnitOfWork())
-                        {
-                            Booking boo = uow.BookingRepository.GetById(booking.Id);
-                            file = boo.PdfFilePath;
-
-                        }
-
-                        byte[] bytes = System.IO.File.ReadAllBytes(file);
-                        objeto_mail.Attachments.Add(new Attachment(file));
-
-                    }
-                    
+                    EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
                 }
+
                 objeto_mail.Body = mail.Template; //replaceParamsWithValues(new Company(), mail.Template);
                 client.SendMailAsync(objeto_mail);
                 return true;
             }
+            else
+            {
+                return false;
+            }
         }
 
+        /// <summary>
+        /// Searches mail for {{ variableName }} occurrences an replaces them with the corresponding value.
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="template"></param>
+        /// <returns></returns>
         public static string replaceParamsWithValues(object param, string template)
         {
             for (int i = 0; i < template.Length - 2; i++)
             {
                 string paramName = "";
                 string temp = "";
+
                 if (i == 569)
                 {
                     Console.WriteLine();
                 }
+
                 string checker = template.Substring(i, 2);
                 if (checker.Equals("{{") == true)
                 {
@@ -124,7 +104,7 @@ namespace Backend.Utils
                     if (param.GetType().Name.Equals(nameof(Company)))
                     {
                         Company c = new Company();
-                        paramName = paramName.ToLower().Replace("company.","");
+                        paramName = paramName.ToLower().Replace("company.", "");
 
                         //var variable = GetPropValue(param, paramName);
                     }
@@ -182,7 +162,6 @@ namespace Backend.Utils
                                              "</html>",
                                "Ein neuer Firmenantrag wurde eingereich");
 
-
             Email IsPendingAcceptedCompany = new Email("IsPendingAcceptedCompany",
                                 "Diese Email wird versendet wenn ein Firmenantrag akzeptiert wurde",
                                                        "<!DOCTYPE html>" +
@@ -209,16 +188,16 @@ namespace Backend.Utils
                                "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT");
 
             Email CompanyAssigned = new Email("CompanyAssigned",
-                                "Diese Email wird an die Firma verschickt wenn es die Firma bereits gibt und Sie dieser zugewiesen wurde",
-                                            "<!DOCTYPE html>" +
-                                             "<html>" +
-                                             "<head>" +
-                                             "</head>" +
-                                             "<body>" +
-                                             "<p>Firma bereits vorhanden wurde {{Company.RegistrationToken}}" +
-                                             "</body>" +
-                                             "</html>",
-                               "Firma bereits vorhande - ABSLEO HTL Leonding FIT");
+                      "Diese Email wird an die Firma verschickt wenn es die Firma bereits gibt und Sie dieser zugewiesen wurde",
+                                  "<!DOCTYPE html>" +
+                                   "<html>" +
+                                   "<head>" +
+                                   "</head>" +
+                                   "<body>" +
+                                   "<p>Firma bereits vorhanden wurde {{Company.RegistrationToken}}" +
+                                   "</body>" +
+                                   "</html>",
+                     "Firma bereits vorhande - ABSLEO HTL Leonding FIT");
 
             Email SendBookingAcceptedMail = new Email("SendBookingAcceptedMail",
                                 "Diese Email wird an die Firma versendet wenn die FIT-Buchung akzeptiert wurde",
@@ -258,8 +237,17 @@ namespace Backend.Utils
                                              "</html>",
                                "FIT-Anmeldung - ABSLEO HTL Leonding FIT");
 
+            List<EmailVariable> variables = new List<EmailVariable> {
+                new EmailVariable("Firma-Name", nameof(Company.Name), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Vorname", nameof(Company.Contact.FirstName), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Nachname", nameof(Company.Contact.LastName), nameof(Company))
+            };
+
             using (IUnitOfWork uow = new UnitOfWork())
             {
+                uow.EmailVariableRepository.InsertMany(variables);
+                uow.Save();
+
                 uow.EmailRepository.Insert(CompanyAssigned);
                 uow.EmailRepository.Insert(IsPendingAcceptedCompany);
                 uow.EmailRepository.Insert(IsPendingDeniedCompany);
@@ -269,6 +257,34 @@ namespace Backend.Utils
                 uow.EmailRepository.Insert(SendForgotten);
                 uow.Save();
             }
+        }
+
+        private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking)
+        {
+            string file;
+
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                Booking boo = uow.BookingRepository.GetById(booking.Id);
+                file = boo.PdfFilePath;
+            }
+
+            byte[] bytes = System.IO.File.ReadAllBytes(file);
+            objeto_mail.Attachments.Add(new Attachment(file));
+        }
+
+        private static SmtpClient GetSmtpClient()
+        {
+            SmtpClient client = new SmtpClient();
+            client.Host = "smtp.gmail.com";
+            client.Port = 587;
+            client.Timeout = 10000;
+            client.UseDefaultCredentials = false;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+
+            return client;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Backend.Controllers
     {
         [HttpGet]
         [ProducesResponseType(typeof(Email), StatusCodes.Status200OK)]
-        public IActionResult GetAllEmail()
+        public IActionResult GetAllEmails()
         {
             using (IUnitOfWork uow = new UnitOfWork())
             {
@@ -32,39 +32,40 @@ namespace Backend.Controllers
                 }
             }
         }
-        [HttpGet("byName")]
-        public IActionResult GetEmailByName(string name)
-        {
-            using (IUnitOfWork uow = new UnitOfWork())
-            {
-                Email email = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
-                if (email != null)
-                {
-                    return new OkObjectResult(email);
-                }
-                else
-                {
-                    return new NoContentResult();
-                }
-            }
-        }
 
-        [HttpGet("byId/{emailId:int}")]
-        public IActionResult GetEmailById(long emailId)
-        {
-            using (IUnitOfWork uow = new UnitOfWork())
-            {
-                Email email = uow.EmailRepository.Get(m => m.Id == emailId).FirstOrDefault();
-                if (email != null)
-                {
-                    return new OkObjectResult(email);
-                }
-                else
-                {
-                    return new NoContentResult();
-                }
-            }
-        }
+        //[HttpGet("byName")]
+        //public IActionResult GetEmailByName(string name)
+        //{
+        //    using (IUnitOfWork uow = new UnitOfWork())
+        //    {
+        //        Email email = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
+        //        if (email != null)
+        //        {
+        //            return new OkObjectResult(email);
+        //        }
+        //        else
+        //        {
+        //            return new NoContentResult();
+        //        }
+        //    }
+        //}
+
+        //[HttpGet("byId/{emailId:int}")]
+        //public IActionResult GetEmailById(long emailId)
+        //{
+        //    using (IUnitOfWork uow = new UnitOfWork())
+        //    {
+        //        Email email = uow.EmailRepository.Get(m => m.Id == emailId).FirstOrDefault();
+        //        if (email != null)
+        //        {
+        //            return new OkObjectResult(email);
+        //        }
+        //        else
+        //        {
+        //            return new NoContentResult();
+        //        }
+        //    }
+        //}
 
         [HttpPut]
         public IActionResult UpdateMail([FromBody] Email email)
