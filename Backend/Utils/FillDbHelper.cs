@@ -335,19 +335,20 @@ namespace Backend.Utils
                                "FIT-Anmeldung - ABSLEO HTL Leonding FIT");
             #endregion
 
+            // generate email variables
             List<EmailVariable> variables = new List<EmailVariable> {
-                new EmailVariable("Firma-Name", nameof(Company.Name), nameof(Company)),
-                new EmailVariable("Firma-Kontakt-Anrede", nameof(Company.Contact.Gender), nameof(Company)),
-                new EmailVariable("Firma-Kontakt-Vorname", nameof(Company.Contact.FirstName), nameof(Company)),
-                new EmailVariable("Firma-Kontakt-Nachname", nameof(Company.Contact.LastName), nameof(Company)),
-                new EmailVariable("Login-Token", nameof(Company.RegistrationToken), nameof(Company)),
-                new EmailVariable("Mitglied seit", nameof(Company.MemberSince), nameof(Company)),
-                new EmailVariable("Firma-Name", nameof(Booking.Company.Name), nameof(Booking)),
-                new EmailVariable("Firma-Kontakt-Anrede", nameof(Booking.Company.Contact.Gender), nameof(Booking)),
-                new EmailVariable("Firma-Kontakt-Vorname", nameof(Booking.Company.Contact.FirstName), nameof(Booking)),
-                new EmailVariable("Firma-Kontakt-Nachname", nameof(Booking.Company.Contact.LastName), nameof(Booking)),
-                new EmailVariable("Login-Token", nameof(Booking.Company.RegistrationToken), nameof(Booking)),
-                new EmailVariable("Mitglied seit", nameof(Booking.Company.MemberSince), nameof(Booking)),
+                new EmailVariable("Firma-Name", concatFieldPath(nameof(Company.Name)), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Anrede",  concatFieldPath(nameof(Company.Contact), nameof(Contact.Gender)), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Vorname", concatFieldPath(nameof(Company.Contact), nameof(Contact.FirstName)), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Nachname", concatFieldPath(nameof(Company.Contact), nameof(Contact.LastName)), nameof(Company)),
+                new EmailVariable("Login-Token", concatFieldPath(nameof(Company.RegistrationToken)), nameof(Company)),
+                new EmailVariable("Mitglied seit",  concatFieldPath(nameof(Company.MemberSince)), nameof(Company)),
+                new EmailVariable("Firma-Name",  concatFieldPath(nameof(Booking.Company), nameof(Company.Name)), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Anrede",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.Gender)), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Vorname",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.FirstName)), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Nachname",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.LastName)), nameof(Booking)),
+                new EmailVariable("Login-Token",  concatFieldPath(nameof(Booking.Company), nameof(Company.RegistrationToken)), nameof(Booking)),
+                new EmailVariable("Mitglied seit",  concatFieldPath(nameof(Booking.Company), nameof(Company.MemberSince)), nameof(Booking)),
             };
 
             uow.EmailVariableRepository.InsertMany(variables);
@@ -365,6 +366,7 @@ namespace Backend.Utils
             SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).ToList();
             SendForgotten.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgotten, v)).ToList();
 
+            // persist emails
             uow.EmailRepository.Insert(CompanyAssigned);
             uow.EmailRepository.Insert(IsPendingAcceptedCompany);
             uow.EmailRepository.Insert(IsPendingDeniedCompany);
@@ -373,6 +375,16 @@ namespace Backend.Utils
             uow.EmailRepository.Insert(SendBookingAcceptedMail);
             uow.EmailRepository.Insert(SendForgotten);
             uow.Save();
+        }
+
+        /// <summary>
+        /// Use to concat the field name paths of string (e.g. Company.Contact.FirstName).
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private static string concatFieldPath(params string[] args)
+        {
+            return String.Join('.', args);
         }
     }
 }

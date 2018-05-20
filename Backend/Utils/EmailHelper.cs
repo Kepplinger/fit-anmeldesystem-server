@@ -9,6 +9,7 @@ using System.Reflection;
 using System.IO;
 using System.Collections.Generic;
 using Backend.Core;
+using System.Text.RegularExpressions;
 
 namespace Backend.Utils
 {
@@ -64,7 +65,8 @@ namespace Backend.Utils
                     EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
                 }
 
-                objeto_mail.Body = mail.Template; //replaceParamsWithValues(new Company(), mail.Template);
+                replaceParamsWithValues(mail, param);
+                objeto_mail.Body = mail.Template;
                 client.SendMailAsync(objeto_mail);
                 return true;
             }
@@ -80,62 +82,55 @@ namespace Backend.Utils
         /// <param name="param"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static string replaceParamsWithValues(object param, string template)
+        public static void replaceParamsWithValues(Email email, object param)
         {
-            for (int i = 0; i < template.Length - 2; i++)
-            {
-                string paramName = "";
-                string temp = "";
+            email.Template = Regex.Replace(
+                email.Template,
+                "{{.*}}",
+                (Match m) => {
 
-                if (i == 569)
-                {
-                    Console.WriteLine();
+                    // remove all whitespaces and double curly braces
+                    string variable = Regex.Replace(m.Value, "(\\s+|{{|}})", string.Empty);
+
+                    return param.GetPropValue(variable).ToString();
                 }
+            );
 
-                string checker = template.Substring(i, 2);
-                if (checker.Equals("{{") == true)
-                {
-                    // von {{ bis ende kürzen
-                    temp = template.Substring(i + 2);
-                    //paramName = temp.Substring(i + 2, );
+            Console.WriteLine(email.Template);
 
-                    // per reflection value von dem param holen
+            //for (int i = 0; i < template.Length - 2; i++)
+            //{
+            //    string paramName = "";
+            //    string temp = "";
 
-                    if (param.GetType().Name.Equals(nameof(Company)))
-                    {
-                        Company c = new Company();
-                        paramName = paramName.ToLower().Replace("company.", "");
+            //    if (i == 569)
+            //    {
+            //        Console.WriteLine();
+            //    }
 
-                        //var variable = GetPropValue(param, paramName);
-                    }
+            //    string checker = template.Substring(i, 2);
+            //    if (checker.Equals("{{") == true)
+            //    {
+            //        // von {{ bis ende kürzen
+            //        temp = template.Substring(i + 2);
+            //        //paramName = temp.Substring(i + 2, );
 
-                }
-                checker = "";
-            }
-            return "";
+            //        // per reflection value von dem param holen
+
+            //        if (param.GetType().Name.Equals(nameof(Company)))
+            //        {
+            //            Company c = new Company();
+            //            paramName = paramName.ToLower().Replace("company.", "");
+
+            //            //var variable = GetPropValue(param, paramName);
+            //        }
+
+            //    }
+            //    checker = "";
+            //}
+            //return "";
         }
 
-        public static Object GetPropValue(this Object obj, String propName)
-        {
-            string[] nameParts = propName.Split('.');
-            if (nameParts.Length == 1)
-            {
-                return obj.GetType().GetProperty(propName).GetValue(obj, null);
-            }
-
-            foreach (String part in nameParts)
-            {
-                if (obj == null) { return null; }
-
-                Type type = obj.GetType();
-                PropertyInfo info = type.GetProperty(part);
-                if (info == null) { return null; }
-
-                obj = info.GetValue(obj, null);
-            }
-            return obj;
-        }
-        
         private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking)
         {
             string file;
