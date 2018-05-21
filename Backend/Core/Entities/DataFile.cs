@@ -11,6 +11,8 @@ namespace Backend.Core.Entities
 
         public string DataUrl { get; set; }
 
+        public DataFile() { }
+
         public DataFile(string name, string dataUrl)
         {
             Name = name;

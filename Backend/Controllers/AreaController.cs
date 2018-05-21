@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,18 +40,7 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-                if (ex.InnerException != null)
-                {
-                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
-                    System.Console.WriteLine(error);
-                    return new BadRequestObjectResult(error);
-                }
-                else
-                {
-                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
-                    System.Console.WriteLine(error);
-                    return new BadRequestObjectResult(error);
-                }
+                return DbErrorHelper.CatchDbError(ex);
             }
             return new StatusCodeResult(StatusCodes.Status400BadRequest);
         }
