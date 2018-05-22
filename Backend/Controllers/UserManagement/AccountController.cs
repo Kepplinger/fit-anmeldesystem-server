@@ -17,9 +17,7 @@ namespace Backend.Controllers.UserManagement
     public class AccountController : Controller
     {
         private IUnitOfWork uow;
-        ApplicationDbContext _appDbContext;
         private readonly UserManager<IdentityUser> _userManager;
-       
 
         public AccountController(UserManager<IdentityUser> userManager, IUnitOfWork uow)
         {
@@ -35,7 +33,6 @@ namespace Backend.Controllers.UserManagement
             {
                 return BadRequest(ModelState);
             }
-
             
             var result = await _userManager.CreateAsync(registered.User, registered.RegistrationPassword);
             await _userManager.AddToRoleAsync(registered.User, "Admin");

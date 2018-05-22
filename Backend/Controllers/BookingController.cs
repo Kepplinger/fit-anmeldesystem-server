@@ -38,7 +38,6 @@ namespace Backend.Controllers
         [Consumes("application/json")]
         public IActionResult Create([FromBody] Booking jsonBooking)
         {
-
             if (jsonBooking != null && this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault() != null)
                 this.Update(jsonBooking);
             else if (jsonBooking != null)
@@ -60,106 +59,22 @@ namespace Backend.Controllers
                 try
                 {
                     // Update already persistent Entities ----------------------
-                    Company toUpdate = this._unitOfWork.CompanyRepository.Get(filter: p => p.Id == jsonBooking.Company.Id).FirstOrDefault();
-                    Booking btoUpdate = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
-                    if (jsonBooking.fk_Company != 0 && toUpdate != null)
-                    {
-                        foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
-                        {
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") 
-                                && p.GetValue(jsonBooking.Company) != null && !p.GetValue(jsonBooking.Company).Equals(p.GetValue(toUpdate)))
-                            {
-                                change.ChangeDate = DateTime.Now;
-                                change.ColumnName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company).ToString();
-                                change.OldValue = p.GetValue(toUpdate).ToString();
-                                change.TableName = nameof(Company);
-                                change.RowId = toUpdate.Address.Id;
-                                change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
-                                change.isAdminChange = false;
-                                change.isReverted = false;
-                                _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.Save();
-
-                                Console.WriteLine("Updated: " + change.ColumnName);
-                                change = new ChangeProtocol();
-                            }
-                        }
-                        _unitOfWork.CompanyRepository.Update(jsonBooking.Company);
-                        _unitOfWork.Save();
-                    }
+                    Booking bookingToUpdate = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
                     change = new ChangeProtocol();
-
-                    if (jsonBooking.Company.fk_Address != 0 && toUpdate.Address != null)
-                    {
-                        foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
-                        {
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") 
-                                && p.GetValue(jsonBooking.Company.Address) != null && !p.GetValue(jsonBooking.Company.Address).Equals(p.GetValue(toUpdate.Address)))
-                            {
-                                change.ChangeDate = DateTime.Now;
-                                change.ColumnName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Address).ToString();
-                                change.OldValue = p.GetValue(toUpdate.Address).ToString();
-                                change.TableName = nameof(Address);
-                                change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
-                                change.isAdminChange = false;
-                                change.isReverted = false;
-                                _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.Save();
-
-                                Console.WriteLine("Updated: " + change.ColumnName);
-                                change = new ChangeProtocol();
-                            }
-                        }
-                        _unitOfWork.AddressRepository.Update(jsonBooking.Company.Address);
-                        _unitOfWork.Save();
-                    }
-
-                    change = new ChangeProtocol();
-                    if (jsonBooking.Company.fk_Contact != 0 && toUpdate.Contact != null)
-                    {
-                        foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
-                        {
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") 
-                                && p.GetValue(jsonBooking.Company.Contact) != null && !p.GetValue(jsonBooking.Company.Contact).Equals(p.GetValue(toUpdate.Contact)))
-                            {
-                                change.ChangeDate = DateTime.Now;
-                                change.ColumnName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
-                                change.OldValue = p.GetValue(toUpdate.Contact).ToString();
-                                change.TableName = nameof(Contact);
-                                change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
-                                change.isAdminChange = false;
-                                change.isReverted = false;
-                                _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.Save();
-
-                                Console.WriteLine("Updated: " + change.ColumnName);
-                                change = new ChangeProtocol();
-                            }
-                        }
-                        _unitOfWork.ContactRepository.Update(jsonBooking.Company.Contact);
-                        _unitOfWork.Save();
-                    }
-                    change = new ChangeProtocol();
-                    if (jsonBooking.fk_FitPackage != 0 && btoUpdate.FitPackage != null)
+                    if (jsonBooking.fk_FitPackage != 0 && bookingToUpdate.FitPackage != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(FitPackage).GetProperties())
                         {
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                                && p.GetValue(jsonBooking.FitPackage) != null && !p.GetValue(jsonBooking.FitPackage).Equals(p.GetValue(btoUpdate.FitPackage)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
+                                && p.GetValue(jsonBooking.FitPackage) != null && !p.GetValue(jsonBooking.FitPackage).Equals(p.GetValue(bookingToUpdate.FitPackage)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
                                 change.NewValue = p.GetValue(jsonBooking.FitPackage).ToString();
-                                change.OldValue = p.GetValue(btoUpdate.FitPackage).ToString();
+                                change.OldValue = p.GetValue(bookingToUpdate.FitPackage).ToString();
                                 change.TableName = nameof(FitPackage);
                                 change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
+                                change.CompanyId = jsonBooking.fk_Company;
                                 change.isAdminChange = false;
                                 change.isReverted = false;
                                 _unitOfWork.ChangeRepository.Insert(change);
@@ -169,25 +84,25 @@ namespace Backend.Controllers
                                 change = new ChangeProtocol();
                             }
                         }
-                        _unitOfWork.PackageRepository.Update(jsonBooking.FitPackage );
+                        _unitOfWork.PackageRepository.Update(jsonBooking.FitPackage);
                         _unitOfWork.Save();
                     }
 
                     change = new ChangeProtocol();
-                    if (jsonBooking.fk_Presentation != 0 && btoUpdate.Presentation != null)
+                    if (jsonBooking.fk_Presentation != 0 && bookingToUpdate.Presentation != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Presentation).GetProperties())
                         {
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                                && p.GetValue(jsonBooking.Presentation) != null && !p.GetValue(jsonBooking.Presentation).Equals(p.GetValue(btoUpdate.Presentation)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
+                                && p.GetValue(jsonBooking.Presentation) != null && !p.GetValue(jsonBooking.Presentation).Equals(p.GetValue(bookingToUpdate.Presentation)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
-                                change.NewValue = p.GetValue(jsonBooking.Company.Contact).ToString();
-                                change.OldValue = p.GetValue(toUpdate).ToString();
+                                change.NewValue = p.GetValue(jsonBooking.Presentation).ToString();
+                                change.OldValue = p.GetValue(bookingToUpdate.Presentation).ToString();
                                 change.TableName = nameof(Presentation);
                                 change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
+                                change.CompanyId = jsonBooking.fk_Company;
                                 change.isAdminChange = false;
                                 change.isReverted = false;
                                 _unitOfWork.ChangeRepository.Insert(change);
@@ -202,20 +117,20 @@ namespace Backend.Controllers
                     }
 
                     change = new ChangeProtocol();
-                    if (jsonBooking.Id != 0 &&  btoUpdate != null)
+                    if (jsonBooking.Id != 0 && bookingToUpdate != null)
                     {
                         foreach (System.Reflection.PropertyInfo p in typeof(Booking).GetProperties())
                         {
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                                && p.GetValue(jsonBooking) != null && !p.GetValue(jsonBooking).Equals(p.GetValue(btoUpdate)))
+                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
+                                && p.GetValue(jsonBooking) != null && !p.GetValue(jsonBooking).Equals(p.GetValue(bookingToUpdate)))
                             {
                                 change.ChangeDate = DateTime.Now;
                                 change.ColumnName = p.Name;
                                 change.NewValue = Convert.ToString(p.GetValue(jsonBooking));
-                                change.OldValue = Convert.ToString(p.GetValue(btoUpdate));
+                                change.OldValue = Convert.ToString(p.GetValue(bookingToUpdate));
                                 change.TableName = nameof(Booking);
                                 change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
+                                change.CompanyId = jsonBooking.fk_Company;
                                 change.isAdminChange = false;
                                 change.isReverted = false;
                                 _unitOfWork.ChangeRepository.Insert(change);
@@ -224,11 +139,12 @@ namespace Backend.Controllers
                                 Console.WriteLine("Updated: " + change.ColumnName);
                                 change = new ChangeProtocol();
                             }
-                           
+
                         }
+
+                        ImageHelper.ManageBookingImages(jsonBooking);
                         _unitOfWork.BookingRepository.Update(jsonBooking);
                         _unitOfWork.Save();
-
                     }
                     _unitOfWork.Save();
                     change = new ChangeProtocol();
@@ -240,44 +156,39 @@ namespace Backend.Controllers
                 catch (DbUpdateException ex)
                 {
                     transaction.Rollback();
-                    if (ex.InnerException != null)
-                    {
-                        String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
-                        System.Console.WriteLine(error);
-                        return new BadRequestObjectResult(error);
-                    }
-                    else
-                    {
-                        String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
-                        System.Console.WriteLine(error);
-                        return new BadRequestObjectResult(error);
-                    }
+                    return DbErrorHelper.CatchDbError(ex);
                 }
             }
         }
 
         [NonAction]
-        public IActionResult Insert(Booking jsonBooking)
+        private IActionResult Insert(Booking jsonBooking)
         {
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
                 try
                 {
-                    foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                    // PRESENTATION
+                    if (jsonBooking.Presentation != null)
                     {
-                        _unitOfWork.PresentationBranchesRepository.Insert(item);
-                    }
-                    _unitOfWork.Save();
-                    _unitOfWork.PresentationRepository.Insert(jsonBooking.Presentation);
-                    _unitOfWork.Save();
+                        foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                        {
+                            _unitOfWork.PresentationBranchesRepository.Insert(item);
+                        }
 
-                    foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
-                    {
-                        item.fk_Presentation = jsonBooking.Presentation.Id;
-                        _unitOfWork.PresentationBranchesRepository.Update(item);
-                    }
-                    _unitOfWork.Save();
+                        _unitOfWork.Save();
+                        _unitOfWork.PresentationRepository.Insert(jsonBooking.Presentation);
+                        _unitOfWork.Save();
 
+                        foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                        {
+                            item.fk_Presentation = jsonBooking.Presentation.Id;
+                            _unitOfWork.PresentationBranchesRepository.Update(item);
+                        }
+                        _unitOfWork.Save();
+                    }
+
+                    // REPRESENTATIVES
                     for (int i = 0; i < jsonBooking.Representatives.Count; i++)
                     {
                         if (jsonBooking.Representatives.ElementAt(i).Id > 0)
@@ -287,26 +198,28 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                     }
 
-                    //Generate Pictures 
-                    string compImgPath = ImageHelper.BookingImages(jsonBooking);
-                    jsonBooking.Logo.DataUrl = compImgPath;
+                    // IMAGES 
+                    ImageHelper.ManageBookingImages(jsonBooking);
 
+                    // PACKAGE
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
                     _unitOfWork.Save();
 
+                    // EVENT
                     // Get the current active Event (nimmt an das es nur 1 gibt)
                     if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
                     {
-                        jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.Event.Id).FirstOrDefault();
+                        jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.fk_Event).FirstOrDefault();
                         _unitOfWork.Save();
                         jsonBooking.CreationDate = DateTime.Now;
                     }
                     else
                     {
-                        //falls es kein aktives gibt transaction rollbackn
+                        // make rollback if there are no active transactions
                         transaction.Rollback();
                     }
 
+                    // BRANCHES
                     List<BookingBranches> bbranches = new List<BookingBranches>();
                     foreach (BookingBranches item in jsonBooking.Branches)
                     {
@@ -316,6 +229,7 @@ namespace Backend.Controllers
                     }
                     jsonBooking.Branches = null;
 
+                    // RESOURCES
                     List<ResourceBooking> rbooking = new List<ResourceBooking>();
                     foreach (ResourceBooking item in jsonBooking.Resources)
                     {
@@ -328,6 +242,7 @@ namespace Backend.Controllers
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 
+                    // BRANCHES
                     foreach (BookingBranches item in bbranches)
                     {
                         item.fk_Booking = jsonBooking.Id;
@@ -336,6 +251,7 @@ namespace Backend.Controllers
                         _unitOfWork.Save();
                     }
 
+                    // RESOURCES
                     foreach (ResourceBooking item in rbooking)
                     {
                         item.fk_Booking = jsonBooking.Id;
@@ -345,12 +261,17 @@ namespace Backend.Controllers
 
                     jsonBooking.Resources = rbooking;
                     jsonBooking.Branches = bbranches;
-                    _unitOfWork.Save();
+                    _unitOfWork.Save(); // bringt des wos?
 
-                    jsonBooking.Location.isOccupied = true;
-                    _unitOfWork.LocationRepository.Update(jsonBooking.Location);
-                    _unitOfWork.Save();
+                    // LOCATION
+                    if (jsonBooking.Location != null)
+                    {
+                        jsonBooking.Location.isOccupied = true;
+                        _unitOfWork.LocationRepository.Update(jsonBooking.Location);
+                        _unitOfWork.Save();
+                    }
 
+                    // COMPANY
                     if (jsonBooking.Company == null)
                     {
                         jsonBooking.Company = _unitOfWork.CompanyRepository.Get(p => p.Id == jsonBooking.fk_Company).FirstOrDefault();
@@ -368,8 +289,6 @@ namespace Backend.Controllers
                     _unitOfWork.Dispose();
 
                     //Senden der Bestätigungs E-Mail
-
-
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
                     EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
@@ -379,18 +298,7 @@ namespace Backend.Controllers
                 catch (DbUpdateException ex)
                 {
                     transaction.Rollback();
-                    if (ex.InnerException != null)
-                    {
-                        String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
-                        System.Console.WriteLine(error);
-                        return new BadRequestObjectResult(error);
-                    }
-                    else
-                    {
-                        String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
-                        System.Console.WriteLine(error);
-                        return new BadRequestObjectResult(error);
-                    }
+                    return DbErrorHelper.CatchDbError(ex);
                 }
             }
         }

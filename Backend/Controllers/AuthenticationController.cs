@@ -122,7 +122,7 @@ namespace Backend.Controllers
         public IActionResult BookingLogin([FromBody] JToken json)
         {
             string token = json["token"].Value<string>();
-            Graduate actGraduate = this._unitOfWork.GraduateRepository.Get(g => g.RegistrationToken.Equals(token), includeProperties: "Address").FirstOrDefault();
+            Graduate actGraduate = this._unitOfWork.GraduateRepository.Get(g => g.RegistrationToken.ToUpper().Equals(token.ToUpper()), includeProperties: "Address").FirstOrDefault();
 
             if (actGraduate != null)
             {
@@ -133,7 +133,7 @@ namespace Backend.Controllers
                 return new OkObjectResult(graduateJson);
             }
 
-            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.Equals(token),includeProperties: "Address,Contact").FirstOrDefault();
+            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.ToUpper().Equals(token.ToUpper()),includeProperties: "Address,Contact").FirstOrDefault();
 
             if (actCompany == null)
             {

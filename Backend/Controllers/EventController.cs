@@ -144,18 +144,7 @@ namespace Backend.Controllers
             }
             catch (DbUpdateException ex)
             {
-                if (ex.InnerException != null)
-                {
-                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
-                    System.Console.WriteLine(error);
-                    return new BadRequestObjectResult(error);
-                }
-                else
-                {
-                    String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
-                    System.Console.WriteLine(error);
-                    return new BadRequestObjectResult(error);
-                }
+                return DbErrorHelper.CatchDbError(ex);
             }
         }
 

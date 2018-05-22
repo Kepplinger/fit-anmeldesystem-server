@@ -28,7 +28,7 @@ namespace Backend.Core.Entities
 
         [Required]
         public List<Representative> Representatives { get; set; }
-
+        
         public List<ResourceBooking> Resources { get; set; }
 
         [Required]
