@@ -27,7 +27,7 @@ namespace Backend.Utils
             string baseString = area.Graphic.DataUrl.Substring(indexof + 7);
 
             string dataFormat = getDataFormat(start);
-            
+
             //Read filepath from appsetting.json
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -50,50 +50,53 @@ namespace Backend.Utils
             return baseurl + "/images/" + filename;
         }
 
-        public static string BookingImages(Booking booking)
+        public static void ManageBookingImages(Booking booking)
         {
+            // Create directory for company
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json");
+            var configuration = builder.Build();
+
+            string baseUrl = configuration["Urls:ServerUrl"];
+            // string baseUrl = configuration["Urls:ServerUrl"];
+            string filePath = configuration["ImageFilePaths:ServerImages"];
+
+            using (IUnitOfWork uow = new UnitOfWork())
+            {
+                Company company = uow.CompanyRepository.Get(comp => comp.Id == booking.fk_Company).FirstOrDefault();
+                filePath = filePath + company.Name;
+                baseUrl = baseUrl + "\\" + company.Name;
+            }
+
+            System.IO.Directory.CreateDirectory(filePath);
+
             if (booking.Logo != null && booking.Logo.DataUrl != null && booking.Logo.DataUrl.Contains("base64,"))
             {
-                Company company;
-
-                using (IUnitOfWork uow = new UnitOfWork())
-                {
-                    company = uow.CompanyRepository.Get(comp => comp.Id == booking.fk_Company).FirstOrDefault();
-                }
-
-                // Create directory for company
-                var builder = new ConfigurationBuilder()
-                   .SetBasePath(Directory.GetCurrentDirectory())
-                   .AddJsonFile("appsettings.json");
-                var configuration = builder.Build();
-                string filepath = configuration["ImageFilePaths:ServerImages"];
-                filepath = filepath + company.Name;
-                string baseurl = configuration["Urls:ServerUrl"];
-
-                System.IO.Directory.CreateDirectory(filepath);
-                
-                int logoIndexOf = booking.Logo.DataUrl.IndexOf("base64,");
-                string logoStart = booking.Logo.DataUrl.Substring(0, logoIndexOf);
-                string logoBaseString = booking.Logo.DataUrl.Substring(logoIndexOf + 7);
-                string logoDataFormat = getDataFormat(logoStart);
-
-                string logoFilePath = filepath + "/companyLogo" + logoDataFormat;
-
-                ImageHelper.Base64ToImage(logoBaseString, logoFilePath);
-                
-                for (int i = 0; i < booking.Representatives.Count; i++)
-                {
-                    int represIndexOf = booking.Representatives[i].Image.DataUrl.IndexOf("base64,");
-                    string represStart = booking.Representatives[i].Image.DataUrl.Substring(0, represIndexOf);
-                    string represBaseString = booking.Representatives[i].Image.DataUrl.Substring(represIndexOf + 7);
-                    string represDataFormat = getDataFormat(represStart);
-                    string represFilePath = filepath + "/contact" + Convert.ToString(i) + represDataFormat;
-                    ImageHelper.Base64ToImage(represBaseString, represFilePath);
-                }
-                
-                return baseurl + "/images/" + company.Name;
+                booking.Logo.DataUrl = baseUrl + "\\" + ManageImage(booking.Logo, filePath);
             }
-            else return "noImageAdded";
+
+            for (int i = 0; i < booking.Representatives.Count; i++)
+            {
+                if (booking.Representatives[i].Image != null && booking.Representatives[i].Image.DataUrl != null && booking.Representatives[i].Image.DataUrl.Contains("base64,"))
+                {
+                    booking.Representatives[i].Image.DataUrl = baseUrl + "\\" + ManageImage(booking.Representatives[i].Image, filePath);
+                }
+            }
+        }
+
+        private static string ManageImage(DataFile image, string filePath)
+        {
+            int base64Index = image.DataUrl.IndexOf("base64,");
+
+            string descriptionPart = image.DataUrl.Substring(0, base64Index);
+            string base64Part = image.DataUrl.Substring(base64Index + 7);
+
+            string fileName = ImageHelper.GetHash() + getDataFormat(descriptionPart);
+
+            ImageHelper.Base64ToImage(base64Part, filePath + "\\" + fileName);
+
+            return fileName;
         }
 
         private static string GetHash()
@@ -123,7 +126,7 @@ namespace Backend.Utils
                 dataFormat = ".jpeg";
             else if (start.ToLower().Contains("gif"))
                 dataFormat = ".gif";
-            
+
             return dataFormat;
         }
     }

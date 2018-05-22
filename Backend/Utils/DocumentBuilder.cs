@@ -18,10 +18,10 @@ namespace Backend.Utils
 {
     public class DocumentBuilder
     {
-        private char cchecked ='\u221A';
-        private char unccecked ='\u00A8';
+        private char cchecked = '\u221A';
+        private char unccecked = '\u00A8';
         public const string DOCUMENT_DESTINATION = "./Pdfs/";
-    
+
         private PdfWriter writer;
 
         public DocumentBuilder()
@@ -47,7 +47,8 @@ namespace Backend.Utils
                 beautyInternational = beautyInternational + tmp + " ";
             }
 
-            foreach(string tmp in autArray){
+            foreach (string tmp in autArray)
+            {
                 beautyNational = beautyNational + tmp + " ";
             }
             Company company = new Company();
@@ -58,7 +59,7 @@ namespace Backend.Utils
 
 
 
-                string file = DOCUMENT_DESTINATION + $"FIT-Anmeldung_{company.Name}_{DateTime.Now.ToString("ddMMyyyy")}.pdf";
+            string file = DOCUMENT_DESTINATION + $"FIT-Anmeldung_{company.Name}_{DateTime.Now.ToString("ddMMyyyy")}.pdf";
             using (IUnitOfWork uow = new UnitOfWork())
             {
                 Booking boo = uow.BookingRepository.GetById(booking.Id);
@@ -66,7 +67,7 @@ namespace Backend.Utils
                 uow.BookingRepository.Update(boo);
                 uow.Save();
             }
-                writer = new PdfWriter(file);
+            writer = new PdfWriter(file);
 
             PdfDocument pdf = new PdfDocument(writer);
             pdf.GetDocumentInfo()
@@ -82,8 +83,8 @@ namespace Backend.Utils
             Document document = new Document(pdf);
 
             Image imageHeader = new Image(iText.IO.Image.ImageDataFactory.Create("./ImagesPdf/Header.png"));
-            imageHeader.ScaleToFit(595,80);
-            imageHeader.SetFixedPosition(0,785);
+            imageHeader.ScaleToFit(595, 80);
+            imageHeader.SetFixedPosition(0, 785);
 
             Image imageFooter = new Image(iText.IO.Image.ImageDataFactory.Create("./ImagesPdf/Footer.png"));
             imageFooter.ScaleToFit(595, 90);
@@ -109,9 +110,9 @@ namespace Backend.Utils
                 );
 
 
-                Cell cell = new Cell();
-                Table table = new Table(2);
-                table.UseAllAvailableWidth();
+            Cell cell = new Cell();
+            Table table = new Table(2);
+            table.UseAllAvailableWidth();
             float[] fuck = { 0, 123, 255, 100 };
             cell.Add(new Paragraph("Stammdaten").SetBold());
             cell.SetBackgroundColor(myColor);
@@ -124,14 +125,19 @@ namespace Backend.Utils
             table.AddCell(cell);
             cell = new Cell();
 
-                table.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.WHITE);
-                table.SetFontColor(iText.Kernel.Colors.ColorConstants.BLACK);
-                table.AddCell("Firmen Name");
-                table.AddCell(booking.Company.Name);
+            table.SetBackgroundColor(iText.Kernel.Colors.ColorConstants.WHITE);
+            table.SetFontColor(iText.Kernel.Colors.ColorConstants.BLACK);
+            table.AddCell("Firmen Name");
+            table.AddCell(booking.Company.Name);
             table.AddCell("Ihr gewähltes Paket");
             table.AddCell(booking.FitPackage.Name);
-            table.AddCell("Ihr Standplatz");
-            table.AddCell(booking.Location.Number);
+
+            if (booking.Location != null)
+            {
+                table.AddCell("Ihr Standplatz");
+                table.AddCell(booking.Location.Number);
+            }
+
             table.AddCell("Adresse");
             table.AddCell(booking.Company.Address.Street + "." + booking.Company.Address.StreetNumber + ", " + booking.Company.Address.ZipCode + " " + booking.Company.Address.City);
 
@@ -189,12 +195,13 @@ namespace Backend.Utils
             else
                 table.AddCell(imageNo.SetHorizontalAlignment(HorizontalAlignment.CENTER));
 
-            foreach(BookingBranches branch in booking.Branches){
-                table.AddCell("Sie vergeben "+branch.Branch.Name+"?");
-                    table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));
+            foreach (BookingBranches branch in booking.Branches)
+            {
+                table.AddCell("Sie vergeben " + branch.Branch.Name + "?");
+                table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));
             }
 
-      
+
 
 
             document.Add(table);
@@ -222,7 +229,7 @@ namespace Backend.Utils
             document.Add(table);
 
             document.Close();
-            
+
             // ignored by
             Table topTable = new Table(UnitValue.CreatePercentArray(new float[] { 100f }), true);
 
@@ -601,32 +608,32 @@ namespace Backend.Utils
                 .SetFontSize(8)
                 .SetMargin(0)
                 .SetTextAlignment(TextAlignment.JUSTIFIED_ALL));*/
-        }
+    }
 
-        /*public void AddFooter(Document document, PdfFont font, Student stud)
+    /*public void AddFooter(Document document, PdfFont font, Student stud)
+    {
+        Paragraph lFooter = new Paragraph()
+            .Add(new Text("HTBLA Leonding"))
+            .SetFontSize(10)
+            .SetFont(font);
+        Paragraph rFooter = new Paragraph()
+            .Add(new Text($"Erstellt für {stud.UserName}"))
+            .SetFontSize(10)
+            .SetFont(font);
+
+        for (int i = 1; i <= document.GetPdfDocument().GetNumberOfPages(); i++)
         {
-            Paragraph lFooter = new Paragraph()
-                .Add(new Text("HTBLA Leonding"))
-                .SetFontSize(10)
-                .SetFont(font);
-            Paragraph rFooter = new Paragraph()
-                .Add(new Text($"Erstellt für {stud.UserName}"))
-                .SetFontSize(10)
-                .SetFont(font);
+            float lx = 20;
+            float rx = document.GetPdfDocument().GetPage(i).GetPageSize().GetWidth() - 20;
+            float y = document.GetPdfDocument().GetPage(i).GetPageSize().GetBottom() + 20;
 
-            for (int i = 1; i <= document.GetPdfDocument().GetNumberOfPages(); i++)
-            {
-                float lx = 20;
-                float rx = document.GetPdfDocument().GetPage(i).GetPageSize().GetWidth() - 20;
-                float y = document.GetPdfDocument().GetPage(i).GetPageSize().GetBottom() + 20;
-
-                document.ShowTextAligned(lFooter, lx, y, i,
-                        TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
-                document.ShowTextAligned(rFooter, rx, y, i,
-                        TextAlignment.RIGHT, VerticalAlignment.BOTTOM, 0);
-            }
+            document.ShowTextAligned(lFooter, lx, y, i,
+                    TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+            document.ShowTextAligned(rFooter, rx, y, i,
+                    TextAlignment.RIGHT, VerticalAlignment.BOTTOM, 0);
         }
-    }*/
+    }
+}*/
 
     public class CustomBorderCell : Cell
     {

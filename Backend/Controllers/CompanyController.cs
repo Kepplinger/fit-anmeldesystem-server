@@ -60,25 +60,17 @@ namespace Backend.Controllers
                     jsonComp.Address.Addition = "";
                 }
 
-                string finalCode = "";
-                string encoded = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-                encoded = encoded.Replace("/", "_").Replace("+", "-");
-                encoded = encoded.Substring(0, 12);
+                string loginCode = "";
 
-                for (int i = 1; i < encoded.Length; i++)
+                do
                 {
-                    if (i % 4 == 0)
-                    {
-                        finalCode += encoded[i - 1];
-                        finalCode += "-";
-                    }
-                    else
-                    {
-                        finalCode += encoded[i - 1];
-                    }
-                }
+                    loginCode = Guid.NewGuid().ToString().ToUpper();
+                    loginCode = loginCode.Replace("-", String.Empty);
+                    loginCode = loginCode.Substring(0, 12);
+                    loginCode = loginCode.Insert(4, "-").Insert(9, "-");
+                } while (_unitOfWork.CompanyRepository.Get(filter: c => c.RegistrationToken == loginCode).Count() != 0);
 
-                storeCompany.RegistrationToken = finalCode;
+                storeCompany.RegistrationToken = loginCode;
                 _unitOfWork.ContactRepository.Insert(storeCompany.Contact);
                 _unitOfWork.Save();
                 _unitOfWork.AddressRepository.Insert(storeCompany.Address);
@@ -243,18 +235,7 @@ namespace Backend.Controllers
                 catch (DbUpdateException ex)
                 {
                     transaction.Rollback();
-                    if (ex.InnerException != null)
-                    {
-                        String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
-                        System.Console.WriteLine(error);
-                        return new BadRequestObjectResult(error);
-                    }
-                    else
-                    {
-                        String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
-                        System.Console.WriteLine(error);
-                        return new BadRequestObjectResult(error);
-                    }
+                    return DbErrorHelper.CatchDbError(ex);
                 }
             }
 

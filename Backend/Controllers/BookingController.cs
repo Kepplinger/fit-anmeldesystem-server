@@ -141,9 +141,10 @@ namespace Backend.Controllers
                             }
 
                         }
+
+                        ImageHelper.ManageBookingImages(jsonBooking);
                         _unitOfWork.BookingRepository.Update(jsonBooking);
                         _unitOfWork.Save();
-
                     }
                     _unitOfWork.Save();
                     change = new ChangeProtocol();
@@ -161,7 +162,7 @@ namespace Backend.Controllers
         }
 
         [NonAction]
-        public IActionResult Insert(Booking jsonBooking)
+        private IActionResult Insert(Booking jsonBooking)
         {
             using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
             {
@@ -198,8 +199,7 @@ namespace Backend.Controllers
                     }
 
                     // IMAGES 
-                    string compImgPath = ImageHelper.BookingImages(jsonBooking);
-                    jsonBooking.Logo.DataUrl = compImgPath;
+                    ImageHelper.ManageBookingImages(jsonBooking);
 
                     // PACKAGE
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
