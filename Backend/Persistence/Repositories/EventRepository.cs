@@ -34,5 +34,30 @@ namespace Backend.Persistence.Repositories
             }
             return query.ToArray();
         }
+
+        /// <summary>
+        /// Returns the current Event. 
+        /// Current Event is either the nearest one in future, or the nearest one in past (past -> only if there is future event)
+        /// </summary>
+        /// <returns></returns>
+        public Event GetCurrentEvent() {
+
+            DateTime today = DateTime.Now;
+            DateTime currentEventDate = DateTime.MinValue;
+
+            // get future Event
+            var query = _context.Events.Where(e => DateTime.Compare(e.EventDate, today) > 0);
+
+            if (query.Count() > 0) {
+                currentEventDate = query.Min(e => e.EventDate);
+            }
+
+            // if no future Event exists
+            if (currentEventDate == DateTime.MinValue) {
+                currentEventDate = _context.Events.Max(e => e.EventDate);
+            }
+
+            return _context.Events.Where(e => e.EventDate == currentEventDate).FirstOrDefault();
+        }
     }
 }

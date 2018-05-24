@@ -57,7 +57,7 @@ namespace Backend.Controllers {
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetLatestEvent() {
             Event e;
-            if ((e = this.GetCurrentEventLogic()) != null) {
+            if ((e = this.DetermineCurrentEvent()) != null) {
                 return new OkObjectResult(e);
             } else {
                 return new NoContentResult();
@@ -75,7 +75,7 @@ namespace Backend.Controllers {
 
                         area.fk_Event = eventToUpdate.Id;
 
-                        if (area.Graphic != null&& area.Graphic.DataUrl != null && area.Graphic.DataUrl.Contains("base64,")) {
+                        if (area.Graphic != null && area.Graphic.DataUrl != null && area.Graphic.DataUrl.Contains("base64,")) {
                             area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
                         }
 
@@ -113,7 +113,12 @@ namespace Backend.Controllers {
                     _unitOfWork.Save();
                     transaction.Commit();
 
-                    return new OkObjectResult(fitEvent);
+                    this.DetermineCurrentEvent();
+
+                    return new OkObjectResult(new {
+                        changedEvent = fitEvent,
+                        events = _unitOfWork.EventRepository.Get()
+                    });
 
                 } else {
                     transaction.Rollback();
@@ -146,9 +151,12 @@ namespace Backend.Controllers {
 
                 _unitOfWork.EventRepository.Insert(fitEvent);
                 _unitOfWork.Save();
-                this.GetCurrentEventLogic();
+                this.DetermineCurrentEvent();
 
-                return new OkObjectResult(fitEvent);
+                return new OkObjectResult(new {
+                    changedEvent = fitEvent,
+                    events = _unitOfWork.EventRepository.Get()
+                });
 
             } else {
                 return new BadRequestObjectResult(new {
@@ -157,58 +165,36 @@ namespace Backend.Controllers {
             }
         }
 
-        private Event GetCurrentEventLogic() {
-            List<Event> allEvents = _unitOfWork.EventRepository.Get().ToList();
+        private Event DetermineCurrentEvent() {
+            if (_unitOfWork.EventRepository.Count() > 0) {
 
-            if (allEvents != null && allEvents.Count > 0) {
-                Event curEvent;
+                Event currentEvent = _unitOfWork.EventRepository.GetCurrentEvent();
 
-                // look if future events available (differ for 2 algo)
-                List<Event> futureEvents = _unitOfWork.EventRepository
-                                       .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                       .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => f.EventDate.Subtract(DateTime.Now) > TimeSpan.Zero)).ToList();
-
-                if (futureEvents != null && futureEvents.Count > 0) {
-                    curEvent = _unitOfWork
-                                       .EventRepository
-                                       .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                       .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => f.EventDate.Subtract(DateTime.Now) > TimeSpan.Zero && d.EventDate.Subtract(DateTime.Now) <= f.EventDate
-                                       .Subtract(DateTime.Now))).OrderBy(q => q.EventDate.Subtract(DateTime.Now)).FirstOrDefault();
-                } else {
-                    TimeSpan s;
-                    TimeSpan s1;
-                    DateTime mynow = DateTime.Now;
-                    curEvent = _unitOfWork
-                                       .EventRepository
-                                       .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                       .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => (s = d.EventDate.Subtract(mynow)) <= (s1 = f.EventDate
-                                       .Subtract(mynow))))
-                                       .OrderByDescending(q => q.EventDate.Subtract(mynow))
-                                       .FirstOrDefault();
-                }
-
-                // if curr event is available set it to isCurrent true and set al other to false
-                if (curEvent != null) {
+                // if curr event is available (and not already current) set it to isCurrent true and set al other to false
+                if (currentEvent != null) {
                     List<Event> events = _unitOfWork.EventRepository.Get(p => p.IsCurrent == true).ToList();
 
                     if (events != null && events.Count > 0) {
-                        for (int i = 0; i < events.Count; i++) {
-                            events.ElementAt(i).IsCurrent = false;
-                            _unitOfWork.EventRepository.Update(events.ElementAt(i));
-                            _unitOfWork.Save();
+                        foreach (Event fitEvent in events) {
+                            fitEvent.IsCurrent = false;
+                            _unitOfWork.EventRepository.Update(fitEvent);
                         }
+                        _unitOfWork.Save();
                     }
 
-                    curEvent.IsCurrent = true;
-                    _unitOfWork.EventRepository.Update(curEvent);
-                    _unitOfWork.Save();
-                    return curEvent;
+                    // check if registration is open
+                    bool isLocked = DateTime.Compare(currentEvent.RegistrationStart, DateTime.Now) > 0
+                        || DateTime.Compare(currentEvent.RegistrationEnd, DateTime.Now) < 0;
+
+                    if (!currentEvent.IsCurrent || currentEvent.IsLocked != isLocked) {
+                        currentEvent.IsCurrent = true;
+                        currentEvent.IsLocked = isLocked;
+                        _unitOfWork.EventRepository.Update(currentEvent);
+                        _unitOfWork.Save();
+                    }
+
+                    return currentEvent;
                 }
-            } else {
-                return null;
             }
             return null;
         }

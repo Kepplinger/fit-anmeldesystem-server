@@ -8,5 +8,6 @@ namespace Backend.Core.Contracts.Repositories
     {
         Event[] Get(Expression<Func<Event, bool>> filter = null, Func<IQueryable<Event>, IOrderedQueryable<Event>> orderBy = null, string includeProperties = "");
 
+        Event GetCurrentEvent();
     }
 }
