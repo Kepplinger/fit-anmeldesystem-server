@@ -14,18 +14,18 @@ using System.Diagnostics;
 using Backend.Core;
 using Backend.Utils;
 
-namespace StoreService.Persistence
-{
-    public class UnitOfWork : IUnitOfWork
-    {
+namespace StoreService.Persistence {
+
+    public class UnitOfWork : IUnitOfWork {
+
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
         private bool _disposed;
-
 
         /// <summary>
         ///     Konkrete Standard-Repositories. Keine Ableitung nötig
         /// </summary>
         public IGenericRepository<Area> AreaRepository { get; }
+        public IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
         public IGenericRepository<Branch> BranchRepository { get; }
         public IGenericRepository<Company> CompanyRepository { get; }
         public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
@@ -54,112 +54,78 @@ namespace StoreService.Persistence
 
         public IEventRepository EventRepository { get; }
 
+        public UnitOfWork() {
 
-        public UnitOfWork()
-        {
             _context = new ApplicationDbContext();
 
             AreaRepository = new GenericRepository<Area>(_context);
-
+            RegistrationStateRepository = new GenericRepository<RegistrationState>(_context);
             AddressRepository = new GenericRepository<Address>(_context);
-
             BookingRepository = new BookingRepository(_context);
-
             CompanyRepository = new GenericRepository<Company>(_context);
-
             ContactRepository = new GenericRepository<Contact>(_context);
-
             RepresentativeRepository = new GenericRepository<Representative>(_context);
-
             BranchRepository = new GenericRepository<Branch>(_context);
-
             LocationRepository = new GenericRepository<Location>(_context);
-
             PackageRepository = new GenericRepository<FitPackage>(_context);
-
             PresentationRepository = new GenericRepository<Presentation>(_context);
-
             ResourceRepository = new GenericRepository<Resource>(_context);
-
             ResourceBookingRepository = new GenericRepository<ResourceBooking>(_context);
-
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
-
             DataFileRepository = new GenericRepository<DataFile>(_context);
-
             EventRepository = new EventRepository(_context);
-
             EmailRepository = new EmailRepository(_context);
-
             EmailVariableRepository = new GenericRepository<EmailVariable>(_context);
-
             EmailVariableUsageRepository = new GenericRepository<EmailVariableUsage>(_context);
-
             GraduateRepository = new GenericRepository<Graduate>(_context);
-
             TagRepository = new GenericRepository<Tag>(_context);
-
             BookingBranchesRepository = new GenericRepository<BookingBranches>(_context);
-
             PresentationBranchesRepository = new GenericRepository<PresentationBranches>(_context);
         }
 
         /// <summary>
         ///     Repository-übergreifendes Speichern der Änderungen
         /// </summary>
-        public void Save()
-        {
+        public void Save() {
             _context.SaveChanges();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
+        protected virtual void Dispose(bool disposing) {
+            if (!_disposed) {
+                if (disposing) {
                     _context.Dispose();
                 }
             }
             _disposed = true;
         }
 
-        public void DeleteDatabase()
-        {
+        public void DeleteDatabase() {
             _context.Database.EnsureDeleted();
         }
 
-        public void MigrateDatabase()
-        {
-            try
-            {
+        public void MigrateDatabase() {
+            try {
                 _context.Database.Migrate();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
 
                 throw ex;
             }
         }
 
-        public IDbContextTransaction BeginTransaction()
-        {
+        public IDbContextTransaction BeginTransaction() {
             return _context.Database.BeginTransaction();
         }
 
-        public void Commit()
-        {
+        public void Commit() {
             _context.Database.CommitTransaction();
         }
 
-        public void FillDb()
-        {
+        public void FillDb() {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             Console.WriteLine("Delete Database ...");

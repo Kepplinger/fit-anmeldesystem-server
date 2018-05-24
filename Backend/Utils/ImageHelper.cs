@@ -19,35 +19,18 @@ namespace Backend.Utils
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        public static string ImageParsing(Area area)
+        public static string ManageAreaGraphic(DataFile image)
         {
-            // parse from 64 String all image infos
-            int indexof = area.Graphic.DataUrl.IndexOf("base64,");
-            string start = area.Graphic.DataUrl.Substring(0, indexof);
-            string baseString = area.Graphic.DataUrl.Substring(indexof + 7);
-
-            string dataFormat = getDataFormat(start);
-
             //Read filepath from appsetting.json
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
+
             string filepath = configuration["ImageFilePaths:ServerImages"];
-
             string baseurl = configuration["Urls:ServerUrl"];
-
-            //set filepath name
-            string filename = ImageHelper.GetHash() + dataFormat;
-            filepath = filepath + filename;
-
-            // filepath
-            //string filepath = @"C:\Users\andis\Desktop\Projects\fit-anmeldesystem-server\Backend\bin\Debug\netcoreapp2.0\images\" + area.Designation + dataFormat;
-
-            // Save image to disk
-            ImageHelper.Base64ToImage(baseString, filepath);
-
-            return baseurl + "/images/" + filename;
+            
+            return baseurl + "/images/" + ManageImage(image, filepath);
         }
 
         public static void ManageBookingImages(Booking booking)
@@ -59,7 +42,6 @@ namespace Backend.Utils
             var configuration = builder.Build();
 
             string baseUrl = configuration["Urls:ServerUrl"];
-            // string baseUrl = configuration["Urls:ServerUrl"];
             string filePath = configuration["ImageFilePaths:ServerImages"];
 
             using (IUnitOfWork uow = new UnitOfWork())

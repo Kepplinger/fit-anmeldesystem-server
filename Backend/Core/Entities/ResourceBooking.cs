@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 namespace Backend.Core.Entities
 {
-    public class ResourceBooking : EntityObject
+    public class ResourceBooking : TimestampEntityObject
     {
         [JsonIgnore]
         [IgnoreDataMember]

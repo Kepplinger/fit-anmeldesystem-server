@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180524123400_Removed Timestamp from Event")]
+    partial class RemovedTimestampfromEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -402,15 +403,19 @@ namespace Backend.Migrations
 
                     b.Property<DateTime>("EventDate");
 
+                    b.Property<bool>("IsCurrent");
+
+                    b.Property<bool>("IsLocked");
+
                     b.Property<DateTime>("RegistrationEnd");
 
                     b.Property<DateTime>("RegistrationStart");
 
-                    b.Property<int>("RegistrationStateId");
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RegistrationStateId");
 
                     b.ToTable("Events");
                 });
@@ -554,20 +559,6 @@ namespace Backend.Migrations
                     b.HasIndex("fk_Presentation");
 
                     b.ToTable("PresentationBranches");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.RegistrationState", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsCurrent");
-
-                    b.Property<bool>("IsLocked");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RegistrationState");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Representative", b =>
@@ -913,14 +904,6 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.EmailVariable", "EmailVariable")
                         .WithMany()
                         .HasForeignKey("fk_EmailVariable")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.Event", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.RegistrationState", "RegistrationState")
-                        .WithMany()
-                        .HasForeignKey("RegistrationStateId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

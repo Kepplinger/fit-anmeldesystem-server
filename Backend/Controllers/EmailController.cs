@@ -83,7 +83,7 @@ namespace Backend.Controllers
     }
 }
 
-public class EmailDTO: EntityObject
+public class EmailDTO: TimestampEntityObject
 {
     public string Name { get; set; }
     public string Description { get; set; }

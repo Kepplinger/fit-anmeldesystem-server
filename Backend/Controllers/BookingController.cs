@@ -244,12 +244,12 @@ namespace Backend.Controllers
                     ImageHelper.ManageBookingImages(jsonBooking);
 
                     // PACKAGE
-                    jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
+                    jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.fk_FitPackage).FirstOrDefault();
                     _unitOfWork.Save();
 
                     // EVENT
                     // Get the current active Event (nimmt an das es nur 1 gibt)
-                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.IsCurrent == true).FirstOrDefault() != null)
+                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.RegistrationState.IsCurrent == true).FirstOrDefault() != null)
                     {
                         jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.fk_Event).FirstOrDefault();
                         _unitOfWork.Save();

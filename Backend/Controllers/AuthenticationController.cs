@@ -158,7 +158,7 @@ namespace Backend.Controllers
             }
             else
             {
-                if (lastBooking.ElementAt(0).Event.IsCurrent)
+                if (lastBooking.ElementAt(0).Event.RegistrationState.IsCurrent)
                 {
                     var booking = new
                     {

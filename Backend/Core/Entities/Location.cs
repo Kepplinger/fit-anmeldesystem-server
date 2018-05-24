@@ -3,11 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Core.Entities
 {
-    public class Location :EntityObject
+    public class Location :TimestampEntityObject
     {       
         [Required]
         public string Number { get; set; }
-
         [Required]
         public string Category { get; set; }
         [Required]

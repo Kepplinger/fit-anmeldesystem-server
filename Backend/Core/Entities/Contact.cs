@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Core.Entities
 {
-    public class Contact : EntityObject
+    public class Contact : TimestampEntityObject
     {
         [Required, MaxLength(15)]
         public string FirstName { get; set; }

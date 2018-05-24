@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Core.Entities
 {
-    public class Representative : EntityObject
+    public class Representative : TimestampEntityObject
     {
         [Required]
         public string Name { get; set; }

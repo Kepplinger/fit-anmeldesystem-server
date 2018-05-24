@@ -6,23 +6,19 @@ using Newtonsoft.Json;
 
 namespace Backend.Core.Entities
 {
-    public class Area : EntityObject
+    public class Area : TimestampEntityObject
     {
         [Required]
         public string Designation { get; set; }
 
-
         public DataFile Graphic { get; set; }
 
-        public int? fk_Event { get; set; }
+        public int fk_Event { get; set; }
 
         [JsonIgnore]
-        [IgnoreDataMember]
         [ForeignKey("fk_Event")]
-        public virtual Event Event { get; set; }
+        public Event Event { get; set; }
 
-
-        [Required]
         public List<Location> Locations { get; set; }
     }
 }

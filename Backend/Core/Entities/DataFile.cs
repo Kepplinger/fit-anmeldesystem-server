@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 {
-    public class DataFile : EntityObject
+    public class DataFile : TimestampEntityObject
     {
         public string Name { get; set; }
 

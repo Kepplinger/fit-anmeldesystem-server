@@ -8,32 +8,29 @@ using Backend.Core.Entities;
 using System.Collections.Generic;
 using StoreService.Persistence;
 using Backend.Utils;
+using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Backend.Controllers
-{
+namespace Backend.Controllers {
+
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
-    public class EventController : Controller
-    {
+    public class EventController : Controller {
+
         private IUnitOfWork _unitOfWork;
 
-        public EventController(IUnitOfWork uow)
-        {
+        public EventController(IUnitOfWork uow) {
             this._unitOfWork = uow;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status400BadRequest)]
-        public IActionResult GetAllEvents()
-        {
-            using (IUnitOfWork uow = new UnitOfWork())
-            {
-                List<Event> events = uow.EventRepository.Get(includeProperties: "Areas").ToList();
-                if (events.Count > 0)
-                {
-                    return new OkObjectResult(events);
-                }
+        public IActionResult GetAllEvents() {
+            List<Event> events = _unitOfWork.EventRepository.Get().ToList();
+
+            if (events.Count > 0) {
+                return new OkObjectResult(events);
+            } else {
                 return new NoContentResult();
             }
         }
@@ -44,209 +41,167 @@ namespace Backend.Controllers
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
-        public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent)
-        {
-            try
-            {
-                if (jsonEvent.Id > 0)
-                {
-                    Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == jsonEvent.Id, includeProperties: "Areas").FirstOrDefault();
-                    if (eventToUpdate != null)
-                    {
-                        int cnt = jsonEvent.Areas.Count;
-                        for (int i = 0; i < cnt; i++)
-                        {
-                            Area area = jsonEvent.Areas.ElementAt(i);
-                            if (area.Graphic.DataUrl.Contains("base64,"))
-                            {
-                                string filename = ImageHelper.ImageParsing(area);
-                                area.Graphic.DataUrl = filename;
-
-                                foreach (Location l in area.Locations)
-                                {
-                                    if (l.Id > 0)
-                                    {
-                                        _unitOfWork.LocationRepository.Update(l);
-                                        _unitOfWork.Save();
-                                    }
-                                    else
-                                    {
-                                        _unitOfWork.LocationRepository.Insert(l);
-                                        _unitOfWork.Save();
-                                    }
-                                }
-                                if (area.Id > 0)
-                                {
-                                    _unitOfWork.AreaRepository.Update(area);
-                                    _unitOfWork.Save();
-                                }
-                                else
-                                {
-                                    area.fk_Event = jsonEvent.Id;
-                                    _unitOfWork.AreaRepository.Insert(area);
-                                    _unitOfWork.Save();
-                                }
-                                _unitOfWork.Save();
-                            }
-                        }
-                        //_unitOfWork.EventRepository.Update(jsonEvent);
-                        //_unitOfWork.Save();
-                        //jsonEvent.IsCurrent = eventToUpdate.IsCurrent;
-                        //_unitOfWork.EventRepository.Update(jsonEvent);
-                        for (int i = 0; i < jsonEvent.Areas.Count; i++)
-                        {
-                            jsonEvent.Areas.ElementAt(i).fk_Event = jsonEvent.Id;
-                            _unitOfWork.EventRepository.Update(jsonEvent);
-                            _unitOfWork.Save();
-                        }
-                        _unitOfWork.Save();
-                        return new OkObjectResult(jsonEvent);
-                    }
+        public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent) {
+            try {
+                if (jsonEvent.Id > 0) {
+                    return UpdateEvent(jsonEvent);
+                } else {
+                    return InsertEvent(jsonEvent);
                 }
-                else
-                {
-
-                    jsonEvent.IsCurrent = true;
-                    //  && _unitOfWork.EventRepository.Get(filter: p => p.IsLocked == false).FirstOrDefault() == null sollte nur ein mögliches Event geben TESTZWECK
-                    if (jsonEvent != null)
-                    {
-                        // Saving Areas and Locations for the Event
-                        foreach (Area area in jsonEvent.Areas)
-                        {
-                            string filepath = ImageHelper.ImageParsing(area);
-                            area.Graphic.DataUrl = filepath;
-
-                            foreach (Location l in area.Locations)
-                            {
-                                _unitOfWork.LocationRepository.Insert(l);
-                                _unitOfWork.Save();
-                            }
-
-                            _unitOfWork.AreaRepository.Insert(area);
-                            _unitOfWork.Save();
-                        }
-                        _unitOfWork.EventRepository.Insert(jsonEvent);
-                        _unitOfWork.Save();
-                        this.GetCurrentEventLogic();
-                        return new OkObjectResult(jsonEvent);
-                    }
-                    else
-                    {
-                        var error = new
-                        {
-                            errorMessage = "Es sind keine Areas und Locations vorhanden!"
-                        };
-                        return new BadRequestObjectResult(error);
-                    }
-                }
-
-                return new BadRequestObjectResult(jsonEvent);
-            }
-            catch (DbUpdateException ex)
-            {
+            } catch (DbUpdateException ex) {
                 return DbErrorHelper.CatchDbError(ex);
             }
         }
 
-        /// <response code="200">Return current Event</response>
-        /// <summary>
-        /// Getting all Events from Database
-        /// </summary>
-        /// wi warads wann amoi duachgschaut wiad wos fia methoden das es scho gibt und east dann programmiert wida btw die methode steht 1 drunta 
-
-        //----------------------DIE METHODE WÜRDE ÜBRIGENS GEHEN WENN MAN NCIHT .toList() SONDERN .firs() MACHT 
-        //[HttpGet("current")]
-        //[ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        //public IActionResult GetCurrentEvent()
-        //{
-        //    List<Event> events = _unitOfWork
-        //                                .EventRepository
-        //                                .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-        //                                .Where(f => _unitOfWork.EventRepository.Get()
-        //                                .Any(d => f.EventDate.Subtract(DateTime.Now) < d.EventDate
-        //                                .Subtract(DateTime.Now)))
-        //                                .ToList();
-        //                                //.Select(p => p.EventDate.Subtract(DateTime.Now)).ToList();
-        //    return new OkObjectResult(events);
-        //}
-
         [HttpGet("current")]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
-        public IActionResult GetLatestEvent()
-        {
+        public IActionResult GetLatestEvent() {
             Event e;
-            if ((e = this.GetCurrentEventLogic()) != null)
-            {
+            if ((e = this.DetermineCurrentEvent()) != null) {
                 return new OkObjectResult(e);
-            }
-            else
-            {
+            } else {
                 return new NoContentResult();
             }
         }
 
-        public Event GetCurrentEventLogic()
-        {
-            List<Event> allEvents = _unitOfWork.EventRepository.Get().ToList();
+        private IActionResult UpdateEvent(Event fitEvent) {
 
-            if (allEvents != null && allEvents.Count > 0)
-            {
-                Event curEvent;
+            Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == fitEvent.Id).FirstOrDefault();
 
-                // look if future events available (differ for 2 algo)
-                List<Event> futureEvents = _unitOfWork.EventRepository
-                                       .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                       .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => f.EventDate.Subtract(DateTime.Now) > TimeSpan.Zero)).ToList();
+            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
+                if (eventToUpdate != null) {
 
-                if (futureEvents != null && futureEvents.Count > 0)
-                {
-                    curEvent = _unitOfWork
-                                       .EventRepository
-                                       .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                       .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => f.EventDate.Subtract(DateTime.Now) > TimeSpan.Zero && d.EventDate.Subtract(DateTime.Now) <= f.EventDate
-                                       .Subtract(DateTime.Now))).OrderBy(q => q.EventDate.Subtract(DateTime.Now)).FirstOrDefault();
-                }
-                else
-                {
-                    TimeSpan s;
-                    TimeSpan s1;
-                    DateTime mynow = DateTime.Now;
-                    curEvent = _unitOfWork
-                                       .EventRepository
-                                       .Get().Where(p => p.EventDate.Year.Equals(DateTime.Now.Year) == true)
-                                       .Where(f => _unitOfWork.EventRepository.Get()
-                                       .Any(d => (s = d.EventDate.Subtract(mynow)) <= (s1 = f.EventDate
-                                       .Subtract(mynow))))
-                                       .OrderByDescending(q => q.EventDate.Subtract(mynow))
-                                       .FirstOrDefault();
-                }
+                    foreach (Area area in fitEvent.Areas) {
 
-                // if curr event is available set it to isCurrent true and set al other to false
-                if (curEvent != null)
-                {
-                    List<Event> events = _unitOfWork.EventRepository.Get(p => p.IsCurrent == true).ToList();
+                        area.fk_Event = eventToUpdate.Id;
 
-                    if (events != null && events.Count > 0)
-                    {
-                        for (int i = 0; i < events.Count; i++)
-                        {
-                            events.ElementAt(i).IsCurrent = false;
-                            _unitOfWork.EventRepository.Update(events.ElementAt(i));
+                        if (area.Graphic != null && area.Graphic.DataUrl != null) {
+                            if (area.Graphic.DataUrl.Contains("base64,")) {
+                                area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
+                            }
+
+                            if (area.Graphic.Id > 0) {
+                                _unitOfWork.DataFileRepository.Update(area.Graphic);
+                            } else {
+                                _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                            }
                             _unitOfWork.Save();
                         }
+
+                        List<Location> locations = _unitOfWork.LocationRepository.Get().ToList();
+
+                        foreach (Location location in area.Locations) {
+                            if (location.Id > 0) {
+                                _unitOfWork.LocationRepository.Update(location);
+                            } else {
+                                _unitOfWork.LocationRepository.Insert(location);
+                            }
+                        }
+
+                        List<Area> areas = _unitOfWork.AreaRepository.Get().ToList();
+
+                        if (area.Id > 0) {
+                            _unitOfWork.AreaRepository.Update(area);
+                        } else {
+                            _unitOfWork.AreaRepository.Insert(area);
+                        }
+                        _unitOfWork.Save();
                     }
 
-                    curEvent.IsCurrent = true;
-                    _unitOfWork.EventRepository.Update(curEvent);
+                    List<Event> events = _unitOfWork.EventRepository.Get().ToList();
+
+                    _unitOfWork.RegistrationStateRepository.Update(fitEvent.RegistrationState);
+                    _unitOfWork.EventRepository.Update(fitEvent);
                     _unitOfWork.Save();
-                    return curEvent;
+                    transaction.Commit();
+
+                    this.DetermineCurrentEvent();
+
+                    return new OkObjectResult(new {
+                        changedEvent = fitEvent,
+                        events = _unitOfWork.EventRepository.Get()
+                    });
+
+                } else {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new {
+                        errorMessage = "Der zu bearbeitende FIT konnte nicht in der Datenbank gefunden werden!"
+                    });
                 }
             }
-            else
-            {
-                return null;
+        }
+
+        private IActionResult InsertEvent(Event fitEvent) {
+            fitEvent.RegistrationState.IsCurrent = true;
+
+            if (fitEvent != null) {
+                foreach (Area area in fitEvent.Areas) {
+
+                    if (area.Graphic != null && area.Graphic.DataUrl != null) {
+
+                        if (area.Graphic.DataUrl.Contains("base64,")) {
+                            area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
+                        }
+
+                        _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                        _unitOfWork.Save();
+                    }
+
+                    foreach (Location location in area.Locations) {
+                        _unitOfWork.LocationRepository.Insert(location);
+                        _unitOfWork.Save();
+                    }
+
+                    _unitOfWork.AreaRepository.Insert(area);
+                }
+
+                _unitOfWork.RegistrationStateRepository.Insert(fitEvent.RegistrationState);
+                _unitOfWork.EventRepository.Insert(fitEvent);
+                _unitOfWork.Save();
+                this.DetermineCurrentEvent();
+
+                return new OkObjectResult(new {
+                    changedEvent = fitEvent,
+                    events = _unitOfWork.EventRepository.Get()
+                });
+
+            } else {
+                return new BadRequestObjectResult(new {
+                    errorMessage = "Es sind keine Areas und Locations vorhanden!"
+                });
+            }
+        }
+
+        private Event DetermineCurrentEvent() {
+            if (_unitOfWork.EventRepository.Count() > 0) {
+
+                Event currentEvent = _unitOfWork.EventRepository.GetCurrentEvent();
+
+                // if curr event is available (and not already current) set it to isCurrent true and set al other to false
+                if (currentEvent != null) {
+                    List<Event> events = _unitOfWork.EventRepository.Get(p => p.RegistrationState.IsCurrent == true).ToList();
+
+                    if (events != null && events.Count > 0) {
+                        foreach (Event fitEvent in events) {
+                            fitEvent.RegistrationState.IsCurrent = false;
+                            _unitOfWork.RegistrationStateRepository.Update(fitEvent.RegistrationState);
+                        }
+                        _unitOfWork.Save();
+                    }
+
+                    // check if registration is open
+                    bool isLocked = DateTime.Compare(currentEvent.RegistrationStart, DateTime.Now) > 0
+                        || DateTime.Compare(currentEvent.RegistrationEnd, DateTime.Now) < 0;
+
+                    if (!currentEvent.RegistrationState.IsCurrent || currentEvent.RegistrationState.IsLocked != isLocked) {
+                        currentEvent.RegistrationState.IsCurrent = true;
+                        currentEvent.RegistrationState.IsLocked = isLocked;
+                        _unitOfWork.RegistrationStateRepository.Update(currentEvent.RegistrationState);
+                        _unitOfWork.Save();
+                    }
+
+                    return currentEvent;
+                }
             }
             return null;
         }

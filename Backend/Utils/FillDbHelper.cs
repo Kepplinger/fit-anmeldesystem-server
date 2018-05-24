@@ -32,7 +32,6 @@ namespace Backend.Utils
             _context.Addresses.Add(address);
             _context.SaveChanges();
 
-
             // Set Up Contact
             Contact contact = new Contact();
             contact.FirstName = "Andrej";
@@ -143,6 +142,7 @@ namespace Backend.Utils
 
             _context.Presentations.Add(p);*/
             _context.SaveChanges();
+
             Location l = new Location();
             l.Category = "A";
             l.Number = "31";
@@ -158,21 +158,18 @@ namespace Backend.Utils
             a.Locations = new List<Location>();
             a.Locations.Add(l);
 
-            _context.Areas.Add(a);
-            _context.SaveChanges();
-
             Event e = new Event();
             e.EventDate = DateTime.Now;
             e.RegistrationEnd = DateTime.Now.AddMonths(2);
             e.RegistrationStart = DateTime.Now.AddMonths(-2);
-            e.IsLocked = false;
-            e.IsCurrent = true;
+            e.RegistrationState = new RegistrationState();
+            e.RegistrationState.IsLocked = false;
+            e.RegistrationState.IsCurrent = true;
             e.Areas = new List<Area>();
             e.Areas.Add(a);
 
             _context.Events.Add(e);
             _context.SaveChanges();
-
 
             Console.WriteLine("Set up some students in the database ...");
             Graduate g = new Graduate();

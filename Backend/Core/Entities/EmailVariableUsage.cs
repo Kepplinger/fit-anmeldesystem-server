@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 {
-    public class EmailVariableUsage : EntityObject
+    public class EmailVariableUsage : TimestampEntityObject
     {
         [JsonIgnore]
         [IgnoreDataMember]

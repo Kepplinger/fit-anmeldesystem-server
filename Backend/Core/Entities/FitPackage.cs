@@ -2,7 +2,7 @@
 
 namespace Backend.Core.Entities
 {
-    public class FitPackage : EntityObject
+    public class FitPackage : TimestampEntityObject
     {
         [Required]
         public string Name { get; set; }

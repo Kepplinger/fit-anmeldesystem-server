@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Core.Entities
 {
-    public class Company : EntityObject
+    public class Company : TimestampEntityObject
     {
         [Required]
         [MaxLength(30)]

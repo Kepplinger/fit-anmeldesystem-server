@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Backend.Core.Entities
 
 {
-    public class Address : EntityObject {
+    public class Address : TimestampEntityObject {
         
         [Required]
         [MaxLength(25)]

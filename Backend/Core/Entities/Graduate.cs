@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Core.Entities
 {
-    public class Graduate : EntityObject
+    public class Graduate : TimestampEntityObject
     {
         [Required]
         [MaxLength(30)]
