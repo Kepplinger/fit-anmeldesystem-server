@@ -17,6 +17,7 @@ namespace Backend.Core.Entities
         [Required]
         public bool IsLocked { get; set; }
 
+        [Required]
         public List<Area> Areas { get; set; }
 
         public bool IsCurrent { get; set; }

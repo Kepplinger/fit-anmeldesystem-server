@@ -34,7 +34,7 @@ namespace Backend.Controllers
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            string url = configuration["Urls:DefaultUrl"];
+            string url = configuration["Urls:ServerUrl"];
 
             string[] files = System.IO.Directory.GetFiles(images);
 

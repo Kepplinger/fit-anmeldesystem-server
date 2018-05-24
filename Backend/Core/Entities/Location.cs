@@ -7,7 +7,6 @@ namespace Backend.Core.Entities
     {       
         [Required]
         public string Number { get; set; }
-
         [Required]
         public string Category { get; set; }
         [Required]

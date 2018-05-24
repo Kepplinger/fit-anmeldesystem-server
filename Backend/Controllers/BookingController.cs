@@ -244,7 +244,7 @@ namespace Backend.Controllers
                     ImageHelper.ManageBookingImages(jsonBooking);
 
                     // PACKAGE
-                    jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.FitPackage.Id).FirstOrDefault();
+                    jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.fk_FitPackage).FirstOrDefault();
                     _unitOfWork.Save();
 
                     // EVENT
