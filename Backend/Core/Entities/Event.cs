@@ -17,11 +17,9 @@ namespace Backend.Core.Entities {
         public DateTime RegistrationEnd { get; set; }
 
         [Required]
-        public bool IsLocked { get; set; }
-
-        [Required]
         public List<Area> Areas { get; set; }
 
-        public bool IsCurrent { get; set; }
+        [Required]
+        public RegistrationState RegistrationState { get; set; }
     }
 }

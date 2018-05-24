@@ -25,6 +25,7 @@ namespace Backend.Persistence.Repositories
                 query = query.Where(filter);
             }
             query = query
+                .Include(p => p.RegistrationState)
                 .Include(p => p.Areas).ThenInclude(p => p.Locations)
                 .Include(p => p.Areas).ThenInclude(p => p.Graphic);
 

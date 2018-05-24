@@ -11,6 +11,7 @@ namespace Backend.Core.Contracts {
         /// Standard Repositories 
         /// </summary>
         IGenericRepository<Area> AreaRepository { get; }
+        IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
         IGenericRepository<Branch> BranchRepository { get; }
         IGenericRepository<Company> CompanyRepository { get; }
         IGenericRepository<Contact> ContactRepository { get; }
@@ -45,6 +46,5 @@ namespace Backend.Core.Contracts {
         IDbContextTransaction BeginTransaction();
 
         void Commit();
-
     }
 }

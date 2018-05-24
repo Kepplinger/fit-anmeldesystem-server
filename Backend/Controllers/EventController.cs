@@ -75,16 +75,18 @@ namespace Backend.Controllers {
 
                         area.fk_Event = eventToUpdate.Id;
 
-                        if (area.Graphic != null && area.Graphic.DataUrl != null && area.Graphic.DataUrl.Contains("base64,")) {
-                            area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
-                        }
+                        if (area.Graphic != null && area.Graphic.DataUrl != null) {
+                            if (area.Graphic.DataUrl.Contains("base64,")) {
+                                area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
+                            }
 
-                        if (area.Graphic.Id > 0) {
-                            _unitOfWork.DataFileRepository.Update(area.Graphic);
-                        } else {
-                            _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                            if (area.Graphic.Id > 0) {
+                                _unitOfWork.DataFileRepository.Update(area.Graphic);
+                            } else {
+                                _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                            }
+                            _unitOfWork.Save();
                         }
-                        _unitOfWork.Save();
 
                         List<Location> locations = _unitOfWork.LocationRepository.Get().ToList();
 
@@ -95,7 +97,6 @@ namespace Backend.Controllers {
                                 _unitOfWork.LocationRepository.Insert(location);
                             }
                         }
-                        _unitOfWork.Save();
 
                         List<Area> areas = _unitOfWork.AreaRepository.Get().ToList();
 
@@ -109,6 +110,7 @@ namespace Backend.Controllers {
 
                     List<Event> events = _unitOfWork.EventRepository.Get().ToList();
 
+                    _unitOfWork.RegistrationStateRepository.Update(fitEvent.RegistrationState);
                     _unitOfWork.EventRepository.Update(fitEvent);
                     _unitOfWork.Save();
                     transaction.Commit();
@@ -130,16 +132,20 @@ namespace Backend.Controllers {
         }
 
         private IActionResult InsertEvent(Event fitEvent) {
-            fitEvent.IsCurrent = true;
+            fitEvent.RegistrationState.IsCurrent = true;
 
             if (fitEvent != null) {
                 foreach (Area area in fitEvent.Areas) {
 
-                    if (area.Graphic != null && area.Graphic.DataUrl != null && area.Graphic.DataUrl.Contains("base64,")) {
-                        area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
+                    if (area.Graphic != null && area.Graphic.DataUrl != null) {
+
+                        if (area.Graphic.DataUrl.Contains("base64,")) {
+                            area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
+                        }
+
+                        _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                        _unitOfWork.Save();
                     }
-                    _unitOfWork.DataFileRepository.Insert(area.Graphic);
-                    _unitOfWork.Save();
 
                     foreach (Location location in area.Locations) {
                         _unitOfWork.LocationRepository.Insert(location);
@@ -149,6 +155,7 @@ namespace Backend.Controllers {
                     _unitOfWork.AreaRepository.Insert(area);
                 }
 
+                _unitOfWork.RegistrationStateRepository.Insert(fitEvent.RegistrationState);
                 _unitOfWork.EventRepository.Insert(fitEvent);
                 _unitOfWork.Save();
                 this.DetermineCurrentEvent();
@@ -172,12 +179,12 @@ namespace Backend.Controllers {
 
                 // if curr event is available (and not already current) set it to isCurrent true and set al other to false
                 if (currentEvent != null) {
-                    List<Event> events = _unitOfWork.EventRepository.Get(p => p.IsCurrent == true).ToList();
+                    List<Event> events = _unitOfWork.EventRepository.Get(p => p.RegistrationState.IsCurrent == true).ToList();
 
                     if (events != null && events.Count > 0) {
                         foreach (Event fitEvent in events) {
-                            fitEvent.IsCurrent = false;
-                            _unitOfWork.EventRepository.Update(fitEvent);
+                            fitEvent.RegistrationState.IsCurrent = false;
+                            _unitOfWork.RegistrationStateRepository.Update(fitEvent.RegistrationState);
                         }
                         _unitOfWork.Save();
                     }
@@ -186,10 +193,10 @@ namespace Backend.Controllers {
                     bool isLocked = DateTime.Compare(currentEvent.RegistrationStart, DateTime.Now) > 0
                         || DateTime.Compare(currentEvent.RegistrationEnd, DateTime.Now) < 0;
 
-                    if (!currentEvent.IsCurrent || currentEvent.IsLocked != isLocked) {
-                        currentEvent.IsCurrent = true;
-                        currentEvent.IsLocked = isLocked;
-                        _unitOfWork.EventRepository.Update(currentEvent);
+                    if (!currentEvent.RegistrationState.IsCurrent || currentEvent.RegistrationState.IsLocked != isLocked) {
+                        currentEvent.RegistrationState.IsCurrent = true;
+                        currentEvent.RegistrationState.IsLocked = isLocked;
+                        _unitOfWork.RegistrationStateRepository.Update(currentEvent.RegistrationState);
                         _unitOfWork.Save();
                     }
 
