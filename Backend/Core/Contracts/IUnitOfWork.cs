@@ -4,10 +4,8 @@ using System;
 using Microsoft.EntityFrameworkCore.Storage;
 using Backend.Core.Contracts.Repositories;
 
-namespace Backend.Core.Contracts
-{
-    public interface IUnitOfWork : IDisposable
-    {
+namespace Backend.Core.Contracts {
+    public interface IUnitOfWork : IDisposable {
 
         /// <summary>
         /// Standard Repositories 

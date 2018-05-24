@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Backend.Core.Entities
 {
-    public class Presentation : EntityObject
+    public class Presentation : TimestampEntityObject
     {
         public List<PresentationBranches> Branches { get; set; }
 

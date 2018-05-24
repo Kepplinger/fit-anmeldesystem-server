@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 namespace Backend.Core.Entities
 {
-    public class Resource : EntityObject
+    public class Resource : TimestampEntityObject
     {
         [Required]
         public string Name { get; set; }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Core
 {
-    public class EmailVariable : EntityObject
+    public class EmailVariable : TimestampEntityObject
     {
         [Required]
         public string Name { get; set; }

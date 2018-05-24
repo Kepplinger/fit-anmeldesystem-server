@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Core.Entities
 {
-    public class Booking : EntityObject
+    public class Booking : TimestampEntityObject
     {
         [ForeignKey("fk_Event"), Required]
         public Event Event { get; set; }

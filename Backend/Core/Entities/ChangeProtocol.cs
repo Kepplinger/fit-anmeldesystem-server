@@ -5,7 +5,7 @@ using Backend.Utils;
 
 namespace Backend.Core.Entities
 {
-    public class ChangeProtocol : EntityObject
+    public class ChangeProtocol : TimestampEntityObject
     {
         public string TableName { get; set; }
 

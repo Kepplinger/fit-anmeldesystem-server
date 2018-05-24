@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Backend.Core.Entities
 {
-    public class Area : EntityObject
+    public class Area : TimestampEntityObject
     {
         [Required]
         public string Designation { get; set; }

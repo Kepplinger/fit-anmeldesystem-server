@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 {
-    public class PresentationBranches : EntityObject
+    public class PresentationBranches : TimestampEntityObject
     {
         [JsonIgnore]
         [IgnoreDataMember]

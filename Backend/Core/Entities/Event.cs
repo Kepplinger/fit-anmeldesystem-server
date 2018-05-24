@@ -4,16 +4,18 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
-namespace Backend.Core.Entities 
-{
-    public class Event : EntityObject
-    {
+namespace Backend.Core.Entities {
+    public class Event : EntityObject {
+
         [Required]
         public DateTime EventDate { get; set; }
+
         [Required]
         public DateTime RegistrationStart { get; set; }
+
         [Required]
         public DateTime RegistrationEnd { get; set; }
+
         [Required]
         public bool IsLocked { get; set; }
 
@@ -22,5 +24,4 @@ namespace Backend.Core.Entities
 
         public bool IsCurrent { get; set; }
     }
-
 }

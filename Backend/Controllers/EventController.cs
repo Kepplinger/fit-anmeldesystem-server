@@ -67,21 +67,24 @@ namespace Backend.Controllers {
         private IActionResult UpdateEvent(Event fitEvent) {
 
             Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == fitEvent.Id).FirstOrDefault();
+
             using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
                 if (eventToUpdate != null) {
+
                     foreach (Area area in fitEvent.Areas) {
 
                         area.fk_Event = eventToUpdate.Id;
 
-                        if (area.Graphic != null && area.Graphic.DataUrl.Contains("base64,")) {
-                            area.Graphic.DataUrl = ImageHelper.ImageParsing(area);
-                            if (area.Graphic.Id > 0) {
-                                _unitOfWork.DataFileRepository.Update(area.Graphic);
-                            } else {
-                                _unitOfWork.DataFileRepository.Insert(area.Graphic);
-                            }
-                            _unitOfWork.Save();
+                        if (area.Graphic != null&& area.Graphic.DataUrl != null && area.Graphic.DataUrl.Contains("base64,")) {
+                            area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
                         }
+
+                        if (area.Graphic.Id > 0) {
+                            _unitOfWork.DataFileRepository.Update(area.Graphic);
+                        } else {
+                            _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                        }
+                        _unitOfWork.Save();
 
                         List<Location> locations = _unitOfWork.LocationRepository.Get().ToList();
 
@@ -125,17 +128,20 @@ namespace Backend.Controllers {
             fitEvent.IsCurrent = true;
 
             if (fitEvent != null) {
-
                 foreach (Area area in fitEvent.Areas) {
-                    area.Graphic.DataUrl = ImageHelper.ImageParsing(area);
 
-                    foreach (Location l in area.Locations) {
-                        _unitOfWork.LocationRepository.Insert(l);
+                    if (area.Graphic != null && area.Graphic.DataUrl != null && area.Graphic.DataUrl.Contains("base64,")) {
+                        area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
+                    }
+                    _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                    _unitOfWork.Save();
+
+                    foreach (Location location in area.Locations) {
+                        _unitOfWork.LocationRepository.Insert(location);
                         _unitOfWork.Save();
                     }
 
                     _unitOfWork.AreaRepository.Insert(area);
-                    _unitOfWork.Save();
                 }
 
                 _unitOfWork.EventRepository.Insert(fitEvent);

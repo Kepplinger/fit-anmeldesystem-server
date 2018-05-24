@@ -2,7 +2,7 @@
 using Backend.Core.Contracts;
 namespace Backend.Core.Entities
 {
-    public class Tag : EntityObject
+    public class Tag : TimestampEntityObject
     {
         public bool IsArchive { get; set; }
 
