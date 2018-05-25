@@ -11,16 +11,13 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace Backend.Controllers
-{
+namespace Backend.Controllers {
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
-    public class CompanyController : Controller
-    {
+    public class CompanyController : Controller {
         private IUnitOfWork _unitOfWork;
 
-        public CompanyController(IUnitOfWork uow)
-        {
+        public CompanyController(IUnitOfWork uow) {
             this._unitOfWork = uow;
         }
 
@@ -30,8 +27,7 @@ namespace Backend.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult GetAll()
-        {
+        public IActionResult GetAll() {
             var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact");
             return new OkObjectResult(companies);
         }
@@ -42,28 +38,23 @@ namespace Backend.Controllers
         /// </summary>
         [HttpGet("pending")]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult GetAllPending()
-        {
+        public IActionResult GetAllPending() {
             var companies = _unitOfWork.CompanyRepository.Get(filter: f => f.IsPending == true, includeProperties: "Address,Contact");
             return new OkObjectResult(companies);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult CreateCompany([FromBody] Company jsonComp)
-        {
-            if (jsonComp != null)
-            {
+        public IActionResult CreateCompany([FromBody] Company jsonComp) {
+            if (jsonComp != null) {
                 Company storeCompany = jsonComp;
-                if (jsonComp.Address.Addition == null)
-                {
+                if (jsonComp.Address.Addition == null) {
                     jsonComp.Address.Addition = "";
                 }
 
                 string loginCode = "";
 
-                do
-                {
+                do {
                     loginCode = Guid.NewGuid().ToString().ToUpper();
                     loginCode = loginCode.Replace("-", String.Empty);
                     loginCode = loginCode.Substring(0, 12);
@@ -87,11 +78,9 @@ namespace Backend.Controllers
         }
 
         [HttpPut("accepting")]
-        public IActionResult Accepting([FromBody] int compId)
-        {
+        public IActionResult Accepting([FromBody] int compId) {
             Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address").FirstOrDefault();
-            if (c != null)
-            {
+            if (c != null) {
                 c.IsPending = false;
                 this._unitOfWork.CompanyRepository.Update(c);
                 this._unitOfWork.Save();
@@ -102,19 +91,16 @@ namespace Backend.Controllers
             return new BadRequestResult();
         }
         [HttpGet("presentation/{eventId:int}")]
-        public IActionResult PresentationByEvent(int eventId)
-        {
+        public IActionResult PresentationByEvent(int eventId) {
             List<object> pres = new List<object>();
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Presentation != null && p.Event.Id == eventId).ToList();
-            for (int i = 0; i < 10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 /*var companyPresentations = new
                 {
                     company = bookings.ElementAt(i).Company,
                     presentation = bookings.ElementAt(i).Presentation,
                 };*/
-                var companyPresentations = new
-                {
+                var companyPresentations = new {
                     companyName = "company Name: " + i,
                     presentationTitle = "presentation title" + i,
                     presentationDescr = "This is a presentation description from: " + i,
@@ -126,114 +112,36 @@ namespace Backend.Controllers
 
         [HttpPut]
         [Consumes("application/json")]
-        public IActionResult Update([FromBody]Company jsonCompany)
-        {
+        public IActionResult Update([FromBody]Company jsonCompany) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
 
-            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction())
-            {
-                ChangeProtocol change = new ChangeProtocol();
+            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
+                try {
+                    Company companyToUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact").FirstOrDefault();
 
-                try
-                {
-                    Company toUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact").FirstOrDefault();
-                    if (jsonCompany.Address.Id != 0)
-                    {
-                        foreach (System.Reflection.PropertyInfo p in typeof(Address).GetProperties())
-                        {
-                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany.Address) != null && !p.GetValue(jsonCompany.Address).Equals(p.GetValue(toUpdate.Address)))
-                            {
-                                if (p != null && jsonCompany.Address != null && toUpdate.Address != null)
-                                {
-                                change.ChangeDate = DateTime.Now;
-                                change.ColumnName = p.Name;
-                                change.NewValue = p.GetValue(jsonCompany.Address).ToString();
-                                change.OldValue = p.GetValue(toUpdate.Address).ToString();
-                                change.TableName = nameof(Address);
-                                change.RowId = toUpdate.Address.Id;
-                                change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
-                                change.isAdminChange = false;
-                                change.isReverted = false;
-                                _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.Save();
-                                Console.WriteLine("No Update for" + change.ColumnName);
-                                change = new ChangeProtocol();
-                                }
-                            }
-                        }
+                    if (jsonCompany.Address.Id != 0) {
+                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Address), jsonCompany.Address, companyToUpdate.Address, nameof(Address), companyToUpdate.Id, false);
                         _unitOfWork.AddressRepository.Update(jsonCompany.Address);
                         _unitOfWork.Save();
-
                     }
 
-                    change = new ChangeProtocol();
-
-                    if (jsonCompany.Contact.Id != 0)
-                    {
-                        foreach (System.Reflection.PropertyInfo p in typeof(Contact).GetProperties())
-                        {
-                            if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany.Contact) != null && !p.GetValue(jsonCompany.Contact).Equals(p.GetValue(toUpdate.Contact)))
-                            {
-                                change.ChangeDate = DateTime.Now;
-                                change.ColumnName = p.Name;
-                                change.NewValue = p.GetValue(jsonCompany.Contact).ToString();
-                                change.OldValue = p.GetValue(toUpdate.Contact).ToString();
-                                change.TableName = nameof(Contact);
-                                change.RowId = toUpdate.Contact.Id;
-                                change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
-                                change.isAdminChange = false;
-                                change.isReverted = false;
-                                _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.Save();
-
-                                Console.WriteLine("Updated: " + change.ColumnName);
-                                change = new ChangeProtocol();
-                            }
-
-                        }
+                    if (jsonCompany.Contact.Id != 0) {
+                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), jsonCompany.Contact, companyToUpdate.Contact, nameof(Contact), companyToUpdate.Id, false);
                         _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
                         _unitOfWork.Save();
-
-
                     }
-                    change = new ChangeProtocol();
 
-                    if (jsonCompany.Id != 0)
-                    {
-                        foreach (System.Reflection.PropertyInfo p in typeof(Company).GetProperties())
-                        {
-                            jsonCompany.RegistrationToken = toUpdate.RegistrationToken;
-                            if (!p.Name.Contains("Timestamp") && p.Name != "FolderInfo" && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk") && p.GetValue(jsonCompany) != null && !p.GetValue(jsonCompany).Equals(p.GetValue(toUpdate)))
-                            {
-                                change.ChangeDate = DateTime.Now;
-                                change.ColumnName = p.Name;
-                                change.NewValue = Convert.ToString(p.GetValue(jsonCompany));
-                                change.OldValue = Convert.ToString(p.GetValue(toUpdate));
-                                change.TableName = nameof(Company);
-                                change.RowId = toUpdate.Id;
-                                change.IsPending = true;
-                                change.CompanyId = toUpdate.Id;
-                                change.isAdminChange = false;
-                                change.isReverted = false;
-                                _unitOfWork.ChangeRepository.Insert(change);
-                                _unitOfWork.Save();
-                                Console.WriteLine("Updated: " + change.ColumnName);
-                                change = new ChangeProtocol();
-                            }
-                        }
+                    if (jsonCompany.Id != 0) {
+                        jsonCompany.RegistrationToken = companyToUpdate.RegistrationToken;
+                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Company), jsonCompany, companyToUpdate, nameof(Company), companyToUpdate.Id, false);
                         _unitOfWork.CompanyRepository.Update(jsonCompany);
                         _unitOfWork.Save();
                     }
-                    _unitOfWork.Save();
-                    change = new ChangeProtocol();
 
                     transaction.Commit();
                     return new OkObjectResult(jsonCompany);
-                }
-                catch (DbUpdateException ex)
-                {
+                    
+                } catch (DbUpdateException ex) {
                     transaction.Rollback();
                     return DbErrorHelper.CatchDbError(ex);
                 }
@@ -243,19 +151,15 @@ namespace Backend.Controllers
 
         [HttpDelete("assign")]
         [Consumes("application/json")]
-        public IActionResult CompanyAssign(int pendingCompanyId, int existingCompanyId)
-        {
+        public IActionResult CompanyAssign(int pendingCompanyId, int existingCompanyId) {
 
             Company existingCompany = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
             Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
 
 
-            if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email))
-            {
-                EmailHelper.SendMailByName("CompanyAssigned", existingCompany,existingCompany.Contact.Email);
-            }
-            else
-            {
+            if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email)) {
+                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
+            } else {
                 EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
                 EmailHelper.SendMailByName("CompanyAssigned", pendingCompany, existingCompany.Contact.Email);
             }
