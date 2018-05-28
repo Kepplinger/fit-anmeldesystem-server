@@ -195,7 +195,7 @@ namespace Backend.Utils
             else
                 table.AddCell(imageNo.SetHorizontalAlignment(HorizontalAlignment.CENTER));
 
-            foreach (BookingBranches branch in booking.Branches)
+            foreach (BookingBranch branch in booking.Branches)
             {
                 table.AddCell("Sie vergeben " + branch.Branch.Name + "?");
                 table.AddCell(imageYes.SetHorizontalAlignment(HorizontalAlignment.CENTER));

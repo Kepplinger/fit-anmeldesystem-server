@@ -28,8 +28,8 @@ namespace Backend.Persistence
         public DbSet<Email> Emails { get; set; }
         public DbSet<Graduate> Graduates { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<BookingBranches> BookingBranches { get; set; }
-        public DbSet<PresentationBranches> PresentationBranches { get; set; }
+        public DbSet<BookingBranch> BookingBranches { get; set; }
+        public DbSet<PresentationBranch> PresentationBranches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

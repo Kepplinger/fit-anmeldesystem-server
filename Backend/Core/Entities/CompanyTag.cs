@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 {
-    public class BookingBranches : TimestampEntityObject
+    public class CompanyTag : TimestampEntityObject
     {
         [JsonIgnore]
         [IgnoreDataMember]
-        [ForeignKey("fk_Booking")]
-        public Booking Booking { get; set; }
-        public int? fk_Booking { get; set; }
+        [ForeignKey("fk_Company")]
+        public Company Comapny { get; set; }
+        public int? fk_Company { get; set; }
 
-        [ForeignKey("fk_Branch")]
-        public Branch Branch { get; set; }
-        public int fk_Branch { get; set; }
+        [ForeignKey("fk_Tag")]
+        public Tag Tag { get; set; }
+        public int fk_Tag { get; set; }
     }
 }

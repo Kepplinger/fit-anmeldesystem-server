@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180527124857_Company Branch")]
+    partial class CompanyBranch
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,6 +113,8 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(20);
 
+                    b.Property<int?>("BranchId");
+
                     b.Property<string>("CompanyDescription");
 
                     b.Property<DateTime>("CreationDate");
@@ -165,6 +168,8 @@ namespace Backend.Migrations
                     b.Property<bool>("isAccepted");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.HasIndex("LogoId");
 
@@ -302,39 +307,19 @@ namespace Backend.Migrations
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
+                    b.Property<int?>("fk_Booking");
+
                     b.Property<int>("fk_Branch");
 
                     b.Property<int?>("fk_Company");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("fk_Booking");
+
                     b.HasIndex("fk_Branch");
 
-                    b.HasIndex("fk_Company");
-
                     b.ToTable("CompanyBranch");
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.CompanyTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<int?>("fk_Company");
-
-                    b.Property<int>("fk_Tag");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("fk_Company");
-
-                    b.HasIndex("fk_Tag");
-
-                    b.ToTable("CompanyTag");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Contact", b =>
@@ -685,6 +670,8 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("CompanyId");
+
                     b.Property<bool>("IsArchive");
 
                     b.Property<byte[]>("Timestamp")
@@ -694,6 +681,8 @@ namespace Backend.Migrations
                     b.Property<string>("Value");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Tags");
                 });
@@ -872,6 +861,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Booking", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.Branch")
+                        .WithMany("Bookings")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.DataFile", "Logo")
                         .WithMany()
                         .HasForeignKey("LogoId")
@@ -936,27 +930,14 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.CompanyBranch", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.Company", "Comapny")
+                        .WithMany("Branches")
+                        .HasForeignKey("fk_Booking")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("fk_Branch")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Company", "Comapny")
-                        .WithMany("Branches")
-                        .HasForeignKey("fk_Company")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Backend.Core.Entities.CompanyTag", b =>
-                {
-                    b.HasOne("Backend.Core.Entities.Company", "Comapny")
-                        .WithMany("Tags")
-                        .HasForeignKey("fk_Company")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("fk_Tag")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -1041,6 +1022,14 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("fk_Resource")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.Tag", b =>
+                {
+                    b.HasOne("Backend.Core.Entities.Company")
+                        .WithMany("Tags")
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

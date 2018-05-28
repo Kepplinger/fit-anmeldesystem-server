@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Backend.Core.Entities
 {
-    public class PresentationBranches : TimestampEntityObject
+    public class BookingBranch : TimestampEntityObject
     {
         [JsonIgnore]
         [IgnoreDataMember]
-        [ForeignKey("fk_Presentation")]
-        public Presentation Presentation { get; set; }
-        public int? fk_Presentation { get; set; }
+        [ForeignKey("fk_Booking")]
+        public Booking Booking { get; set; }
+        public int? fk_Booking { get; set; }
 
         [ForeignKey("fk_Branch")]
         public Branch Branch { get; set; }

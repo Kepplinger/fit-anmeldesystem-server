@@ -19,7 +19,9 @@ namespace Backend.Core.Entities
         public Contact Contact { get; set; }
         public int fk_Contact { get; set; }
 
-        public List<Tag> Tags { get; set; }
+        public List<CompanyTag> Tags { get; set; }
+
+        public List<CompanyBranch> Branches { get; set; }
 
         [Required]
         public bool IsPending { get; set; }
@@ -32,5 +34,10 @@ namespace Backend.Core.Entities
         public int MemberSince { get; set; }
 
         public int MemberStatus { get; set; } // 0 nichts, 1 interessiert, 2 kla, 3 groß
+
+        public Company() {
+            Tags = new List<CompanyTag>();
+            Branches = new List<CompanyBranch>();
+        }
     }
 }

@@ -27,7 +27,6 @@ namespace StoreService.Persistence {
         public IGenericRepository<Area> AreaRepository { get; }
         public IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
         public IGenericRepository<Branch> BranchRepository { get; }
-        public IGenericRepository<Company> CompanyRepository { get; }
         public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
@@ -41,9 +40,11 @@ namespace StoreService.Persistence {
         public IGenericRepository<EmailVariable> EmailVariableRepository { get; }
         public IGenericRepository<EmailVariableUsage> EmailVariableUsageRepository { get; }
         public IGenericRepository<Tag> TagRepository { get; }
+        public IGenericRepository<CompanyTag> CompanyTagRepository { get; }
+        public IGenericRepository<CompanyBranch> CompanyBranchRepository { get; }
         public IGenericRepository<Graduate> GraduateRepository { get; }
-        public IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
-        public IGenericRepository<PresentationBranches> PresentationBranchesRepository { get; }
+        public IGenericRepository<BookingBranch> BookingBranchesRepository { get; }
+        public IGenericRepository<PresentationBranch> PresentationBranchesRepository { get; }
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
@@ -54,6 +55,8 @@ namespace StoreService.Persistence {
 
         public IEventRepository EventRepository { get; }
 
+        public ICompanyRepository CompanyRepository { get; }
+
         public UnitOfWork() {
 
             _context = new ApplicationDbContext();
@@ -62,7 +65,7 @@ namespace StoreService.Persistence {
             RegistrationStateRepository = new GenericRepository<RegistrationState>(_context);
             AddressRepository = new GenericRepository<Address>(_context);
             BookingRepository = new BookingRepository(_context);
-            CompanyRepository = new GenericRepository<Company>(_context);
+            CompanyRepository = new CompanyRepository(_context);
             ContactRepository = new GenericRepository<Contact>(_context);
             RepresentativeRepository = new GenericRepository<Representative>(_context);
             BranchRepository = new GenericRepository<Branch>(_context);
@@ -79,8 +82,10 @@ namespace StoreService.Persistence {
             EmailVariableUsageRepository = new GenericRepository<EmailVariableUsage>(_context);
             GraduateRepository = new GenericRepository<Graduate>(_context);
             TagRepository = new GenericRepository<Tag>(_context);
-            BookingBranchesRepository = new GenericRepository<BookingBranches>(_context);
-            PresentationBranchesRepository = new GenericRepository<PresentationBranches>(_context);
+            CompanyTagRepository = new GenericRepository<CompanyTag>(_context);
+            CompanyBranchRepository = new GenericRepository<CompanyBranch>(_context);
+            BookingBranchesRepository = new GenericRepository<BookingBranch>(_context);
+            PresentationBranchesRepository = new GenericRepository<PresentationBranch>(_context);
         }
 
         /// <summary>

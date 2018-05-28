@@ -15,6 +15,7 @@ namespace Backend.Controllers {
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class CompanyController : Controller {
+
         private IUnitOfWork _unitOfWork;
 
         public CompanyController(IUnitOfWork uow) {
@@ -28,7 +29,7 @@ namespace Backend.Controllers {
         [HttpGet]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll() {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact");
+            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact,Tags,Branches");
             return new OkObjectResult(companies);
         }
 
@@ -39,13 +40,14 @@ namespace Backend.Controllers {
         [HttpGet("pending")]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAllPending() {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: f => f.IsPending == true, includeProperties: "Address,Contact");
+            var companies = _unitOfWork.CompanyRepository.Get(filter: f => f.IsPending == true, includeProperties: "Address,Contact,Tags,Branches");
             return new OkObjectResult(companies);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult CreateCompany([FromBody] Company jsonComp) {
+
             if (jsonComp != null) {
                 Company storeCompany = jsonComp;
                 if (jsonComp.Address.Addition == null) {
@@ -79,7 +81,7 @@ namespace Backend.Controllers {
 
         [HttpPut("accepting")]
         public IActionResult Accepting([FromBody] int compId) {
-            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address").FirstOrDefault();
+            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
             if (c != null) {
                 c.IsPending = false;
                 this._unitOfWork.CompanyRepository.Update(c);
@@ -117,7 +119,7 @@ namespace Backend.Controllers {
 
             using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
                 try {
-                    Company companyToUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact").FirstOrDefault();
+                    Company companyToUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact,Tags,Branches").FirstOrDefault();
 
                     if (jsonCompany.Address.Id != 0) {
                         ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Address), jsonCompany.Address, companyToUpdate.Address, nameof(Address), companyToUpdate.Id, false);
@@ -140,13 +142,12 @@ namespace Backend.Controllers {
 
                     transaction.Commit();
                     return new OkObjectResult(jsonCompany);
-                    
+
                 } catch (DbUpdateException ex) {
                     transaction.Rollback();
                     return DbErrorHelper.CatchDbError(ex);
                 }
             }
-
         }
 
         [HttpDelete("assign")]
@@ -155,7 +156,6 @@ namespace Backend.Controllers {
 
             Company existingCompany = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
             Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
-
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email)) {
                 EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
