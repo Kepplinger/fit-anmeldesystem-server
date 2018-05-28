@@ -172,6 +172,14 @@ namespace Backend.Utils
             _context.SaveChanges();
 
             Console.WriteLine("Set up some students in the database ...");
+
+            Address address1 = new Address();
+            address1.Street = "Dr. Karl Rennerstraße";
+            address1.StreetNumber = "17a";
+            address1.ZipCode = "4061";
+            address1.City = "Pasching";
+            address1.Addition = "A Haus hoid";
+
             Graduate g = new Graduate();
             g.LastName = "Kepplinger";
             g.FirstName = "Simon";
@@ -179,9 +187,27 @@ namespace Backend.Utils
             g.Email = "simon.kepplinger@gmail.com";
             g.PhoneNumber = "seiFlammenTelNr";
             g.RegistrationToken = "GraduateToken1";
-            g.Address = address;
+            g.Address = address1;
 
             _context.Graduates.Add(g);
+
+            Address address2 = new Address();
+            address1.Street = "Asphaltstraße";
+            address1.StreetNumber = "32";
+            address1.ZipCode = "4040";
+            address1.City = "Linz";
+            address1.Addition = "";
+
+            Graduate g2 = new Graduate();
+            g2.LastName = "Sakal";
+            g2.FirstName = "Andrea";
+            g2.Gender = "F";
+            g2.Email = "andra.sakal@gmail.com";
+            g2.PhoneNumber = "000000007";
+            g2.RegistrationToken = "GraduateToken2";
+            g2.Address = address1;
+
+            _context.Graduates.Add(g2);
             _context.SaveChanges();
 
             for (int i = 0; i < 11; i++)

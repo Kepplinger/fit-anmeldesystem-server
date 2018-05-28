@@ -37,6 +37,7 @@ namespace Backend.Utils {
                 && !p.Name.ToLower().Contains("id")
                 && !p.Name.ToLower().Contains("fk")
                 && !p.Name.ToLower().Contains("tags")
+                && !p.Name.ToLower().Contains("branches")
                 && p.GetValue(newObject) != null
                 && !p.GetValue(newObject).Equals(p.GetValue(oldObject))) {
 

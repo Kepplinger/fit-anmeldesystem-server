@@ -24,7 +24,7 @@ namespace Backend.Core.Entities
         public Presentation Presentation { get; set; }
         public int? fk_Presentation { get; set; }
 
-        public List<BookingBranches> Branches { get; set; }
+        public List<BookingBranch> Branches { get; set; }
 
         [Required]
         public List<Representative> Representatives { get; set; }

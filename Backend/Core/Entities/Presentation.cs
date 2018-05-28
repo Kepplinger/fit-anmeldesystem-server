@@ -5,7 +5,7 @@ namespace Backend.Core.Entities
 {
     public class Presentation : TimestampEntityObject
     {
-        public List<PresentationBranches> Branches { get; set; }
+        public List<PresentationBranch> Branches { get; set; }
 
         public string RoomNumber { get; set; }
 

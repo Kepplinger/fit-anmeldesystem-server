@@ -50,7 +50,6 @@ namespace Backend.Controllers
             {
                 return new BadRequestObjectResult(jsonBooking);
             }
-
         }
 
         [HttpPut]
@@ -213,7 +212,7 @@ namespace Backend.Controllers
                     // PRESENTATION
                     if (jsonBooking.Presentation != null)
                     {
-                        foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                        foreach (PresentationBranch item in jsonBooking.Presentation.Branches)
                         {
                             _unitOfWork.PresentationBranchesRepository.Insert(item);
                         }
@@ -222,7 +221,7 @@ namespace Backend.Controllers
                         _unitOfWork.PresentationRepository.Insert(jsonBooking.Presentation);
                         _unitOfWork.Save();
 
-                        foreach (PresentationBranches item in jsonBooking.Presentation.Branches)
+                        foreach (PresentationBranch item in jsonBooking.Presentation.Branches)
                         {
                             item.fk_Presentation = jsonBooking.Presentation.Id;
                             _unitOfWork.PresentationBranchesRepository.Update(item);
@@ -262,10 +261,10 @@ namespace Backend.Controllers
                     }
 
                     // BRANCHES
-                    List<BookingBranches> bbranches = new List<BookingBranches>();
-                    foreach (BookingBranches item in jsonBooking.Branches)
+                    List<BookingBranch> bbranches = new List<BookingBranch>();
+                    foreach (BookingBranch item in jsonBooking.Branches)
                     {
-                        BookingBranches br = new BookingBranches();
+                        BookingBranch br = new BookingBranch();
                         br.fk_Branch = item.fk_Branch;
                         bbranches.Add(br);
                     }
@@ -285,7 +284,7 @@ namespace Backend.Controllers
                     _unitOfWork.Save();
 
                     // BRANCHES
-                    foreach (BookingBranches item in bbranches)
+                    foreach (BookingBranch item in bbranches)
                     {
                         item.fk_Booking = jsonBooking.Id;
                         item.Branch = _unitOfWork.BranchRepository.GetById(item.fk_Branch);

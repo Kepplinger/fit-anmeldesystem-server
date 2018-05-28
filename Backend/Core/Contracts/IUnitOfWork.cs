@@ -13,7 +13,6 @@ namespace Backend.Core.Contracts {
         IGenericRepository<Area> AreaRepository { get; }
         IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
         IGenericRepository<Branch> BranchRepository { get; }
-        IGenericRepository<Company> CompanyRepository { get; }
         IGenericRepository<Contact> ContactRepository { get; }
         IGenericRepository<Location> LocationRepository { get; }
         IGenericRepository<FitPackage> PackageRepository { get; }
@@ -28,14 +27,17 @@ namespace Backend.Core.Contracts {
         IGenericRepository<EmailVariableUsage> EmailVariableUsageRepository { get; }
         IGenericRepository<Graduate> GraduateRepository { get; }
         IGenericRepository<Tag> TagRepository { get; }
-        IGenericRepository<BookingBranches> BookingBranchesRepository { get; }
-        IGenericRepository<PresentationBranches> PresentationBranchesRepository { get; }
+        IGenericRepository<CompanyTag> CompanyTagRepository { get; }
+        IGenericRepository<CompanyBranch> CompanyBranchRepository { get; }
+        IGenericRepository<BookingBranch> BookingBranchesRepository { get; }
+        IGenericRepository<PresentationBranch> PresentationBranchesRepository { get; }
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>
         IEmailRepository EmailRepository { get; }
         IBookingRepository BookingRepository { get; }
         IEventRepository EventRepository { get; }
+        ICompanyRepository CompanyRepository { get; }
 
         void Save();
 
