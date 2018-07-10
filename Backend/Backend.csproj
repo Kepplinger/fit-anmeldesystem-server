@@ -11,6 +11,7 @@
     <Content Remove="ConsoleFillDb\**" />
     <EmbeddedResource Remove="ConsoleFillDb\**" />
     <None Remove="ConsoleFillDb\**" />
+    <Compile Remove="Migrations\20180417193849_initial.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Controllers\ValuesController.cs" />
