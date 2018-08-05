@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Backend.Core.Contracts.Repositories;
@@ -58,7 +59,7 @@ namespace Backend.Persistence.Repositories
                 currentEventDate = _context.Events.Max(e => e.EventDate);
             }
 
-            return _context.Events.Where(e => e.EventDate == currentEventDate).FirstOrDefault();
+            return _context.Events.Where(e => e.EventDate == currentEventDate).Include("RegistrationState").FirstOrDefault();
         }
     }
 }
