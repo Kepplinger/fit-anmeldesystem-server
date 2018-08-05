@@ -302,7 +302,7 @@ namespace Backend.Controllers
 
                     jsonBooking.Resources = rbooking;
                     jsonBooking.Branches = bbranches;
-                    _unitOfWork.Save(); // bringt des wos?
+                    _unitOfWork.Save(); // TODO bringt des wos?
 
                     // LOCATION
                     if (jsonBooking.Location != null)
