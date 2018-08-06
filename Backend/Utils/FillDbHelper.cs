@@ -212,7 +212,6 @@ namespace Backend.Utils
 
             for (int i = 0; i < 11; i++)
             {
-
                 // Set up Booking
                 Booking booking = new Booking();
                 booking.AdditionalInfo = "Here is some Additional Info";
@@ -226,6 +225,7 @@ namespace Backend.Utils
                 booking.Event = e;
                 booking.Representatives = repre;
                 booking.fk_Company = company.Id;
+                booking.fk_Contact = contact.Id;
                 booking.Email = "officemail@gmail.com";
                 booking.Branch = "Firmen Branche";
                 booking.EstablishmentsAut = "Linz";

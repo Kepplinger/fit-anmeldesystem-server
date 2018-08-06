@@ -71,9 +71,11 @@ namespace Backend.Controllers {
             using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
                 if (eventToUpdate != null) {
 
+                    DeleteUntrackedChildren(eventToUpdate, fitEvent);
+
                     foreach (Area area in fitEvent.Areas) {
 
-                        area.fk_Event = eventToUpdate.Id;
+                        area.fk_Event = fitEvent.Id;
 
                         if (area.Graphic != null && area.Graphic.DataUrl != null) {
                             if (area.Graphic.DataUrl.Contains("base64,")) {
@@ -98,8 +100,6 @@ namespace Backend.Controllers {
                             }
                         }
 
-                        List<Area> areas = _unitOfWork.AreaRepository.Get().ToList();
-
                         if (area.Id > 0) {
                             _unitOfWork.AreaRepository.Update(area);
                         } else {
@@ -107,8 +107,6 @@ namespace Backend.Controllers {
                         }
                         _unitOfWork.Save();
                     }
-
-                    List<Event> events = _unitOfWork.EventRepository.Get().ToList();
 
                     _unitOfWork.RegistrationStateRepository.Update(fitEvent.RegistrationState);
                     _unitOfWork.EventRepository.Update(fitEvent);
@@ -136,7 +134,6 @@ namespace Backend.Controllers {
 
             if (fitEvent != null) {
                 foreach (Area area in fitEvent.Areas) {
-
                     if (area.Graphic != null && area.Graphic.DataUrl != null) {
 
                         if (area.Graphic.DataUrl.Contains("base64,")) {
@@ -146,18 +143,11 @@ namespace Backend.Controllers {
                         _unitOfWork.DataFileRepository.Insert(area.Graphic);
                         _unitOfWork.Save();
                     }
-
-                    foreach (Location location in area.Locations) {
-                        _unitOfWork.LocationRepository.Insert(location);
-                        _unitOfWork.Save();
-                    }
-
-                    _unitOfWork.AreaRepository.Insert(area);
                 }
 
-                _unitOfWork.RegistrationStateRepository.Insert(fitEvent.RegistrationState);
                 _unitOfWork.EventRepository.Insert(fitEvent);
                 _unitOfWork.Save();
+
                 this.DetermineCurrentEvent();
 
                 return new OkObjectResult(new {
@@ -204,6 +194,30 @@ namespace Backend.Controllers {
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Deletes Areas and Locations which aren't in the event anymore. (They were deleted by the admin)
+        /// </summary>
+        /// <param name="eventToUpdate"></param>
+        /// <param name="newEvent"></param>
+        private void DeleteUntrackedChildren(Event eventToUpdate, Event newEvent) {
+
+            foreach (Area area in eventToUpdate.Areas) {
+                if (!newEvent.Areas.Any(a => a.Id == area.Id)) {
+                    area.Locations.ForEach(l => _unitOfWork.LocationRepository.Delete(l));
+                    _unitOfWork.AreaRepository.Delete(area);
+                } else {
+                    Area newArea = newEvent.Areas.Find(a => a.Id == area.Id);
+
+                    foreach (Location location in area.Locations) {
+                        if (!newArea.Locations.Any(l => l.Id == location.Id)) {
+                            _unitOfWork.LocationRepository.Delete(location);
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class reffk : Migration
+    public partial class contactf : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
