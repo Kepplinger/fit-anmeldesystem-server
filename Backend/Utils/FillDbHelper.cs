@@ -74,17 +74,6 @@ namespace Backend.Utils
             _context.Resources.Add(resource2);
             _context.SaveChanges();
 
-            //Representatives
-            List<Representative> repre = new List<Representative>();
-            Representative repr = new Representative();
-            repr.Email = "andi.sakal15@gmail.com";
-            repr.Image = null;
-            repr.Name = "Andrej Sakal";
-
-            _context.Rerpresentatives.Add(repr);
-            _context.SaveChanges();
-            repre.Add(repr);
-
             FitPackage package = new FitPackage();
             package.Name = "Basispaket";
             package.Discriminator = 1;
@@ -212,6 +201,17 @@ namespace Backend.Utils
 
             for (int i = 0; i < 11; i++)
             {
+                //Representatives
+                List<Representative> repre = new List<Representative>();
+                Representative repr = new Representative();
+                repr.Email = "andi.sakal15@gmail.com";
+                repr.Image = null;
+                repr.Name = "Andrej Sakal";
+
+                _context.Rerpresentatives.Add(repr);
+                _context.SaveChanges();
+                repre.Add(repr);
+                
                 // Set up Booking
                 Booking booking = new Booking();
                 booking.AdditionalInfo = "Here is some Additional Info";

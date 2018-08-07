@@ -48,7 +48,7 @@ namespace Backend.Persistence.Repositories
             DateTime currentEventDate = DateTime.MinValue;
 
             // get future Event
-            var query = _context.Events.Where(e => DateTime.Compare(e.EventDate, today) > 0);
+            var query = _context.Events.Where(e => DateTime.Compare(e.EventDate.Date, today.Date) >= 0);
 
             if (query.Count() > 0) {
                 currentEventDate = query.Min(e => e.EventDate);
