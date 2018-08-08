@@ -32,7 +32,7 @@ namespace Backend.Core.Entities
         public List<ResourceBooking> Resources { get; set; }
 
         [Required]
-        public bool isAccepted { get; set; }
+        public int isAccepted { get; set; }
 
         [ForeignKey("fk_FitPackage"), Required]
         public FitPackage FitPackage { get; set; }

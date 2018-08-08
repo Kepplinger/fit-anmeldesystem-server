@@ -13,17 +13,14 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
-namespace Backend.Controllers
-{
+namespace Backend.Controllers {
     [Route("api/[controller]")]
     //[Authorize(Roles = "Admin")]
     [Produces("application/json", "application/xml")]
-    public class BookingController : Controller
-    {
+    public class BookingController : Controller {
         private IUnitOfWork _unitOfWork;
 
-        public BookingController(IUnitOfWork uow)
-        {
+        public BookingController(IUnitOfWork uow) {
             this._unitOfWork = uow;
         }
 
@@ -36,38 +33,27 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
-        public IActionResult Create([FromBody] Booking jsonBooking)
-        {
-            if (jsonBooking != null && this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault() != null)
-            {
+        public IActionResult Create([FromBody] Booking jsonBooking) {
+            if (jsonBooking != null && this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault() != null) {
                 return this.Update(jsonBooking);
-            }
-            else if (jsonBooking != null)
-            {
+            } else if (jsonBooking != null) {
                 return this.Insert(jsonBooking);
-            }
-            else
-            {
+            } else {
                 return new BadRequestObjectResult(jsonBooking);
             }
         }
 
         [HttpPut]
         [Consumes("application/json")]
-        public IActionResult Update(Booking jsonBooking)
-        {
+        public IActionResult Update(Booking jsonBooking) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
 
-            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction())
-            {
-                try
-                {
+            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
+                try {
                     //ManageChanges(jsonBooking);
 
-                    if (jsonBooking.Presentation != null)
-                    {
-                        if (jsonBooking.Presentation.File != null)
-                        {
+                    if (jsonBooking.Presentation != null) {
+                        if (jsonBooking.Presentation.File != null) {
                             if (jsonBooking.Presentation.File.Id != null)
                                 _unitOfWork.DataFileRepository.Update(jsonBooking.Presentation.File);
                             else
@@ -84,16 +70,14 @@ namespace Backend.Controllers
 
                     ImageHelper.ManageBookingImages(jsonBooking);
 
-                    if (jsonBooking.Logo != null)
-                    {
+                    if (jsonBooking.Logo != null) {
                         if (jsonBooking.Logo.Id != null)
                             _unitOfWork.DataFileRepository.Update(jsonBooking.Logo);
                         else
                             _unitOfWork.DataFileRepository.Insert(jsonBooking.Logo);
                     }
 
-                    foreach (Representative representative in jsonBooking.Representatives)
-                    {
+                    foreach (Representative representative in jsonBooking.Representatives) {
                         _unitOfWork.DataFileRepository.Update(representative.Image);
                         _unitOfWork.RepresentativeRepository.Update(representative);
                     }
@@ -104,9 +88,7 @@ namespace Backend.Controllers
                     transaction.Commit();
 
                     return new OkObjectResult(jsonBooking);
-                }
-                catch (DbUpdateException ex)
-                {
+                } catch (DbUpdateException ex) {
                     transaction.Rollback();
                     return DbErrorHelper.CatchDbError(ex);
                 }
@@ -114,15 +96,13 @@ namespace Backend.Controllers
         }
 
         // auslagern
-        private void ManageChanges(Booking booking)
-        {
+        private void ManageChanges(Booking booking) {
             ChangeProtocol change = new ChangeProtocol();
 
             // Update already persistent Entities ----------------------
             Booking bookingToUpdate = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == booking.Id).FirstOrDefault();
             change = new ChangeProtocol();
-            if (booking.fk_FitPackage != 0 && bookingToUpdate.FitPackage != null)
-            {
+            if (booking.fk_FitPackage != 0 && bookingToUpdate.FitPackage != null) {
                 //foreach (System.Reflection.PropertyInfo p in typeof(FitPackage).GetProperties())
                 //{
                 //    if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
@@ -149,13 +129,10 @@ namespace Backend.Controllers
             }
 
             change = new ChangeProtocol();
-            if (booking.fk_Presentation != 0 && bookingToUpdate.Presentation != null)
-            {
-                foreach (System.Reflection.PropertyInfo p in typeof(Presentation).GetProperties())
-                {
+            if (booking.fk_Presentation != 0 && bookingToUpdate.Presentation != null) {
+                foreach (System.Reflection.PropertyInfo p in typeof(Presentation).GetProperties()) {
                     if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                        && p.GetValue(booking.Presentation) != null && !p.GetValue(booking.Presentation).Equals(p.GetValue(bookingToUpdate.Presentation)))
-                    {
+                        && p.GetValue(booking.Presentation) != null && !p.GetValue(booking.Presentation).Equals(p.GetValue(bookingToUpdate.Presentation))) {
                         change.ChangeDate = DateTime.Now;
                         change.ColumnName = p.Name;
                         change.NewValue = p.GetValue(booking.Presentation).ToString();
@@ -175,13 +152,10 @@ namespace Backend.Controllers
             }
 
             change = new ChangeProtocol();
-            if (booking.Id != 0 && bookingToUpdate != null)
-            {
-                foreach (System.Reflection.PropertyInfo p in typeof(Booking).GetProperties())
-                {
+            if (booking.Id != 0 && bookingToUpdate != null) {
+                foreach (System.Reflection.PropertyInfo p in typeof(Booking).GetProperties()) {
                     if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                        && p.GetValue(booking) != null && !p.GetValue(booking).Equals(p.GetValue(bookingToUpdate)))
-                    {
+                        && p.GetValue(booking) != null && !p.GetValue(booking).Equals(p.GetValue(bookingToUpdate))) {
                         change.ChangeDate = DateTime.Now;
                         change.ColumnName = p.Name;
                         change.NewValue = Convert.ToString(p.GetValue(booking));
@@ -203,17 +177,12 @@ namespace Backend.Controllers
         }
 
         [NonAction]
-        private IActionResult Insert(Booking jsonBooking)
-        {
-            using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
-            {
-                try
-                {
+        private IActionResult Insert(Booking jsonBooking) {
+            using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction()) {
+                try {
                     // PRESENTATION
-                    if (jsonBooking.Presentation != null)
-                    {
-                        foreach (PresentationBranch item in jsonBooking.Presentation.Branches)
-                        {
+                    if (jsonBooking.Presentation != null) {
+                        foreach (PresentationBranch item in jsonBooking.Presentation.Branches) {
                             _unitOfWork.PresentationBranchesRepository.Insert(item);
                         }
 
@@ -221,8 +190,7 @@ namespace Backend.Controllers
                         _unitOfWork.PresentationRepository.Insert(jsonBooking.Presentation);
                         _unitOfWork.Save();
 
-                        foreach (PresentationBranch item in jsonBooking.Presentation.Branches)
-                        {
+                        foreach (PresentationBranch item in jsonBooking.Presentation.Branches) {
                             item.fk_Presentation = jsonBooking.Presentation.Id;
                             _unitOfWork.PresentationBranchesRepository.Update(item);
                         }
@@ -230,8 +198,7 @@ namespace Backend.Controllers
                     }
 
                     // REPRESENTATIVES
-                    for (int i = 0; i < jsonBooking.Representatives.Count; i++)
-                    {
+                    for (int i = 0; i < jsonBooking.Representatives.Count; i++) {
                         if (jsonBooking.Representatives.ElementAt(i).Id > 0)
                             _unitOfWork.RepresentativeRepository.Update(jsonBooking.Representatives.ElementAt(i));
                         else
@@ -248,22 +215,18 @@ namespace Backend.Controllers
 
                     // EVENT
                     // Get the current active Event (nimmt an das es nur 1 gibt)
-                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.RegistrationState.IsCurrent == true).FirstOrDefault() != null)
-                    {
+                    if (_unitOfWork.EventRepository.Get(filter: ev => ev.RegistrationState.IsCurrent == true).FirstOrDefault() != null) {
                         jsonBooking.Event = _unitOfWork.EventRepository.Get(filter: ev => ev.Id == jsonBooking.fk_Event).FirstOrDefault();
                         _unitOfWork.Save();
                         jsonBooking.CreationDate = DateTime.Now;
-                    }
-                    else
-                    {
+                    } else {
                         // make rollback if there are no active transactions
                         transaction.Rollback();
                     }
 
                     // BRANCHES
                     List<BookingBranch> bbranches = new List<BookingBranch>();
-                    foreach (BookingBranch item in jsonBooking.Branches)
-                    {
+                    foreach (BookingBranch item in jsonBooking.Branches) {
                         BookingBranch br = new BookingBranch();
                         br.fk_Branch = item.fk_Branch;
                         bbranches.Add(br);
@@ -272,8 +235,7 @@ namespace Backend.Controllers
 
                     // RESOURCES
                     List<ResourceBooking> rbooking = new List<ResourceBooking>();
-                    foreach (ResourceBooking item in jsonBooking.Resources)
-                    {
+                    foreach (ResourceBooking item in jsonBooking.Resources) {
                         ResourceBooking bk = new ResourceBooking();
                         bk.fk_Resource = item.fk_Resource;
                         rbooking.Add(bk);
@@ -284,8 +246,7 @@ namespace Backend.Controllers
                     _unitOfWork.Save();
 
                     // BRANCHES
-                    foreach (BookingBranch item in bbranches)
-                    {
+                    foreach (BookingBranch item in bbranches) {
                         item.fk_Booking = jsonBooking.Id;
                         item.Branch = _unitOfWork.BranchRepository.GetById(item.fk_Branch);
                         _unitOfWork.BookingBranchesRepository.Insert(item);
@@ -293,8 +254,7 @@ namespace Backend.Controllers
                     }
 
                     // RESOURCES
-                    foreach (ResourceBooking item in rbooking)
-                    {
+                    foreach (ResourceBooking item in rbooking) {
                         item.fk_Booking = jsonBooking.Id;
                         _unitOfWork.ResourceBookingRepository.Insert(item);
                         _unitOfWork.Save();
@@ -305,23 +265,19 @@ namespace Backend.Controllers
                     _unitOfWork.Save(); // TODO bringt des wos?
 
                     // LOCATION
-                    if (jsonBooking.Location != null)
-                    {
+                    if (jsonBooking.Location != null) {
                         jsonBooking.Location.isOccupied = true;
                         _unitOfWork.LocationRepository.Update(jsonBooking.Location);
                         _unitOfWork.Save();
                     }
 
                     // COMPANY
-                    if (jsonBooking.Company == null)
-                    {
+                    if (jsonBooking.Company == null) {
                         jsonBooking.Company = _unitOfWork.CompanyRepository.Get(p => p.Id == jsonBooking.fk_Company).FirstOrDefault();
-                        if (jsonBooking.Company.Address == null)
-                        {
+                        if (jsonBooking.Company.Address == null) {
                             jsonBooking.Company.Address = _unitOfWork.AddressRepository.Get(p => p.Id == jsonBooking.Company.fk_Address).FirstOrDefault();
                         }
-                        if (jsonBooking.Company.Contact == null)
-                        {
+                        if (jsonBooking.Company.Contact == null) {
                             jsonBooking.Company.Contact = _unitOfWork.ContactRepository.Get(p => p.Id == jsonBooking.Company.fk_Contact).FirstOrDefault();
                         }
                     }
@@ -335,9 +291,7 @@ namespace Backend.Controllers
                     EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
 
                     return new OkObjectResult(jsonBooking);
-                }
-                catch (DbUpdateException ex)
-                {
+                } catch (DbUpdateException ex) {
                     transaction.Rollback();
                     return DbErrorHelper.CatchDbError(ex);
                 }
@@ -350,8 +304,7 @@ namespace Backend.Controllers
         /// <response code="200">Returns all available Bookings</response>
         [HttpGet]
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
-        public IActionResult GetAll()
-        {
+        public IActionResult GetAll() {
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation,Contact").ToList();
             if (bookings != null && bookings.Count > 0)
                 return new OkObjectResult(bookings);
@@ -365,11 +318,9 @@ namespace Backend.Controllers
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetById(int id)
-        {
+        public IActionResult GetById(int id) {
             Booking booking = _unitOfWork.BookingRepository.GetById(id);
-            if (booking != null)
-            {
+            if (booking != null) {
                 return new OkObjectResult(booking);
             }
             return new NoContentResult();
@@ -381,8 +332,7 @@ namespace Backend.Controllers
         /// </summary>
         [HttpGet("getBookingByCompanyId/{id}")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetbookingByCompanyId(int id)
-        {
+        public IActionResult GetBookingByCompanyId(int id) {
             var bookings = _unitOfWork.BookingRepository.Get(p => p.Company.Id == id);
             return new ObjectResult(bookings);
         }
@@ -394,14 +344,28 @@ namespace Backend.Controllers
         [HttpGet("event/{id}")]
         [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetBookingByEventId(int id)
-        {
+        public IActionResult GetBookingByEventId(int id) {
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
-            if (bookings != null && bookings.Count > 0)
-            {
+            if (bookings != null && bookings.Count > 0) {
                 return new ObjectResult(bookings);
             }
             return new NoContentResult();
+        }
+
+        /// <summary>
+        /// Accepts or rejects target booking.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        [HttpPut("accept/{id}")]
+        public IActionResult AcceptBooking(int id, [FromBody] int status) {
+            Booking booking = _unitOfWork.BookingRepository.GetById(id);
+            booking.isAccepted = status;
+            _unitOfWork.BookingRepository.Update(booking);
+            _unitOfWork.Save();
+
+            return new ObjectResult(booking);
         }
     }
 }

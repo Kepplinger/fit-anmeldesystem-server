@@ -216,7 +216,7 @@ namespace Backend.Utils
                 Booking booking = new Booking();
                 booking.AdditionalInfo = "Here is some Additional Info";
                 booking.CompanyDescription = "This is the company description";
-                booking.isAccepted = true;
+                booking.isAccepted = 0;
                 booking.ProvidesSummerJob = true;
                 booking.ProvidesThesis = false;
                 booking.Remarks = "Remark";
