@@ -8,12 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Backend.Utils
-{
-    public static class FillDbHelper
-    {
-        public static void createTestData(ApplicationDbContext _context)
-        {
+namespace Backend.Utils {
+    public static class FillDbHelper {
+        public static void createTestData(ApplicationDbContext _context) {
             Console.WriteLine("Search for Companies who want to join FIT ...");
             // Set up Company
             Company company = new Company();
@@ -119,19 +116,6 @@ namespace Backend.Utils
             _context.Branches.Add(bio);
             _context.SaveChanges();
 
-            /*Presentation p = new Presentation();
-            p.Branches = new List<PresentationBranches>();
-
-            p.Branches.Add(it);
-            p.Description = "zad mi nimma";
-            p.IsAccepted = false;
-            p.RoomNumber = "nrofroom";
-            p.Title = "title";
-            p.FileURL = "http://";
-
-            _context.Presentations.Add(p);*/
-            _context.SaveChanges();
-
             Location l = new Location();
             l.Category = "A";
             l.Number = "31";
@@ -199,8 +183,7 @@ namespace Backend.Utils
             _context.Graduates.Add(g2);
             _context.SaveChanges();
 
-            for (int i = 0; i < 11; i++)
-            {
+            for (int i = 0; i < 11; i++) {
                 //Representatives
                 List<Representative> repre = new List<Representative>();
                 Representative repr = new Representative();
@@ -211,7 +194,18 @@ namespace Backend.Utils
                 _context.Rerpresentatives.Add(repr);
                 _context.SaveChanges();
                 repre.Add(repr);
-                
+
+                Presentation p = new Presentation();
+                p.Branches = new List<PresentationBranch>();
+                p.Description = "zad mi nimma";
+                p.IsAccepted = 0;
+                p.RoomNumber = "nrofroom";
+                p.Title = "title";
+                p.File = null;
+
+                _context.Presentations.Add(p);
+                _context.SaveChanges();
+
                 // Set up Booking
                 Booking booking = new Booking();
                 booking.AdditionalInfo = "Here is some Additional Info";
@@ -235,6 +229,7 @@ namespace Backend.Utils
                 booking.Homepage = "www.fit.com";
                 booking.Logo = null;
                 booking.PhoneNumber = "firmenphonenr";
+                booking.Presentation = p;
 
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
@@ -255,8 +250,7 @@ namespace Backend.Utils
             }
         }
 
-        public static void createEmails(IUnitOfWork uow)
-        {
+        public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
             Email isPendingGottenCompany = new Email("isPendingGottenCompany",
                                 "Diese Email geht an die Firma und gilt als Bestätigungsemail eines erfolgreichen Firmenantrags",
@@ -405,8 +399,7 @@ namespace Backend.Utils
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private static string concatFieldPath(params string[] args)
-        {
+        private static string concatFieldPath(params string[] args) {
             return String.Join('.', args);
         }
     }

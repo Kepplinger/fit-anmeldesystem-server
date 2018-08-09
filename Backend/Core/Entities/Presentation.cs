@@ -16,7 +16,7 @@ namespace Backend.Core.Entities
         [MaxLength(500)]
         public string Description { get; set; }
 
-        public bool IsAccepted { get; set; }
+        public int IsAccepted { get; set; }
 
         public DataFile File { get; set; }
     }
