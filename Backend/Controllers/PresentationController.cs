@@ -35,9 +35,7 @@ namespace Backend.Controllers {
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult Update(int id, [FromBody] Presentation presentation) {
             if (presentation != null) {
-                _unitOfWork.PresentationRepository.Update(presentation);
-                _unitOfWork.Save();
-                return new ObjectResult(presentation);
+                return new ObjectResult(UpdatePresentation(presentation));
             } else {
                 return new BadRequestResult();
             }
@@ -49,12 +47,33 @@ namespace Backend.Controllers {
             Presentation presentation = _unitOfWork.PresentationRepository.Get(filter: p => p.Id == id).FirstOrDefault();
             if (presentation != null) {
                 presentation.IsAccepted = status;
-                _unitOfWork.PresentationRepository.Update(presentation);
-                _unitOfWork.Save();
-                return new ObjectResult(presentation);
+                return new ObjectResult(UpdatePresentation(presentation));
             } else {
                 return new BadRequestResult();
             }
+        }
+
+        private Presentation UpdatePresentation(Presentation presentation) {
+
+            List<PresentationBranch> presentationBranches = _unitOfWork.PresentationBranchesRepository
+                .Get(pb => pb.fk_Presentation == presentation.Id, includeProperties: "Branch")
+                .ToList();
+
+            foreach (PresentationBranch presentationBranch in presentationBranches) {
+                int index = presentation.Branches.FindIndex(pb => pb.fk_Branch == presentationBranch.fk_Branch);
+
+                if (index != -1) {
+                    presentation.Branches[index] = presentationBranch;
+                } else {
+                    _unitOfWork.PresentationBranchesRepository.Delete(presentationBranch);
+                    _unitOfWork.Save();
+                }
+            }
+
+            _unitOfWork.PresentationRepository.Update(presentation);
+            _unitOfWork.Save();
+            presentation = _unitOfWork.PresentationRepository.Get(filter: p => p.Id == presentation.Id).FirstOrDefault();
+            return presentation;
         }
     }
 }
