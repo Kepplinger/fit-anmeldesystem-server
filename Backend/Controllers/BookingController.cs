@@ -54,13 +54,13 @@ namespace Backend.Controllers {
 
                     if (jsonBooking.Presentation != null) {
                         if (jsonBooking.Presentation.File != null) {
-                            if (jsonBooking.Presentation.File.Id != null)
+                            if (jsonBooking.Presentation.File.Id > 0)
                                 _unitOfWork.DataFileRepository.Update(jsonBooking.Presentation.File);
                             else
                                 _unitOfWork.DataFileRepository.Insert(jsonBooking.Presentation.File);
                         }
 
-                        if (jsonBooking.Presentation.Id != null)
+                        if (jsonBooking.Presentation.Id > 0)
                             _unitOfWork.PresentationRepository.Update(jsonBooking.Presentation);
                         else
                             _unitOfWork.PresentationRepository.Insert(jsonBooking.Presentation);
@@ -71,14 +71,19 @@ namespace Backend.Controllers {
                     ImageHelper.ManageBookingImages(jsonBooking);
 
                     if (jsonBooking.Logo != null) {
-                        if (jsonBooking.Logo.Id != null)
+                        if (jsonBooking.Logo.Id > 0)
                             _unitOfWork.DataFileRepository.Update(jsonBooking.Logo);
                         else
                             _unitOfWork.DataFileRepository.Insert(jsonBooking.Logo);
                     }
 
                     foreach (Representative representative in jsonBooking.Representatives) {
-                        _unitOfWork.DataFileRepository.Update(representative.Image);
+                        if (representative.Image != null) {
+                            if (representative.Image.Id > 0)
+                                _unitOfWork.DataFileRepository.Update(representative.Image);
+                            else
+                                _unitOfWork.DataFileRepository.Insert(representative.Image);
+                        }
                         _unitOfWork.RepresentativeRepository.Update(representative);
                     }
 
@@ -359,13 +364,17 @@ namespace Backend.Controllers {
         /// <param name="status"></param>
         /// <returns></returns>
         [HttpPut("accept/{id}")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult AcceptBooking(int id, [FromBody] int status) {
             Booking booking = _unitOfWork.BookingRepository.GetById(id);
-            booking.isAccepted = status;
-            _unitOfWork.BookingRepository.Update(booking);
-            _unitOfWork.Save();
-
-            return new ObjectResult(booking);
+            if (booking != null) {
+                booking.isAccepted = status;
+                _unitOfWork.BookingRepository.Update(booking);
+                _unitOfWork.Save();
+                return new ObjectResult(booking);
+            } else {
+                return new BadRequestResult();
+            }
         }
     }
 }

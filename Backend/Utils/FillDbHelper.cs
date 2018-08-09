@@ -197,10 +197,10 @@ namespace Backend.Utils {
 
                 Presentation p = new Presentation();
                 p.Branches = new List<PresentationBranch>();
-                p.Description = "zad mi nimma";
+                p.Description = "Hallo ist da jemand?";
                 p.IsAccepted = 0;
-                p.RoomNumber = "nrofroom";
-                p.Title = "title";
+                p.RoomNumber = "E27";
+                p.Title = "Coole Präsi";
                 p.File = null;
 
                 _context.Presentations.Add(p);

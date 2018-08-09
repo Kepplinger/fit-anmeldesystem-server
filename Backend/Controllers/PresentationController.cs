@@ -17,16 +17,6 @@ namespace Backend.Controllers {
             this._unitOfWork = uow;
         }
 
-        [HttpGet]
-        [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
-        public IActionResult Get() {
-            List<Presentation> pres = _unitOfWork.PresentationRepository.Get().ToList<Presentation>();
-            if (pres != null && pres.Count > 0) {
-                return new OkObjectResult(pres);
-            }
-            return new NoContentResult();
-        }
-
         [HttpGet("{eventId}")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult GetByEvent(int eventID) {
@@ -41,11 +31,30 @@ namespace Backend.Controllers {
             return new NoContentResult();
         }
 
-        [HttpGet("presentationId:int")]
+        [HttpPut()]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
-        public IActionResult Get(int presentationId) {
-            Presentation pres = _unitOfWork.PresentationRepository.Get(p => p.Id == presentationId).FirstOrDefault();
-            return new OkObjectResult(pres);
+        public IActionResult Update(int id, [FromBody] Presentation presentation) {
+            if (presentation != null) {
+                _unitOfWork.PresentationRepository.Update(presentation);
+                _unitOfWork.Save();
+                return new ObjectResult(presentation);
+            } else {
+                return new BadRequestResult();
+            }
+        }
+
+        [HttpPut("accept/{id}")]
+        [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
+        public IActionResult Accept(int id, [FromBody] int status) {
+            Presentation presentation = _unitOfWork.PresentationRepository.Get(filter: p => p.Id == id).FirstOrDefault();
+            if (presentation != null) {
+                presentation.IsAccepted = status;
+                _unitOfWork.PresentationRepository.Update(presentation);
+                _unitOfWork.Save();
+                return new ObjectResult(presentation);
+            } else {
+                return new BadRequestResult();
+            }
         }
     }
 }

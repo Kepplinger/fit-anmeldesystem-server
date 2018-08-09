@@ -16,7 +16,6 @@ namespace Backend.Core.Contracts {
         IGenericRepository<Contact> ContactRepository { get; }
         IGenericRepository<Location> LocationRepository { get; }
         IGenericRepository<FitPackage> PackageRepository { get; }
-        IGenericRepository<Presentation> PresentationRepository { get; }
         IGenericRepository<Representative> RepresentativeRepository { get; }
         IGenericRepository<Resource> ResourceRepository { get; }
         IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
@@ -38,6 +37,7 @@ namespace Backend.Core.Contracts {
         IBookingRepository BookingRepository { get; }
         IEventRepository EventRepository { get; }
         ICompanyRepository CompanyRepository { get; }
+        IPresentationRepository PresentationRepository { get; }
 
         void Save();
 

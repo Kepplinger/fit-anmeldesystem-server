@@ -31,7 +31,6 @@ namespace StoreService.Persistence {
         public IGenericRepository<Contact> ContactRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
         public IGenericRepository<FitPackage> PackageRepository { get; }
-        public IGenericRepository<Presentation> PresentationRepository { get; }
         public IGenericRepository<Representative> RepresentativeRepository { get; }
         public IGenericRepository<Resource> ResourceRepository { get; }
         public IGenericRepository<ResourceBooking> ResourceBookingRepository { get; }
@@ -57,6 +56,8 @@ namespace StoreService.Persistence {
 
         public ICompanyRepository CompanyRepository { get; }
 
+        public IPresentationRepository PresentationRepository { get; }
+
         public UnitOfWork() {
 
             _context = new ApplicationDbContext();
@@ -71,13 +72,13 @@ namespace StoreService.Persistence {
             BranchRepository = new GenericRepository<Branch>(_context);
             LocationRepository = new GenericRepository<Location>(_context);
             PackageRepository = new GenericRepository<FitPackage>(_context);
-            PresentationRepository = new GenericRepository<Presentation>(_context);
             ResourceRepository = new GenericRepository<Resource>(_context);
             ResourceBookingRepository = new GenericRepository<ResourceBooking>(_context);
             ChangeRepository = new GenericRepository<ChangeProtocol>(_context);
             DataFileRepository = new GenericRepository<DataFile>(_context);
             EventRepository = new EventRepository(_context);
             EmailRepository = new EmailRepository(_context);
+            PresentationRepository = new PresentationRepository(_context);
             EmailVariableRepository = new GenericRepository<EmailVariable>(_context);
             EmailVariableUsageRepository = new GenericRepository<EmailVariableUsage>(_context);
             GraduateRepository = new GenericRepository<Graduate>(_context);
