@@ -8,17 +8,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="ConsoleFillDb\**" />
+    <Compile Remove="Data\**" />
+    <Compile Remove="Media\**" />
     <Content Remove="ConsoleFillDb\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="Media\**" />
     <EmbeddedResource Remove="ConsoleFillDb\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Media\**" />
     <None Remove="ConsoleFillDb\**" />
+    <None Remove="Data\**" />
+    <None Remove="Media\**" />
     <Compile Remove="Migrations\20180417193849_initial.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Controllers\ValuesController.cs" />
+    <Compile Remove="Src\Controllers\ValuesController.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Media\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="EmailTemplates\" />
   </ItemGroup>
