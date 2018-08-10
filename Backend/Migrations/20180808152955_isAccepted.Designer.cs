@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180808152955_isAccepted")]
+    partial class isAccepted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -555,7 +556,7 @@ namespace Backend.Migrations
 
                     b.Property<int?>("FileId");
 
-                    b.Property<int>("IsAccepted");
+                    b.Property<bool>("IsAccepted");
 
                     b.Property<string>("RoomNumber");
 
