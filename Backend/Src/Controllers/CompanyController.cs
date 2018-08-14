@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Src.Persistence.Facades;
 using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,9 +18,11 @@ namespace Backend.Controllers {
     public class CompanyController : Controller {
 
         private IUnitOfWork _unitOfWork;
+        private CompanyFacade _companyFacade;
 
         public CompanyController(IUnitOfWork uow) {
-            this._unitOfWork = uow;
+            _unitOfWork = uow;
+            _companyFacade = new CompanyFacade(_unitOfWork);
         }
 
         /// <response code="200">Returns all available Companies</response>
@@ -80,7 +83,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut("accepting")]
-        public IActionResult Accepting([FromBody] int compId) {
+        public IActionResult AcceptCompany([FromBody] int compId) {
             Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
             if (c != null) {
                 c.IsPending = false;
@@ -92,67 +95,21 @@ namespace Backend.Controllers {
             }
             return new BadRequestResult();
         }
-        [HttpGet("presentation/{eventId:int}")]
-        public IActionResult PresentationByEvent(int eventId) {
-            List<object> pres = new List<object>();
-            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Presentation != null && p.Event.Id == eventId).ToList();
-            for (int i = 0; i < 10; i++) {
-                /*var companyPresentations = new
-                {
-                    company = bookings.ElementAt(i).Company,
-                    presentation = bookings.ElementAt(i).Presentation,
-                };*/
-                var companyPresentations = new {
-                    companyName = "company Name: " + i,
-                    presentationTitle = "presentation title" + i,
-                    presentationDescr = "This is a presentation description from: " + i,
-                };
-                pres.Add(companyPresentations);
-            }
-            return new OkObjectResult(pres);
-        }
 
         [HttpPut]
         [Consumes("application/json")]
-        public IActionResult Update([FromBody]Company jsonCompany) {
+        public IActionResult Update([FromBody]Company company) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
-
-            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
-                try {
-                    Company companyToUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact,Tags,Branches").FirstOrDefault();
-
-                    if (jsonCompany.Address.Id != 0) {
-                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Address), jsonCompany.Address, companyToUpdate.Address, nameof(Address), companyToUpdate.Id, false);
-                        _unitOfWork.AddressRepository.Update(jsonCompany.Address);
-                        _unitOfWork.Save();
-                    }
-
-                    if (jsonCompany.Contact.Id != 0) {
-                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), jsonCompany.Contact, companyToUpdate.Contact, nameof(Contact), companyToUpdate.Id, false);
-                        _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
-                        _unitOfWork.Save();
-                    }
-
-                    if (jsonCompany.Id != 0) {
-                        jsonCompany.RegistrationToken = companyToUpdate.RegistrationToken;
-                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Company), jsonCompany, companyToUpdate, nameof(Company), companyToUpdate.Id, false);
-                        _unitOfWork.CompanyRepository.Update(jsonCompany);
-                        _unitOfWork.Save();
-                    }
-
-                    transaction.Commit();
-                    return new OkObjectResult(jsonCompany);
-
-                } catch (DbUpdateException ex) {
-                    transaction.Rollback();
-                    return DbErrorHelper.CatchDbError(ex);
-                }
+            try {
+                return new OkObjectResult(_companyFacade.Update(company));
+            } catch (DbUpdateException ex) {
+                return DbErrorHelper.CatchDbError(ex);
             }
         }
 
         [HttpDelete("assign")]
         [Consumes("application/json")]
-        public IActionResult CompanyAssign(int pendingCompanyId, int existingCompanyId) {
+        public IActionResult AssignCompany(int pendingCompanyId, int existingCompanyId) {
 
             Company existingCompany = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
             Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
