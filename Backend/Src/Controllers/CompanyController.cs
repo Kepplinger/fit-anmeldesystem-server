@@ -32,18 +32,7 @@ namespace Backend.Controllers {
         [HttpGet]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll() {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact,Tags,Branches");
-            return new OkObjectResult(companies);
-        }
-
-        /// <response code="200">Returns all pending Companies</response>
-        /// <summary>
-        /// Getting all Companies from Database
-        /// </summary>
-        [HttpGet("pending")]
-        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult GetAllPending() {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: f => f.IsPending == true, includeProperties: "Address,Contact,Tags,Branches");
+            var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,Tags,Branches");
             return new OkObjectResult(companies);
         }
 
@@ -82,16 +71,19 @@ namespace Backend.Controllers {
             return new BadRequestResult();
         }
 
-        [HttpPut("accepting")]
-        public IActionResult AcceptCompany([FromBody] int compId) {
-            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
-            if (c != null) {
-                c.IsPending = false;
-                this._unitOfWork.CompanyRepository.Update(c);
-                this._unitOfWork.Save();
-                EmailHelper.SendMailByName("IsPendingAcceptedCompany", c, c.Contact.Email);
+        [HttpPut("accept/{compId}")]
+        public IActionResult AcceptCompany(int compId, [FromBody] int status) {
+            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
+            if (company != null) {
+                company.IsAccepted = status;
+                _unitOfWork.CompanyRepository.Update(company);
+                _unitOfWork.Save();
 
-                return new OkResult();
+                if (company.IsAccepted == 1) {
+                    EmailHelper.SendMailByName("IsPendingAcceptedCompany", company, company.Contact.Email);
+                }
+
+                return new OkObjectResult(company);
             }
             return new BadRequestResult();
         }

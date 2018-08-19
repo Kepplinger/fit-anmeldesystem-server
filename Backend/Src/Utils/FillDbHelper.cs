@@ -15,7 +15,7 @@ namespace Backend.Utils {
             // Set up Company
             Company company = new Company();
             company.Name = "Kepplinger IT";
-            company.IsPending = false;
+            company.IsAccepted = 1;
             company.RegistrationToken = "FirmenToken1";
 
             // Set up Address
