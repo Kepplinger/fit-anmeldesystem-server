@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers {
@@ -31,7 +32,7 @@ namespace Backend.Controllers {
 
         [HttpPut("apply")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
-        public IActionResult applyChange([FromBody] int id) {
+        public IActionResult ApplyChange([FromBody] int id) {
             if (id != null) {
                 ChangeProtocol change = _unitOfWork.ChangeRepository.Get(p => p.Id == id).FirstOrDefault();
                 if (change != null) {
@@ -46,39 +47,30 @@ namespace Backend.Controllers {
 
         [HttpPut("revert")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
-        public IActionResult revertChange([FromBody] int id) {
+        public IActionResult RevertChange([FromBody] int id) {
 
             if (id != null) {
-
                 ChangeProtocol change = _unitOfWork.ChangeRepository.Get(filter: c => c.Id == id).FirstOrDefault();
 
                 if (change != null) {
                     switch (change.TableName) {
                         case "Booking":
-                            Booking booking = _unitOfWork.BookingRepository.Get(filter: c => c.Id == id).FirstOrDefault();
-                            var bookingInfo = booking.GetType().GetProperty(change.ColumnName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                            bookingInfo.SetValue(booking, change.OldValue, null);
+                            RevertChangeOnEntity<Booking>(_unitOfWork.BookingRepository, change);
                             break;
                         case "Presentation":
+                            RevertChangeOnEntity<Presentation>(_unitOfWork.PresentationRepository, change);
                             break;
                         case "Representative":
-                            break;
-                        case "FolderInfo":
+                            RevertChangeOnEntity<Representative>(_unitOfWork.RepresentativeRepository, change);
                             break;
                         case "Contact":
+                            RevertChangeOnEntity<Contact>(_unitOfWork.ContactRepository, change);
                             break;
                         case "Address":
-                            var comp = _unitOfWork.CompanyRepository.Get(p => p.Id == change.CompanyId, includeProperties: "Address").FirstOrDefault();
-                            Address address = _unitOfWork.AddressRepository.Get(filter: c => c.Id == comp.Address.Id).FirstOrDefault();
-                            var addressInfo = address.GetType().GetProperty(change.ColumnName);
-                            addressInfo.SetValue(address, change.OldValue);
-                            _unitOfWork.AddressRepository.Update(address);
+                            RevertChangeOnEntity<Address>(_unitOfWork.AddressRepository, change);
                             break;
                         case "Company":
-                            Company company = _unitOfWork.CompanyRepository.Get(p => p.Id == change.CompanyId, includeProperties: "Address").FirstOrDefault();
-                            var companyProperty = company.GetType().GetProperty(change.ColumnName);
-                            companyProperty.SetValue(company, change.OldValue);
-                            _unitOfWork.CompanyRepository.Update(company);
+                            RevertChangeOnEntity<Company>(_unitOfWork.CompanyRepository, change);
                             break;
                         default:
                             return new BadRequestResult();
@@ -94,6 +86,16 @@ namespace Backend.Controllers {
                 }
             }
             return new BadRequestResult();
+        }
+
+        private void RevertChangeOnEntity<T> (IGenericRepository<T> repository, ChangeProtocol change) where T : class, IEntityObject, new() {
+            T entity = repository.Get(filter: c => c.Id == change.RowId).FirstOrDefault();
+            if (entity != null) {
+                PropertyInfo propertyInfo = entity.GetType().GetProperty(change.ColumnName);
+                propertyInfo.SetValue(entity, Convert.ChangeType(change.OldValue, propertyInfo.PropertyType));
+                repository.Update(entity);
+                _unitOfWork.Save();
+            }
         }
     }
 }

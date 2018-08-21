@@ -71,6 +71,17 @@ namespace Backend.Controllers {
             return new BadRequestResult();
         }
 
+        [HttpPut]
+        [Consumes("application/json")]
+        public IActionResult Update([FromBody]Company company, [FromQuery] bool isAdminChange) {
+            Contract.Ensures(Contract.Result<IActionResult>() != null);
+            try {
+                return new OkObjectResult(_companyFacade.Update(company, true, isAdminChange));
+            } catch (DbUpdateException ex) {
+                return DbErrorHelper.CatchDbError(ex);
+            }
+        }
+
         [HttpPut("accept/{compId}")]
         public IActionResult AcceptCompany(int compId, [FromBody] int status) {
             Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
@@ -86,17 +97,6 @@ namespace Backend.Controllers {
                 return new OkObjectResult(company);
             }
             return new BadRequestResult();
-        }
-
-        [HttpPut]
-        [Consumes("application/json")]
-        public IActionResult Update([FromBody]Company company) {
-            Contract.Ensures(Contract.Result<IActionResult>() != null);
-            try {
-                return new OkObjectResult(_companyFacade.Update(company));
-            } catch (DbUpdateException ex) {
-                return DbErrorHelper.CatchDbError(ex);
-            }
         }
 
         [HttpDelete("assign")]

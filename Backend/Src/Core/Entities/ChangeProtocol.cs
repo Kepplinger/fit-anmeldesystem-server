@@ -13,17 +13,15 @@ namespace Backend.Core.Entities
 
         public DateTime ChangeDate { get; set; }
 
- 
         public string NewValue { get; set; }
             
-
         public string OldValue { get; set; }
 
         public int RowId { get; set; }
 
-        public bool IsPending { get; set; }
-
         public int CompanyId { get; set; }
+
+        public bool IsPending { get; set; }
 
         public bool isAdminChange { get; set; }
 

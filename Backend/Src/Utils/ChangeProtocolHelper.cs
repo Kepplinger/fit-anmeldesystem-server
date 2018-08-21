@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Backend.Utils {
+
     public class ChangeProtocolHelper {
 
         public static void GenerateChangeProtocolForType(
@@ -16,9 +17,10 @@ namespace Backend.Utils {
             IEntityObject oldObject,
             string tableName,
             int companyId,
-            bool isAdminChange) {
+            bool isAdminChange,
+            bool doSave = false) {
             foreach (System.Reflection.PropertyInfo p in type.GetProperties()) {
-                ChangeProtocolHelper.GenerateChangeProtocol(unitOfWork, p, newObject, oldObject, tableName, companyId, isAdminChange);
+                ChangeProtocolHelper.GenerateChangeProtocol(unitOfWork, p, newObject, oldObject, tableName, companyId, isAdminChange, doSave);
             }
         }
 
@@ -29,7 +31,8 @@ namespace Backend.Utils {
             IEntityObject oldObject,
             string tableName,
             int companyId,
-            bool isAdminChange) {
+            bool isAdminChange,
+            bool doSave) {
 
             ChangeProtocol change = new ChangeProtocol();
 
@@ -38,6 +41,11 @@ namespace Backend.Utils {
                 && !p.Name.ToLower().Contains("fk")
                 && !p.Name.ToLower().Contains("tags")
                 && !p.Name.ToLower().Contains("branches")
+                && !p.Name.ToLower().Contains("representatives")
+                && !p.Name.ToLower().Contains("resources")
+                && !p.Name.ToLower().Contains("contact")
+                && !p.Name.ToLower().Contains("creationdate")
+                && !p.Name.ToLower().Contains("logo")
                 && p.GetValue(newObject) != null
                 && !p.GetValue(newObject).Equals(p.GetValue(oldObject))) {
 
@@ -54,7 +62,10 @@ namespace Backend.Utils {
                     change.isReverted = false;
                 }
                 unitOfWork.ChangeRepository.Insert(change);
-                unitOfWork.Save();
+
+                if (doSave) {
+                    unitOfWork.Save();
+                }
             }
         }
     }

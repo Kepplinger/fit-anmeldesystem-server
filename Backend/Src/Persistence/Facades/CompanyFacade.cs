@@ -18,7 +18,7 @@ namespace Backend.Src.Persistence.Facades {
             _unitOfWork = unitOfWork;
         }
 
-        public Company Update(Company company, bool protocolChanges = true) {
+        public Company Update(Company company, bool protocolChanges = true, bool isAdminChange = false) {
             using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
                 try {
                     Company companyToUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(company.Id), includeProperties: "Address,Contact,Tags,Branches").FirstOrDefault();
@@ -26,24 +26,24 @@ namespace Backend.Src.Persistence.Facades {
                     UpdateCompanyBranches(company);
                     UpdateCompanyTags(company);
 
-                    if (company.Address.Id != 0) {
+                    if (company.Address.Id > 0) {
                         if (protocolChanges)
-                            ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Address), company.Address, companyToUpdate.Address, nameof(Address), companyToUpdate.Id, false);
+                            ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Address), company.Address, companyToUpdate.Address, nameof(Address), companyToUpdate.Id, isAdminChange);
                         _unitOfWork.AddressRepository.Update(company.Address);
                         _unitOfWork.Save();
                     }
 
-                    if (company.Contact.Id != 0) {
+                    if (company.Contact.Id > 0) {
                         if (protocolChanges)
-                            ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), company.Contact, companyToUpdate.Contact, nameof(Contact), companyToUpdate.Id, false);
+                            ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), company.Contact, companyToUpdate.Contact, nameof(Contact), companyToUpdate.Id, isAdminChange);
                         _unitOfWork.ContactRepository.Update(company.Contact);
                         _unitOfWork.Save();
                     }
 
-                    if (company.Id != 0) {
+                    if (company.Id > 0) {
                         company.RegistrationToken = companyToUpdate.RegistrationToken;
                         if (protocolChanges)
-                            ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Company), company, companyToUpdate, nameof(Company), companyToUpdate.Id, false);
+                            ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Company), company, companyToUpdate, nameof(Company), companyToUpdate.Id, isAdminChange);
                         _unitOfWork.CompanyRepository.Update(company);
                         _unitOfWork.Save();
                     }
