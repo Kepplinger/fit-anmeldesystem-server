@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Src.Persistence.Facades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace Backend.Utils {
 
             if (!p.Name.ToLower().Contains("timestamp")
                 && !p.Name.ToLower().Contains("id")
-                && !p.Name.ToLower().Contains("fk")
+                && (!p.Name.ToLower().Contains("fk") || p.Name.ToLower().Contains("fk_fitpackage"))
                 && !p.Name.ToLower().Contains("tags")
                 && !p.Name.ToLower().Contains("branches")
                 && !p.Name.ToLower().Contains("representatives")
@@ -46,7 +47,8 @@ namespace Backend.Utils {
                 && !p.Name.ToLower().Contains("contact")
                 && !p.Name.ToLower().Contains("creationdate")
                 && !p.Name.ToLower().Contains("logo")
-                && p.GetValue(newObject) != null
+                && !p.Name.ToLower().Contains("file")
+                && p.GetValue(newObject) != null 
                 && !p.GetValue(newObject).Equals(p.GetValue(oldObject))) {
 
                 if (p != null && newObject != null && oldObject != null) {
@@ -61,11 +63,9 @@ namespace Backend.Utils {
                     change.isAdminChange = isAdminChange;
                     change.isReverted = false;
                 }
-                unitOfWork.ChangeRepository.Insert(change);
 
-                if (doSave) {
-                    unitOfWork.Save();
-                }
+                ChangelogFacade changelogFacade = new ChangelogFacade(unitOfWork);
+                changelogFacade.InsertNewChange(change, doSave);
             }
         }
     }
