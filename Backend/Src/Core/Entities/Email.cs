@@ -6,7 +6,10 @@ namespace Backend.Core.Entities
 {
     public class Email : TimestampEntityObject
     {
-        [Required, MaxLength(25)]
+        [Required]
+        public string Identifier { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         [Required]
@@ -22,8 +25,9 @@ namespace Backend.Core.Entities
 
         public Email() { }
 
-        public Email(string _name, string _desc, string _template, string _subject)
+        public Email(string _identifier, string _name, string _desc, string _template, string _subject)
         {
+            this.Identifier = _identifier;
             this.Name = _name;
             this.Description = _desc;
             this.Template = _template;

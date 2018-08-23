@@ -252,7 +252,7 @@ namespace Backend.Utils {
 
         public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
-            Email isPendingGottenCompany = new Email("isPendingGottenCompany",
+            Email isPendingGottenCompany = new Email("PGC", "Antrag eingereicht (Firma)",
                                 "Diese Email geht an die Firma und gilt als Bestätigungsemail eines erfolgreichen Firmenantrags",
                                 "<!DOCTYPE html>" +
                                              "<html>" +
@@ -264,7 +264,7 @@ namespace Backend.Utils {
                                              "</html>",
                                 "Ihr Firmenantrag wurde eingereicht - ABSLEO HTL Leonding FIT");
 
-            Email isPendingGottenAdmin = new Email("isPendingGottenAdmin",
+            Email isPendingGottenAdmin = new Email("PGA", "Antrag eingereicht (Admin)",
                                 "Diese Email wird dem Admin bei einer neuen Firmenanmeldung versendet",
                                                    "<!DOCTYPE html>" +
                                              "<html>" +
@@ -276,7 +276,7 @@ namespace Backend.Utils {
                                              "</html>",
                                "Ein neuer Firmenantrag wurde eingereich");
 
-            Email IsPendingAcceptedCompany = new Email("IsPendingAcceptedCompany",
+            Email IsPendingAcceptedCompany = new Email("PAC", "Firma akzeptiert (Firma)",
                                 "Diese Email wird versendet wenn ein Firmenantrag akzeptiert wurde",
                                                        "<!DOCTYPE html>" +
                                              "<html>" +
@@ -289,7 +289,7 @@ namespace Backend.Utils {
                                              "</html>",
                                "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding FIT");
 
-            Email IsPendingDeniedCompany = new Email("IsPendingDeniedCompany",
+            Email IsPendingDeniedCompany = new Email("PDC", "Firma abgelehnt (Firma)",
                                 "Diese Email wird versendet wenn ein Firmenantrag abgelehnt wurde",
                                                      "<!DOCTYPE html>" +
                                              "<html>" +
@@ -301,7 +301,7 @@ namespace Backend.Utils {
                                              "</html>",
                                "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT");
 
-            Email CompanyAssigned = new Email("CompanyAssigned",
+            Email CompanyAssigned = new Email("CA", "Firma einer bestehenden zugewiesen (Firma)",
                       "Diese Email wird an die Firma verschickt wenn es die Firma bereits gibt und Sie dieser zugewiesen wurde",
                                   "<!DOCTYPE html>" +
                                    "<html>" +
@@ -313,7 +313,7 @@ namespace Backend.Utils {
                                    "</html>",
                      "Firma bereits vorhande - ABSLEO HTL Leonding FIT");
 
-            Email SendBookingAcceptedMail = new Email("SendBookingAcceptedMail",
+            Email SendBookingAcceptedMail = new Email("SBA", "FIT-Anmeldung eingereicht (Firma)",
                                 "Diese Email wird an die Firma versendet wenn die FIT-Buchung akzeptiert wurde",
                                                       "<!DOCTYPE html>" +
                                              "<html>" +
@@ -339,7 +339,7 @@ namespace Backend.Utils {
                                              "</html>",
                                "FIT-Buchung wurde akzeptiert - ABSLEO HTL Leonding FIT");
 
-            Email SendForgotten = new Email("SendForgotten",
+            Email SendForgotten = new Email("SF", "Firma-Code vergessen (Firma)",
                                 "Dies ist eine FirmenCode vergessen Email",
                                             "<!DOCTYPE html>" +
                                              "<html>" +
@@ -354,18 +354,57 @@ namespace Backend.Utils {
 
             // generate email variables
             List<EmailVariable> variables = new List<EmailVariable> {
+                
+                // COMPANY
                 new EmailVariable("Firma-Name", concatFieldPath(nameof(Company.Name)), nameof(Company)),
                 new EmailVariable("Firma-Kontakt-Anrede",  concatFieldPath(nameof(Company.Contact), nameof(Contact.Gender)), nameof(Company)),
+                new EmailVariable("geehrte/r Firma-Kontakt-Anrede",  "DEAR_" + concatFieldPath(nameof(Company.Contact), nameof(Contact.Gender)), nameof(Company)),
                 new EmailVariable("Firma-Kontakt-Vorname", concatFieldPath(nameof(Company.Contact), nameof(Contact.FirstName)), nameof(Company)),
                 new EmailVariable("Firma-Kontakt-Nachname", concatFieldPath(nameof(Company.Contact), nameof(Contact.LastName)), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Email", concatFieldPath(nameof(Company.Contact), nameof(Contact.Email)), nameof(Company)),
+                new EmailVariable("Firma-Kontakt-Telefon", concatFieldPath(nameof(Company.Contact), nameof(Contact.PhoneNumber)), nameof(Company)),
+                new EmailVariable("Firma-Adresse-Straße", concatFieldPath(nameof(Company.Address), nameof(Address.Street)), nameof(Company)),
+                new EmailVariable("Firma-Adresse-Hausnummer", concatFieldPath(nameof(Company.Address), nameof(Address.StreetNumber)), nameof(Company)),
+                new EmailVariable("Firma-Adresse-Ort", concatFieldPath(nameof(Company.Address), nameof(Address.City)), nameof(Company)),
+                new EmailVariable("Firma-Adresse-Postleitzahl", concatFieldPath(nameof(Company.Address), nameof(Address.ZipCode)), nameof(Company)),
+                new EmailVariable("Firma-Adresse-Zusatz", concatFieldPath(nameof(Company.Address), nameof(Address.Addition)), nameof(Company)),
                 new EmailVariable("Login-Token", concatFieldPath(nameof(Company.RegistrationToken)), nameof(Company)),
-                new EmailVariable("Mitglied seit",  concatFieldPath(nameof(Company.MemberSince)), nameof(Company)),
+
+                // BOOKING
                 new EmailVariable("Firma-Name",  concatFieldPath(nameof(Booking.Company), nameof(Company.Name)), nameof(Booking)),
                 new EmailVariable("Firma-Kontakt-Anrede",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.Gender)), nameof(Booking)),
+                new EmailVariable("geehrte/r Firma-Kontakt-Anrede",  "DEAR_" + concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.Gender)), nameof(Booking)),
                 new EmailVariable("Firma-Kontakt-Vorname",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.FirstName)), nameof(Booking)),
                 new EmailVariable("Firma-Kontakt-Nachname",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.LastName)), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Email",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.Email)), nameof(Booking)),
+                new EmailVariable("Firma-Kontakt-Telefon",  concatFieldPath(nameof(Booking.Company), nameof(Company.Contact), nameof(Contact.PhoneNumber)), nameof(Booking)),
+                new EmailVariable("Firma-Adresse-Straße",  concatFieldPath(nameof(Booking.Company), nameof(Company.Address), nameof(Address.Street)), nameof(Booking)),
+                new EmailVariable("Firma-Adresse-Hausnummer",  concatFieldPath(nameof(Booking.Company), nameof(Company.Address), nameof(Address.StreetNumber)), nameof(Booking)),
+                new EmailVariable("Firma-Adresse-Ort",  concatFieldPath(nameof(Booking.Company), nameof(Company.Address), nameof(Address.City)), nameof(Booking)),
+                new EmailVariable("Firma-Adresse-Postleitzahl",  concatFieldPath(nameof(Booking.Company), nameof(Company.Address), nameof(Address.ZipCode)), nameof(Booking)),
+                new EmailVariable("Firma-Adresse-Zusatz",  concatFieldPath(nameof(Booking.Company), nameof(Company.Address), nameof(Address.Addition)), nameof(Booking)),
+
                 new EmailVariable("Login-Token",  concatFieldPath(nameof(Booking.Company), nameof(Company.RegistrationToken)), nameof(Booking)),
-                new EmailVariable("Mitglied seit",  concatFieldPath(nameof(Booking.Company), nameof(Company.MemberSince)), nameof(Booking)),
+                new EmailVariable("Email",  concatFieldPath(nameof(Booking.Email)), nameof(Booking)),
+                new EmailVariable("Telefon",  concatFieldPath(nameof(Booking.PhoneNumber)), nameof(Booking)),
+                new EmailVariable("Homepage",  concatFieldPath(nameof(Booking.Homepage)), nameof(Booking)),
+                new EmailVariable("Buchungszeitpunkt",  concatFieldPath(nameof(Booking.CreationDate)), nameof(Booking)),
+
+                new EmailVariable("Stand-Platznummer",  concatFieldPath(nameof(Booking.Location.Number)), nameof(Booking)),
+                new EmailVariable("Stand-Kategorie",  concatFieldPath(nameof(Booking.Location.Category)), nameof(Booking)),
+                new EmailVariable("Paket-Name",  concatFieldPath(nameof(Booking.FitPackage), nameof(FitPackage.Name)), nameof(Booking)),
+                new EmailVariable("Paket-Preis",  concatFieldPath(nameof(Booking.FitPackage), nameof(FitPackage.Price)), nameof(Booking)),
+
+                new EmailVariable("Präsentation-Name",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.Title)), nameof(Booking)),
+                new EmailVariable("Präsentation-Raum",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.RoomNumber)), nameof(Booking)),
+                new EmailVariable("Präsentation-Datei",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.File), nameof(DataFile.Name)), nameof(Booking)),
+
+                new EmailVariable("Kontakt-Anrede",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.Gender)), nameof(Booking)),
+                new EmailVariable("geehrte/r Kontakt-Anrede",  "DEAR_" + concatFieldPath(nameof(Booking.Contact), nameof(Contact.Gender)), nameof(Booking)),
+                new EmailVariable("Kontakt-Vorname",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.FirstName)), nameof(Booking)),
+                new EmailVariable("Kontakt-Nachname",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.LastName)), nameof(Booking)),
+                new EmailVariable("Kontakt-Email",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.Email)), nameof(Booking)),
+                new EmailVariable("Kontakt-Telefon",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.PhoneNumber)), nameof(Booking)),
             };
 
             uow.EmailVariableRepository.InsertMany(variables);

@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using Backend.Core;
 using System.Text.RegularExpressions;
 
-namespace Backend.Utils
-{
-    public static class EmailHelper
-    {
+namespace Backend.Utils {
+    public static class EmailHelper {
         // isPendingGottenCompany
         // isPendingGottenAdmin
         // IsPendingAcceptedCompany
@@ -23,8 +21,7 @@ namespace Backend.Utils
         // SendBookingAcceptedMail
         // SendForgotten
 
-        public static void SendMail(Email mail, object param, string reciever)
-        {
+        public static void SendMail(Email mail, object param, string reciever) {
             //client config 
             SmtpClient client = EmailHelper.GetSmtpClient();
 
@@ -38,17 +35,14 @@ namespace Backend.Utils
             objeto_mail.Body = mail.Template;
         }
 
-        public static bool SendMailByName(String mailName, object param, string reciever)
-        {
+        public static bool SendMailByIdentifier(String mailName, object param, string reciever) {
             Email mail;
 
-            using (IUnitOfWork uow = new UnitOfWork())
-            {
-                mail = uow.EmailRepository.Get(m => m.Name.ToLower().Equals(mailName.ToLower())).FirstOrDefault();
+            using (IUnitOfWork uow = new UnitOfWork()) {
+                mail = uow.EmailRepository.Get(m => m.Identifier.ToLower().Equals(mailName.ToLower())).FirstOrDefault();
             }
 
-            if (mail != null)
-            {
+            if (mail != null) {
                 // Client config
                 SmtpClient client = EmailHelper.GetSmtpClient();
 
@@ -60,8 +54,7 @@ namespace Backend.Utils
                 objeto_mail.IsBodyHtml = true;
 
                 // Add PDF-Attachment for Booking-Registrations
-                if (mailName.Equals("SendBookingAcceptedMail") && param is Booking)
-                {
+                if (mailName.Equals("SendBookingAcceptedMail") && param is Booking) {
                     EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
                 }
 
@@ -69,9 +62,7 @@ namespace Backend.Utils
                 objeto_mail.Body = mail.Template;
                 client.SendMailAsync(objeto_mail);
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
@@ -82,28 +73,69 @@ namespace Backend.Utils
         /// <param name="param"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static void replaceParamsWithValues(Email email, object param)
-        {
-            // replace every variable within double curly braces
-            email.Template = Regex.Replace(
+        public static void replaceParamsWithValues(Email email, object param) {
+
+            if (param != null) {
+
+                email.Template = Regex.Replace(
                 email.Template,
-                "{{[^}}]*}}",
+                "{{ GENDER_TITLE }}",
                 (Match m) => {
 
-                    // remove all whitespaces and double curly braces
-                    string variable = Regex.Replace(m.Value, "(\\s+|{{|}})", string.Empty);
+                    if ((param as Company).Contact.Gender == "M") {
+                        return "geehrter";
+                    } else {
+                        return "geehrte";
+                    }
+                });
 
-                    return param.GetPropValue(variable).ToString();
-                }
-            );
+                // replace every variable within double curly braces
+                email.Template = Regex.Replace(
+                    email.Template,
+                    "{{[^}}]*}}",
+                    (Match m) => {
+
+                        // remove all whitespaces and double curly braces
+                        string variable = Regex.Replace(m.Value, "(\\s+|{{|}})", string.Empty);
+                        string value = "";
+
+                        try {
+                            if (variable.Contains("DEAR_")) {
+                                variable = Regex.Replace(m.Value, "DEAR_", string.Empty);
+                                value = param.GetPropValue(variable).ToString();
+
+                                switch (value) {
+                                    case "M":
+                                        return "geehrter Herr";
+                                        break;
+                                    case "F":
+                                        return "geehrte Frau";
+                                }
+
+                            } else {
+                                value = param.GetPropValue(variable).ToString();
+
+                                if (variable.ToLower().Contains("gender")) {
+                                    switch (value) {
+                                        case "M":
+                                            return "Herr";
+                                        case "F":
+                                            return "Frau";
+                                    }
+                                }
+                            }
+                        } catch (Exception) { }
+
+                        return value;
+                    }
+                );
+            }
         }
 
-        private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking)
-        {
+        private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
             string file;
 
-            using (IUnitOfWork uow = new UnitOfWork())
-            {
+            using (IUnitOfWork uow = new UnitOfWork()) {
                 file = uow.BookingRepository.GetById(booking.Id).PdfFilePath;
             }
 
@@ -111,8 +143,7 @@ namespace Backend.Utils
             objeto_mail.Attachments.Add(new Attachment(file));
         }
 
-        private static SmtpClient GetSmtpClient()
-        {
+        private static SmtpClient GetSmtpClient() {
             SmtpClient client = new SmtpClient();
             client.Host = "smtp.gmail.com";
             client.Port = 587;

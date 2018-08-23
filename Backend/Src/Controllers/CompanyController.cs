@@ -63,8 +63,8 @@ namespace Backend.Controllers {
 
                 _unitOfWork.CompanyRepository.Insert(storeCompany);
                 _unitOfWork.Save();
-                EmailHelper.SendMailByName("IsPendingGottenCompany", storeCompany, storeCompany.Contact.Email);
-                EmailHelper.SendMailByName("IsPendingGottenAdmin", storeCompany, storeCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("PGC", storeCompany, storeCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("PGA", storeCompany, storeCompany.Contact.Email);
 
                 return new ObjectResult(storeCompany);
             }
@@ -91,7 +91,7 @@ namespace Backend.Controllers {
                 _unitOfWork.Save();
 
                 if (company.IsAccepted == 1) {
-                    EmailHelper.SendMailByName("IsPendingAcceptedCompany", company, company.Contact.Email);
+                    EmailHelper.SendMailByIdentifier("PAC", company, company.Contact.Email);
                 }
 
                 return new OkObjectResult(company);
@@ -107,10 +107,10 @@ namespace Backend.Controllers {
             Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email)) {
-                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email);
             } else {
-                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
-                EmailHelper.SendMailByName("CompanyAssigned", pendingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("CA", pendingCompany, existingCompany.Contact.Email);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);

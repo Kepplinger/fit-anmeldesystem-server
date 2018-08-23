@@ -104,7 +104,7 @@ namespace Backend.Controllers
 
             if (company != null)
             {
-                EmailHelper.SendMailByName("SendForgotten", company, company.Contact.Email);
+                EmailHelper.SendMailByIdentifier("SF", company, company.Contact.Email);
                 return new NoContentResult();
             }
             else

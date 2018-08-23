@@ -59,6 +59,7 @@ namespace Backend.Controllers
             {
                 Id = emailTransfer.Id,
                 Timestamp = emailTransfer.Timestamp,
+                Identifier = emailTransfer.Identifier,
                 Name = emailTransfer.Name,
                 Description = emailTransfer.Description,
                 Subject = emailTransfer.Subject,
@@ -73,6 +74,7 @@ namespace Backend.Controllers
             {
                 Id = email.Id,
                 Timestamp = email.Timestamp,
+                Identifier = email.Identifier,
                 Name = email.Name,
                 Description = email.Description,
                 Template = email.Template,
@@ -85,6 +87,7 @@ namespace Backend.Controllers
 
 public class EmailDTO: TimestampEntityObject
 {
+    public string Identifier { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public string Template { get; set; }
