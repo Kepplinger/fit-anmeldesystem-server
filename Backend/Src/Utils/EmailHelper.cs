@@ -21,18 +21,26 @@ namespace Backend.Utils {
         // SendBookingAcceptedMail
         // SendForgotten
 
-        public static void SendMail(Email mail, object param, string reciever) {
-            //client config 
+        public static bool SendMail(Email mail, object param, string reciever) {
+            // Client config
             SmtpClient client = EmailHelper.GetSmtpClient();
 
-            //message config 
+            // Message config 
             MailMessage objeto_mail = new MailMessage();
             objeto_mail.Subject = mail.Subject;
             objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
             objeto_mail.To.Add(new MailAddress(reciever));
             objeto_mail.IsBodyHtml = true;
-            client.SendMailAsync(objeto_mail);
+
+            // Add PDF-Attachment for Booking-Registrations
+            if (mail.Identifier.Equals("SBA") && param is Booking) {
+                EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+            }
+
+            replaceParamsWithValues(mail, param);
             objeto_mail.Body = mail.Template;
+            client.SendMailAsync(objeto_mail);
+            return true;
         }
 
         public static bool SendMailByIdentifier(String mailName, object param, string reciever) {
@@ -43,25 +51,7 @@ namespace Backend.Utils {
             }
 
             if (mail != null) {
-                // Client config
-                SmtpClient client = EmailHelper.GetSmtpClient();
-
-                // Message config 
-                MailMessage objeto_mail = new MailMessage();
-                objeto_mail.Subject = mail.Subject;
-                objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-                objeto_mail.To.Add(new MailAddress(reciever));
-                objeto_mail.IsBodyHtml = true;
-
-                // Add PDF-Attachment for Booking-Registrations
-                if (mailName.Equals("SendBookingAcceptedMail") && param is Booking) {
-                    EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
-                }
-
-                replaceParamsWithValues(mail, param);
-                objeto_mail.Body = mail.Template;
-                client.SendMailAsync(objeto_mail);
-                return true;
+                return SendMail(mail, param, reciever);
             } else {
                 return false;
             }
