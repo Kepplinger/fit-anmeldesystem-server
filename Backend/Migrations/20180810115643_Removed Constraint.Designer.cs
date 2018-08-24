@@ -11,9 +11,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180810115643_Removed Constraint")]
+    partial class RemovedConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,7 +262,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("IsAccepted");
+                    b.Property<bool>("IsPending");
 
                     b.Property<double>("MemberPaymentAmount");
 
@@ -394,11 +395,9 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
-                    b.Property<string>("Identifier")
-                        .IsRequired();
-
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(25);
 
                     b.Property<string>("Subject")
                         .IsRequired();

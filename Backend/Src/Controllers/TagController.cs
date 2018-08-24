@@ -35,7 +35,6 @@ namespace Backend.Controllers {
         [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Put([FromBody] List<Tag> tags) {
-
             if (tags != null) {
                 foreach (Tag tag in tags) {
                     if (tag.Id > 0) {

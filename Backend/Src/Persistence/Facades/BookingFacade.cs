@@ -24,11 +24,22 @@ namespace Backend.Src.Persistence.Facades {
             _representativeFacade = new RepresentativeFacade(_unitOfWork);
         }
 
-        public Booking Update(Booking booking) {
+        public Booking Update(Booking booking, bool protocolChanges = false, bool isAdminChange = false) {
             using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
                 try {
+                    Booking bookingToUpdate = _unitOfWork.BookingRepository.Get(filter: p => p.Id.Equals(booking.Id)).FirstOrDefault();
+                    booking.CreationDate = bookingToUpdate.CreationDate;
 
-                    //ManageChanges(booking);
+                    if (protocolChanges) {
+                        //TODO
+                        //if (booking.Presentation != null) {
+                        //    ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Presentation), booking.Presentation, bookingToUpdate.Presentation, nameof(Presentation), bookingToUpdate.Company.Id, isAdminChange);
+                        //}
+
+                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Booking), booking, bookingToUpdate, nameof(Booking), bookingToUpdate.Company.Id, isAdminChange);
+                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), booking.Contact, bookingToUpdate.Contact, nameof(Contact), bookingToUpdate.Company.Id, isAdminChange);
+                    }
+
                     _presentationFacade.UpdateOrInsert(booking.Presentation);
 
                     ImageHelper.ManageBookingImages(booking);

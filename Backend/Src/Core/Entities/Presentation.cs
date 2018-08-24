@@ -10,7 +10,6 @@ namespace Backend.Core.Entities
         public string RoomNumber { get; set; }
 
         [Required]
-        [MaxLength(30)]
         public string Title { get; set; }
 
         [MaxLength(500)]

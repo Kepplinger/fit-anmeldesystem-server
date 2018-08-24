@@ -24,7 +24,7 @@ namespace Backend.Core.Entities
         public List<CompanyBranch> Branches { get; set; }
 
         [Required]
-        public bool IsPending { get; set; }
+        public int IsAccepted { get; set; }
 
         [Required, JsonIgnore]
         public string RegistrationToken { get; set; }

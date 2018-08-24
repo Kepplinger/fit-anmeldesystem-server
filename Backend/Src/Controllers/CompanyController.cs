@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Src.Persistence.Facades;
 using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,9 +18,11 @@ namespace Backend.Controllers {
     public class CompanyController : Controller {
 
         private IUnitOfWork _unitOfWork;
+        private CompanyFacade _companyFacade;
 
         public CompanyController(IUnitOfWork uow) {
-            this._unitOfWork = uow;
+            _unitOfWork = uow;
+            _companyFacade = new CompanyFacade(_unitOfWork);
         }
 
         /// <response code="200">Returns all available Companies</response>
@@ -29,18 +32,7 @@ namespace Backend.Controllers {
         [HttpGet]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public IActionResult GetAll() {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: p => p.IsPending == false, includeProperties: "Address,Contact,Tags,Branches");
-            return new OkObjectResult(companies);
-        }
-
-        /// <response code="200">Returns all pending Companies</response>
-        /// <summary>
-        /// Getting all Companies from Database
-        /// </summary>
-        [HttpGet("pending")]
-        [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult GetAllPending() {
-            var companies = _unitOfWork.CompanyRepository.Get(filter: f => f.IsPending == true, includeProperties: "Address,Contact,Tags,Branches");
+            var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,Tags,Branches");
             return new OkObjectResult(companies);
         }
 
@@ -71,97 +63,54 @@ namespace Backend.Controllers {
 
                 _unitOfWork.CompanyRepository.Insert(storeCompany);
                 _unitOfWork.Save();
-                EmailHelper.SendMailByName("IsPendingGottenCompany", storeCompany, storeCompany.Contact.Email);
-                EmailHelper.SendMailByName("IsPendingGottenAdmin", storeCompany, storeCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("PGC", storeCompany, storeCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("PGA", storeCompany, storeCompany.Contact.Email);
 
                 return new ObjectResult(storeCompany);
             }
             return new BadRequestResult();
         }
 
-        [HttpPut("accepting")]
-        public IActionResult Accepting([FromBody] int compId) {
-            Company c = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
-            if (c != null) {
-                c.IsPending = false;
-                this._unitOfWork.CompanyRepository.Update(c);
-                this._unitOfWork.Save();
-                EmailHelper.SendMailByName("IsPendingAcceptedCompany", c, c.Contact.Email);
-
-                return new OkResult();
-            }
-            return new BadRequestResult();
-        }
-        [HttpGet("presentation/{eventId:int}")]
-        public IActionResult PresentationByEvent(int eventId) {
-            List<object> pres = new List<object>();
-            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Presentation != null && p.Event.Id == eventId).ToList();
-            for (int i = 0; i < 10; i++) {
-                /*var companyPresentations = new
-                {
-                    company = bookings.ElementAt(i).Company,
-                    presentation = bookings.ElementAt(i).Presentation,
-                };*/
-                var companyPresentations = new {
-                    companyName = "company Name: " + i,
-                    presentationTitle = "presentation title" + i,
-                    presentationDescr = "This is a presentation description from: " + i,
-                };
-                pres.Add(companyPresentations);
-            }
-            return new OkObjectResult(pres);
-        }
-
         [HttpPut]
         [Consumes("application/json")]
-        public IActionResult Update([FromBody]Company jsonCompany) {
+        public IActionResult Update([FromBody]Company company, [FromQuery] bool isAdminChange) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
-
-            using (IDbContextTransaction transaction = this._unitOfWork.BeginTransaction()) {
-                try {
-                    Company companyToUpdate = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(jsonCompany.Id), includeProperties: "Address,Contact,Tags,Branches").FirstOrDefault();
-
-                    if (jsonCompany.Address.Id != 0) {
-                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Address), jsonCompany.Address, companyToUpdate.Address, nameof(Address), companyToUpdate.Id, false);
-                        _unitOfWork.AddressRepository.Update(jsonCompany.Address);
-                        _unitOfWork.Save();
-                    }
-
-                    if (jsonCompany.Contact.Id != 0) {
-                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), jsonCompany.Contact, companyToUpdate.Contact, nameof(Contact), companyToUpdate.Id, false);
-                        _unitOfWork.ContactRepository.Update(jsonCompany.Contact);
-                        _unitOfWork.Save();
-                    }
-
-                    if (jsonCompany.Id != 0) {
-                        jsonCompany.RegistrationToken = companyToUpdate.RegistrationToken;
-                        ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Company), jsonCompany, companyToUpdate, nameof(Company), companyToUpdate.Id, false);
-                        _unitOfWork.CompanyRepository.Update(jsonCompany);
-                        _unitOfWork.Save();
-                    }
-
-                    transaction.Commit();
-                    return new OkObjectResult(jsonCompany);
-
-                } catch (DbUpdateException ex) {
-                    transaction.Rollback();
-                    return DbErrorHelper.CatchDbError(ex);
-                }
+            try {
+                return new OkObjectResult(_companyFacade.Update(company, true, isAdminChange));
+            } catch (DbUpdateException ex) {
+                return DbErrorHelper.CatchDbError(ex);
             }
+        }
+
+        [HttpPut("accept/{compId}")]
+        public IActionResult AcceptCompany(int compId, [FromBody] int status) {
+            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
+            if (company != null) {
+                company.IsAccepted = status;
+                _unitOfWork.CompanyRepository.Update(company);
+                _unitOfWork.Save();
+
+                if (company.IsAccepted == 1) {
+                    EmailHelper.SendMailByIdentifier("PAC", company, company.Contact.Email);
+                }
+
+                return new OkObjectResult(company);
+            }
+            return new BadRequestResult();
         }
 
         [HttpDelete("assign")]
         [Consumes("application/json")]
-        public IActionResult CompanyAssign(int pendingCompanyId, int existingCompanyId) {
+        public IActionResult AssignCompany(int pendingCompanyId, int existingCompanyId) {
 
             Company existingCompany = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
             Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email)) {
-                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email);
             } else {
-                EmailHelper.SendMailByName("CompanyAssigned", existingCompany, existingCompany.Contact.Email);
-                EmailHelper.SendMailByName("CompanyAssigned", pendingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email);
+                EmailHelper.SendMailByIdentifier("CA", pendingCompany, existingCompany.Contact.Email);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);

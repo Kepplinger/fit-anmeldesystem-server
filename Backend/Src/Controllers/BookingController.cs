@@ -38,111 +38,102 @@ namespace Backend.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
-        public IActionResult Create([FromBody] Booking jsonBooking) {
-
+        public IActionResult Create([FromBody] Booking jsonBooking, [FromQuery] bool isAdminChange) {
             Booking booking = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
 
             if (jsonBooking != null && booking != null) {
-                return new OkObjectResult(_bookingFacade.Update(jsonBooking));
+                return new OkObjectResult(_bookingFacade.Update(jsonBooking, true, isAdminChange));
             } else if (jsonBooking != null) {
                 return this.Insert(jsonBooking);
             } else {
                 return new BadRequestObjectResult(jsonBooking);
             }
-
         }
 
         [HttpPut]
         [Consumes("application/json")]
-        public IActionResult Update(Booking jsonBooking) {
+        public IActionResult Update([FromBody] Booking booking, [FromQuery] bool isAdminChange) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
             try {
-                _bookingFacade.Update(jsonBooking);
-                return new OkObjectResult(jsonBooking);
+                _bookingFacade.Update(booking, true, isAdminChange);
+                return new OkObjectResult(booking);
             } catch (DbUpdateException ex) {
 
                 return DbErrorHelper.CatchDbError(ex);
             }
         }
 
-        // auslagern
-        private void ManageChanges(Booking booking) {
-            ChangeProtocol change = new ChangeProtocol();
+        /// <summary>
+        /// Returns all saved Bookings
+        /// </summary>
+        /// <response code="200">Returns all available Bookings</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
+        public IActionResult GetAll() {
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation,Contact").ToList();
+            if (bookings != null && bookings.Count > 0)
+                return new OkObjectResult(bookings);
+            else
+                return new NoContentResult();
+        }
 
-            // Update already persistent Entities ----------------------
-            Booking bookingToUpdate = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == booking.Id).FirstOrDefault();
-            change = new ChangeProtocol();
-            if (booking.fk_FitPackage != 0 && bookingToUpdate.FitPackage != null) {
-                //foreach (System.Reflection.PropertyInfo p in typeof(FitPackage).GetProperties())
-                //{
-                //    if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                //        && p.GetValue(jsonBooking.FitPackage) != null && !p.GetValue(jsonBooking.FitPackage).Equals(p.GetValue(bookingToUpdate.FitPackage)))
-                //    {
-                //        change.ChangeDate = DateTime.Now;
-                //        change.ColumnName = p.Name;
-                //        change.NewValue = p.GetValue(jsonBooking.FitPackage).ToString();
-                //        change.OldValue = p.GetValue(bookingToUpdate.FitPackage).ToString();
-                //        change.TableName = nameof(FitPackage);
-                //        change.IsPending = true;
-                //        change.CompanyId = jsonBooking.fk_Company;
-                //        change.isAdminChange = false;
-                //        change.isReverted = false;
-                //        _unitOfWork.ChangeRepository.Insert(change);
-                //        _unitOfWork.Save();
-
-                //        Console.WriteLine("Updated: " + change.ColumnName);
-                //        change = new ChangeProtocol();
-                //    }
-                //}
-                //_unitOfWork.PackageRepository.Update(jsonBooking.FitPackage);
-                //_unitOfWork.Save();
+        /// <response code="200">Returning Booking by id</response>
+        /// <summary>
+        /// Getting a booking by the id
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
+        public IActionResult GetById(int id) {
+            Booking booking = _unitOfWork.BookingRepository.GetById(id);
+            if (booking != null) {
+                return new OkObjectResult(booking);
             }
+            return new NoContentResult();
+        }
 
-            change = new ChangeProtocol();
-            if (booking.fk_Presentation != 0 && bookingToUpdate.Presentation != null) {
-                foreach (System.Reflection.PropertyInfo p in typeof(Presentation).GetProperties()) {
-                    if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                        && p.GetValue(booking.Presentation) != null && !p.GetValue(booking.Presentation).Equals(p.GetValue(bookingToUpdate.Presentation))) {
-                        change.ChangeDate = DateTime.Now;
-                        change.ColumnName = p.Name;
-                        change.NewValue = p.GetValue(booking.Presentation).ToString();
-                        change.OldValue = p.GetValue(bookingToUpdate.Presentation).ToString();
-                        change.TableName = nameof(Presentation);
-                        change.IsPending = true;
-                        change.CompanyId = booking.fk_Company;
-                        change.isAdminChange = false;
-                        change.isReverted = false;
-                        _unitOfWork.ChangeRepository.Insert(change);
-                        _unitOfWork.Save();
+        /// <response code="200">Returns the available bookings by company id</response>
+        /// <summary>
+        /// Getting all bookings by company id
+        /// </summary>
+        [HttpGet("getBookingByCompanyId/{id}")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
+        public IActionResult GetBookingByCompanyId(int id) {
+            var bookings = _unitOfWork.BookingRepository.Get(p => p.Company.Id == id);
+            return new ObjectResult(bookings);
+        }
 
-                        Console.WriteLine("Updated: " + change.ColumnName);
-                        change = new ChangeProtocol();
-                    }
-                }
+        /// <response code="200">Returns the available bookings by event id</response>
+        /// <summary>
+        /// Getting all bookings by event id
+        /// </summary>
+        [HttpGet("event/{id}")]
+        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
+        public IActionResult GetBookingByEventId(int id) {
+            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
+            if (bookings != null && bookings.Count > 0) {
+                return new ObjectResult(bookings);
             }
+            return new NoContentResult();
+        }
 
-            change = new ChangeProtocol();
-            if (booking.Id != 0 && bookingToUpdate != null) {
-                foreach (System.Reflection.PropertyInfo p in typeof(Booking).GetProperties()) {
-                    if (!p.Name.Contains("Timestamp") && !p.Name.ToLower().Contains("id") && !p.Name.ToLower().Contains("fk")
-                        && p.GetValue(booking) != null && !p.GetValue(booking).Equals(p.GetValue(bookingToUpdate))) {
-                        change.ChangeDate = DateTime.Now;
-                        change.ColumnName = p.Name;
-                        change.NewValue = Convert.ToString(p.GetValue(booking));
-                        change.OldValue = Convert.ToString(p.GetValue(bookingToUpdate));
-                        change.TableName = nameof(Booking);
-                        change.IsPending = true;
-                        change.CompanyId = booking.fk_Company;
-                        change.isAdminChange = false;
-                        change.isReverted = false;
-                        _unitOfWork.ChangeRepository.Insert(change);
-                        _unitOfWork.Save();
-
-                        Console.WriteLine("Updated: " + change.ColumnName);
-                        change = new ChangeProtocol();
-                    }
-
-                }
+        /// <summary>
+        /// Accepts or rejects target booking.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        [HttpPut("accept/{id}")]
+        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
+        public IActionResult AcceptBooking(int id, [FromBody] int status) {
+            Booking booking = _unitOfWork.BookingRepository.GetById(id);
+            if (booking != null) {
+                booking.isAccepted = status;
+                _unitOfWork.BookingRepository.Update(booking);
+                _unitOfWork.Save();
+                return new ObjectResult(booking);
+            } else {
+                return new BadRequestResult();
             }
         }
 
@@ -258,87 +249,13 @@ namespace Backend.Controllers {
                     //Senden der Bestätigungs E-Mail
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
-                    EmailHelper.SendMailByName("SendBookingAcceptedMail", jsonBooking, jsonBooking.Contact.Email);
+                    EmailHelper.SendMailByIdentifier("SBA", jsonBooking, jsonBooking.Contact.Email);
 
                     return new OkObjectResult(jsonBooking);
                 } catch (DbUpdateException ex) {
                     transaction.Rollback();
                     return DbErrorHelper.CatchDbError(ex);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Returns all saved Bookings
-        /// </summary>
-        /// <response code="200">Returns all available Bookings</response>
-        [HttpGet]
-        [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
-        public IActionResult GetAll() {
-            List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation,Contact").ToList();
-            if (bookings != null && bookings.Count > 0)
-                return new OkObjectResult(bookings);
-            else
-                return new NoContentResult();
-        }
-
-        /// <response code="200">Returning Booking by id</response>
-        /// <summary>
-        /// Getting a booking by the id
-        /// </summary>
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetById(int id) {
-            Booking booking = _unitOfWork.BookingRepository.GetById(id);
-            if (booking != null) {
-                return new OkObjectResult(booking);
-            }
-            return new NoContentResult();
-        }
-
-        /// <response code="200">Returns the available bookings by company id</response>
-        /// <summary>
-        /// Getting all bookings by company id
-        /// </summary>
-        [HttpGet("getBookingByCompanyId/{id}")]
-        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetBookingByCompanyId(int id) {
-            var bookings = _unitOfWork.BookingRepository.Get(p => p.Company.Id == id);
-            return new ObjectResult(bookings);
-        }
-
-        /// <response code="200">Returns the available bookings by event id</response>
-        /// <summary>
-        /// Getting all bookings by event id
-        /// </summary>
-        [HttpGet("event/{id}")]
-        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
-        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetBookingByEventId(int id) {
-            List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
-            if (bookings != null && bookings.Count > 0) {
-                return new ObjectResult(bookings);
-            }
-            return new NoContentResult();
-        }
-
-        /// <summary>
-        /// Accepts or rejects target booking.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        [HttpPut("accept/{id}")]
-        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult AcceptBooking(int id, [FromBody] int status) {
-            Booking booking = _unitOfWork.BookingRepository.GetById(id);
-            if (booking != null) {
-                booking.isAccepted = status;
-                _unitOfWork.BookingRepository.Update(booking);
-                _unitOfWork.Save();
-                return new ObjectResult(booking);
-            } else {
-                return new BadRequestResult();
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Src.Persistence.Facades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Backend.Utils {
+
     public class ChangeProtocolHelper {
 
         public static void GenerateChangeProtocolForType(
@@ -16,9 +18,10 @@ namespace Backend.Utils {
             IEntityObject oldObject,
             string tableName,
             int companyId,
-            bool isAdminChange) {
+            bool isAdminChange,
+            bool doSave = false) {
             foreach (System.Reflection.PropertyInfo p in type.GetProperties()) {
-                ChangeProtocolHelper.GenerateChangeProtocol(unitOfWork, p, newObject, oldObject, tableName, companyId, isAdminChange);
+                ChangeProtocolHelper.GenerateChangeProtocol(unitOfWork, p, newObject, oldObject, tableName, companyId, isAdminChange, doSave);
             }
         }
 
@@ -29,16 +32,23 @@ namespace Backend.Utils {
             IEntityObject oldObject,
             string tableName,
             int companyId,
-            bool isAdminChange) {
+            bool isAdminChange,
+            bool doSave) {
 
             ChangeProtocol change = new ChangeProtocol();
 
             if (!p.Name.ToLower().Contains("timestamp")
                 && !p.Name.ToLower().Contains("id")
-                && !p.Name.ToLower().Contains("fk")
+                && (!p.Name.ToLower().Contains("fk") || p.Name.ToLower().Contains("fk_fitpackage"))
                 && !p.Name.ToLower().Contains("tags")
                 && !p.Name.ToLower().Contains("branches")
-                && p.GetValue(newObject) != null
+                && !p.Name.ToLower().Contains("representatives")
+                && !p.Name.ToLower().Contains("resources")
+                && !p.Name.ToLower().Contains("contact")
+                && !p.Name.ToLower().Contains("creationdate")
+                && !p.Name.ToLower().Contains("logo")
+                && !p.Name.ToLower().Contains("file")
+                && p.GetValue(newObject) != null 
                 && !p.GetValue(newObject).Equals(p.GetValue(oldObject))) {
 
                 if (p != null && newObject != null && oldObject != null) {
@@ -53,8 +63,9 @@ namespace Backend.Utils {
                     change.isAdminChange = isAdminChange;
                     change.isReverted = false;
                 }
-                unitOfWork.ChangeRepository.Insert(change);
-                unitOfWork.Save();
+
+                ChangelogFacade changelogFacade = new ChangelogFacade(unitOfWork);
+                changelogFacade.InsertNewChange(change, doSave);
             }
         }
     }
