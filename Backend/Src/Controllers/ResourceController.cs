@@ -3,6 +3,7 @@ using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Backend.Controllers
 {
@@ -55,6 +56,25 @@ namespace Backend.Controllers
         {
             var resources = _unitOfWork.ResourceRepository.Get();
             return new OkObjectResult(resources);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        public IActionResult Put([FromBody] List<Resource> resources) {
+            if (resources != null) {
+                foreach (Resource resource in resources) {
+                    if (resource.Id > 0) {
+                        _unitOfWork.ResourceRepository.Update(resource);
+                    } else {
+                        _unitOfWork.ResourceRepository.Insert(resource);
+                    }
+                }
+                _unitOfWork.Save();
+                return new OkObjectResult(resources);
+            } else {
+                return new BadRequestResult();
+            }
         }
     }
 }

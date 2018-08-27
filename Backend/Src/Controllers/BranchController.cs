@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Core.Contracts;
+using System.Collections.Generic;
 
 namespace Backend.Controllers
 {
@@ -26,6 +27,25 @@ namespace Backend.Controllers
         {
             var branches = _unitOfWork.BranchRepository.Get();
             return new OkObjectResult(branches);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        public IActionResult Put([FromBody] List<Branch> branches) {
+            if (branches != null) {
+                foreach (Branch branch in branches) {
+                    if (branch.Id > 0) {
+                        _unitOfWork.BranchRepository.Update(branch);
+                    } else {
+                        _unitOfWork.BranchRepository.Insert(branch);
+                    }
+                }
+                _unitOfWork.Save();
+                return new OkObjectResult(branches);
+            } else {
+                return new BadRequestResult();
+            }
         }
     }
 }
