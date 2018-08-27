@@ -54,7 +54,15 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var resources = _unitOfWork.ResourceRepository.Get();
+            var resources = _unitOfWork.ResourceRepository.Get(filter: r => !r.IsArchive);
+            return new OkObjectResult(resources);
+        }
+
+        [HttpGet]
+        [Route("archive")]
+        [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
+        public IActionResult GetAllArchived() {
+            var resources = _unitOfWork.ResourceRepository.Get(filter: r => r.IsArchive);
             return new OkObjectResult(resources);
         }
 

@@ -25,7 +25,19 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            var branches = _unitOfWork.BranchRepository.Get();
+            var branches = _unitOfWork.BranchRepository.Get(filter: b => !b.IsArchive);
+            return new OkObjectResult(branches);
+        }
+
+        /// <response code="200">Returns all available Addresses</response>
+        /// <summary>
+        /// Getting all Addresses from Database
+        /// </summary>
+        [HttpGet]
+        [Route("archive")]
+        [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
+        public IActionResult GetAllArchived() {
+            var branches = _unitOfWork.BranchRepository.Get(filter: b => b.IsArchive);
             return new OkObjectResult(branches);
         }
 
