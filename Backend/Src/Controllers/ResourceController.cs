@@ -28,7 +28,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Resource temp)
         {
-            System.Console.WriteLine(temp.Description);
             try
             {
                 if (temp != null)

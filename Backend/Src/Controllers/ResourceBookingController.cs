@@ -27,7 +27,6 @@ namespace Backend.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] ResourceBooking temp)
         {
-            System.Console.WriteLine(temp.Resource.Description);
             try
             {
                 if (temp != null)
