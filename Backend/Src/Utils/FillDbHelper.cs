@@ -2,6 +2,7 @@
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Backend.Persistence;
+using Backend.Src.Core.Entities;
 using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,14 @@ using System.Threading.Tasks;
 namespace Backend.Utils {
     public static class FillDbHelper {
         public static void createTestData(ApplicationDbContext _context) {
+
+            SmtpConfig smtpConfig = new SmtpConfig();
+            smtpConfig.Host = "smtp.gmail.com";
+            smtpConfig.Port = 587;
+            smtpConfig.MailAddress = "andi.sakal@gmail.com";
+            smtpConfig.Password = "sombor123";
+            _context.SmtpConfigs.Add(smtpConfig);
+
             Console.WriteLine("Search for Companies who want to join FIT ...");
             // Set up Company
             Company company = new Company();

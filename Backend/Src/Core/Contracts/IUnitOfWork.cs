@@ -3,6 +3,7 @@ using Backend.Persistence.Repositories;
 using System;
 using Microsoft.EntityFrameworkCore.Storage;
 using Backend.Core.Contracts.Repositories;
+using Backend.Src.Core.Entities;
 
 namespace Backend.Core.Contracts {
     public interface IUnitOfWork : IDisposable {
@@ -30,6 +31,7 @@ namespace Backend.Core.Contracts {
         IGenericRepository<CompanyBranch> CompanyBranchRepository { get; }
         IGenericRepository<BookingBranch> BookingBranchesRepository { get; }
         IGenericRepository<PresentationBranch> PresentationBranchesRepository { get; }
+        IGenericRepository<SmtpConfig> SmtpConfigRepository { get; }
         /// <summary>
         /// Erweiterte Repositories
         /// </summary>

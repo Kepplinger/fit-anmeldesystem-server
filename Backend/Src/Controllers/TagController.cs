@@ -9,6 +9,7 @@ using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace Backend.Controllers {
+
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class TagController : Controller {
