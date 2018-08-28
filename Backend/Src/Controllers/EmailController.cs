@@ -53,10 +53,10 @@ namespace Backend.Controllers {
 
             if (entityType.ToLower() == "booking") {
                 Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Id == entityId).FirstOrDefault();
-                EmailHelper.SendMail(email, booking, emailAddress);
+                EmailHelper.SendMail(email, booking, emailAddress, _unitOfWork);
             } else if (entityType.ToLower() == "company") {
                 Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == entityId).FirstOrDefault();
-                EmailHelper.SendMail(email, company, emailAddress);
+                EmailHelper.SendMail(email, company, emailAddress, _unitOfWork);
             }
 
             return new OkResult();

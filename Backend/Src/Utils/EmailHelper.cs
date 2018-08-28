@@ -10,6 +10,7 @@ using System.IO;
 using System.Collections.Generic;
 using Backend.Core;
 using System.Text.RegularExpressions;
+using Backend.Src.Core.Entities;
 
 namespace Backend.Utils {
     public static class EmailHelper {
@@ -21,29 +22,37 @@ namespace Backend.Utils {
         // SendBookingAcceptedMail
         // SendForgotten
 
-        public static bool SendMail(Email mail, object param, string reciever) {
+        public static bool SendMail(Email mail, object param, string reciever, IUnitOfWork unitOfWork) {
             // Client config
-            SmtpClient client = EmailHelper.GetSmtpClient();
+            SmtpConfig smtpConfig = unitOfWork.SmtpConfigRepository.Get().FirstOrDefault();
 
-            // Message config 
-            MailMessage objeto_mail = new MailMessage();
-            objeto_mail.Subject = mail.Subject;
-            objeto_mail.From = new MailAddress("andi.sakal15@gmail.com");
-            objeto_mail.To.Add(new MailAddress(reciever));
-            objeto_mail.IsBodyHtml = true;
+            if (smtpConfig != null) {
 
-            // Add PDF-Attachment for Booking-Registrations
-            if (mail.Identifier.Equals("SBA") && param is Booking) {
-                EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                SmtpClient client = EmailHelper.GetSmtpClient(smtpConfig);
+
+                // Message config 
+                MailMessage objeto_mail = new MailMessage();
+                objeto_mail.Subject = mail.Subject;
+                objeto_mail.From = new MailAddress(smtpConfig.MailAddress);
+                objeto_mail.To.Add(new MailAddress(reciever));
+                objeto_mail.IsBodyHtml = true;
+
+                // Add PDF-Attachment for Booking-Registrations
+                if (mail.Identifier.Equals("SBA") && param is Booking) {
+                    EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                }
+
+                replaceParamsWithValues(mail, param);
+                objeto_mail.Body = mail.Template;
+                client.SendMailAsync(objeto_mail);
+                return true;
+
+            } else {
+                return false;
             }
-
-            replaceParamsWithValues(mail, param);
-            objeto_mail.Body = mail.Template;
-            client.SendMailAsync(objeto_mail);
-            return true;
         }
 
-        public static bool SendMailByIdentifier(String mailName, object param, string reciever) {
+        public static bool SendMailByIdentifier(String mailName, object param, string reciever, IUnitOfWork unitOfWork) {
             Email mail;
 
             using (IUnitOfWork uow = new UnitOfWork()) {
@@ -51,7 +60,7 @@ namespace Backend.Utils {
             }
 
             if (mail != null) {
-                return SendMail(mail, param, reciever);
+                return SendMail(mail, param, reciever, unitOfWork);
             } else {
                 return false;
             }
@@ -133,15 +142,15 @@ namespace Backend.Utils {
             objeto_mail.Attachments.Add(new Attachment(file));
         }
 
-        private static SmtpClient GetSmtpClient() {
+        private static SmtpClient GetSmtpClient(SmtpConfig smtpConfig) {
             SmtpClient client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.Port = 587;
+            client.Host = smtpConfig.Host;
+            client.Port = smtpConfig.Port;
             client.Timeout = 10000;
             client.UseDefaultCredentials = false;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("andi.sakal@gmail.com", "sombor123");
+            client.Credentials = new NetworkCredential(smtpConfig.MailAddress, smtpConfig.Password);
 
             return client;
         }
