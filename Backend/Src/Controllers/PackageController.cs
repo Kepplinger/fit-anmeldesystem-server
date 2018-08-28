@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Contracts;
+using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,14 @@ namespace Backend.Controllers
         {
             var packages = _unitOfWork.PackageRepository.Get();
             return new OkObjectResult(packages);
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] FitPackage fitPackage) {
+            _unitOfWork.PackageRepository.Update(fitPackage);
+            _unitOfWork.Save();
+
+            return new OkObjectResult(_unitOfWork.PackageRepository.Get());
         }
     }
 }
