@@ -13,6 +13,7 @@ using Backend.Core.Contracts.Repositories;
 using System.Diagnostics;
 using Backend.Core;
 using Backend.Utils;
+using Backend.Src.Core.Entities;
 
 namespace StoreService.Persistence {
 
@@ -44,6 +45,7 @@ namespace StoreService.Persistence {
         public IGenericRepository<Graduate> GraduateRepository { get; }
         public IGenericRepository<BookingBranch> BookingBranchesRepository { get; }
         public IGenericRepository<PresentationBranch> PresentationBranchesRepository { get; }
+        public IGenericRepository<SmtpConfig> SmtpConfigRepository { get; }
 
         /// <summary>
         ///     Konkrete Repositories. Mit Ableitung nötig
@@ -57,6 +59,7 @@ namespace StoreService.Persistence {
         public ICompanyRepository CompanyRepository { get; }
 
         public IPresentationRepository PresentationRepository { get; }
+
 
         public UnitOfWork() {
 
@@ -87,6 +90,7 @@ namespace StoreService.Persistence {
             CompanyBranchRepository = new GenericRepository<CompanyBranch>(_context);
             BookingBranchesRepository = new GenericRepository<BookingBranch>(_context);
             PresentationBranchesRepository = new GenericRepository<PresentationBranch>(_context);
+            SmtpConfigRepository = new GenericRepository<SmtpConfig>(_context);
         }
 
         /// <summary>

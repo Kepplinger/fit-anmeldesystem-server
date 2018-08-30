@@ -2,6 +2,7 @@
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Backend.Persistence;
+using Backend.Src.Core.Entities;
 using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,14 @@ using System.Threading.Tasks;
 namespace Backend.Utils {
     public static class FillDbHelper {
         public static void createTestData(ApplicationDbContext _context) {
+
+            SmtpConfig smtpConfig = new SmtpConfig();
+            smtpConfig.Host = "smtp.gmail.com";
+            smtpConfig.Port = 587;
+            smtpConfig.MailAddress = "andi.sakal@gmail.com";
+            smtpConfig.Password = "sombor123";
+            _context.SmtpConfigs.Add(smtpConfig);
+
             Console.WriteLine("Search for Companies who want to join FIT ...");
             // Set up Company
             Company company = new Company();
@@ -51,23 +60,18 @@ namespace Backend.Utils {
             //Set up Ressources
             Resource resource = new Resource();
             resource.Name = "Stuhl";
-            resource.Description = "Braucht die Firma einen Stuhl";
             _context.Resources.Add(resource);
             Resource resource2 = new Resource();
             resource2.Name = "Fernseher";
-            resource2.Description = "Die Firma braucht einen Fernseher";
             _context.Resources.Add(resource2);
             resource2 = new Resource();
             resource2.Name = "Stehtisch";
-            resource2.Description = "Die Firma braucht einen Stehtisch";
             _context.Resources.Add(resource2);
             resource2 = new Resource();
             resource2.Name = "WLAN";
-            resource2.Description = "Die Firma braucht WLAN";
             _context.Resources.Add(resource2);
             resource2 = new Resource();
             resource2.Name = "Strom";
-            resource2.Description = "Die Firma braucht Strom";
             _context.Resources.Add(resource2);
             _context.SaveChanges();
 

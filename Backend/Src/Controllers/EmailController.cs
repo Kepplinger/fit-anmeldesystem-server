@@ -9,6 +9,7 @@ using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Backend.Core;
+using Backend.Src.Core.Entities;
 
 namespace Backend.Controllers {
     [Route("api/[controller]")]
@@ -48,18 +49,29 @@ namespace Backend.Controllers {
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult sendTestMail(int id, [FromQuery] string emailAddress, [FromQuery] int entityId, [FromQuery] string entityType) {
+        public IActionResult SendTestMail(int id, [FromQuery] string emailAddress, [FromQuery] int entityId, [FromQuery] string entityType) {
             Email email = _unitOfWork.EmailRepository.GetById(id);
 
             if (entityType.ToLower() == "booking") {
                 Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Id == entityId).FirstOrDefault();
-                EmailHelper.SendMail(email, booking, emailAddress);
+                EmailHelper.SendMail(email, booking, emailAddress, _unitOfWork);
             } else if (entityType.ToLower() == "company") {
                 Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == entityId).FirstOrDefault();
-                EmailHelper.SendMail(email, company, emailAddress);
+                EmailHelper.SendMail(email, company, emailAddress, _unitOfWork);
             }
 
             return new OkResult();
+        }
+
+        [HttpPost("smtp")]
+        public IActionResult SendSmtpTestMail([FromBody] SmtpConfig smtpConfig, [FromQuery] string emailAddress) {
+            if (smtpConfig != null && emailAddress !=string.Empty) {
+                Email email = new Email("SMTP-Test-Mail", "SMTP-Test-Mail");
+                EmailHelper.SendMail(email, emailAddress, smtpConfig);
+                return new NoContentResult();
+            } else {
+                return new BadRequestResult();
+            }
         }
 
         private Email mapDtoToEmail(EmailDTO emailTransfer, IUnitOfWork uow) {

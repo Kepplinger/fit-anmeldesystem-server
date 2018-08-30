@@ -249,7 +249,7 @@ namespace Backend.Controllers {
                     //Senden der Bestätigungs E-Mail
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
-                    EmailHelper.SendMailByIdentifier("SBA", jsonBooking, jsonBooking.Contact.Email);
+                    EmailHelper.SendMailByIdentifier("SBA", jsonBooking, jsonBooking.Contact.Email, _unitOfWork);
 
                     return new OkObjectResult(jsonBooking);
                 } catch (DbUpdateException ex) {

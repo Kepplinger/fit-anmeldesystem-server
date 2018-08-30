@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Backend.Src.Core.Entities;
 
 namespace Backend.Persistence
 {
@@ -30,6 +31,7 @@ namespace Backend.Persistence
         public DbSet<Tag> Tags { get; set; }
         public DbSet<BookingBranch> BookingBranches { get; set; }
         public DbSet<PresentationBranch> PresentationBranches { get; set; }
+        public DbSet<SmtpConfig> SmtpConfigs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
