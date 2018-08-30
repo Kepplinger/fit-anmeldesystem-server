@@ -22,10 +22,7 @@ namespace Backend.Utils {
         // SendBookingAcceptedMail
         // SendForgotten
 
-        public static bool SendMail(Email mail, object param, string reciever, IUnitOfWork unitOfWork) {
-            // Client config
-            SmtpConfig smtpConfig = unitOfWork.SmtpConfigRepository.Get().FirstOrDefault();
-
+        public static bool SendMail(Email mail, string reciever, SmtpConfig smtpConfig, object param = null) {
             if (smtpConfig != null) {
 
                 SmtpClient client = EmailHelper.GetSmtpClient(smtpConfig);
@@ -37,12 +34,15 @@ namespace Backend.Utils {
                 objeto_mail.To.Add(new MailAddress(reciever));
                 objeto_mail.IsBodyHtml = true;
 
-                // Add PDF-Attachment for Booking-Registrations
-                if (mail.Identifier.Equals("SBA") && param is Booking) {
-                    EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                if (param != null) {
+                    // Add PDF-Attachment for Booking-Registrations
+                    if (mail.Identifier.Equals("SBA") && param is Booking) {
+                        EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                    }
+
+                    replaceParamsWithValues(mail, param);
                 }
 
-                replaceParamsWithValues(mail, param);
                 objeto_mail.Body = mail.Template;
                 client.SendMailAsync(objeto_mail);
                 return true;
@@ -50,6 +50,12 @@ namespace Backend.Utils {
             } else {
                 return false;
             }
+        }
+
+        public static bool SendMail(Email mail, object param, string reciever, IUnitOfWork unitOfWork) {
+            // Client config
+            SmtpConfig smtpConfig = unitOfWork.SmtpConfigRepository.Get().FirstOrDefault();
+            return SendMail(mail, reciever, smtpConfig, param);
         }
 
         public static bool SendMailByIdentifier(String mailName, object param, string reciever, IUnitOfWork unitOfWork) {

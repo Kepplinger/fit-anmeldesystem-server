@@ -25,6 +25,11 @@ namespace Backend.Core.Entities
 
         public Email() { }
 
+        public Email(string _template, string _subject) {
+            this.Template = _template;
+            this.Subject = _subject;
+        }
+
         public Email(string _identifier, string _name, string _desc, string _template, string _subject)
         {
             this.Identifier = _identifier;
