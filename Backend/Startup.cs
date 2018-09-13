@@ -18,14 +18,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using System.IO;
 
 namespace Backend
 {
     public class Startup
     {
-        //aus einer text file laden ode enviroment variable und zufällige zeichenkette (secretkey)
-        private const string SecretKey = "needtogetthisfromenvironment";
-        private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+        private static string secretKey = ReadPrivateKey();
+        private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
 
         public Startup(IConfiguration configuration)
         {
@@ -97,8 +97,6 @@ namespace Backend
                 options.Audience = connectionString;
                 options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
             });
-
-
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider provider)
@@ -119,15 +117,12 @@ namespace Backend
             });
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
-
             
             createRoles(provider);
-
         }
 
         private async void createRoles(IServiceProvider provider)
         {
-
             using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -142,6 +137,10 @@ namespace Backend
                     }
                 }
             }
+        }
+
+        private static string ReadPrivateKey() {
+            return File.ReadAllText("privateKey.txt", Encoding.Default);
         }
     }
 }
