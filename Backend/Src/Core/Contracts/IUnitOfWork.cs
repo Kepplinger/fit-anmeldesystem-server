@@ -4,6 +4,7 @@ using System;
 using Microsoft.EntityFrameworkCore.Storage;
 using Backend.Core.Contracts.Repositories;
 using Backend.Src.Core.Entities;
+using Backend.Core.Entities.UserManagement;
 
 namespace Backend.Core.Contracts {
     public interface IUnitOfWork : IDisposable {

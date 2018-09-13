@@ -195,7 +195,7 @@ namespace Backend.Utils {
                 repr.Image = null;
                 repr.Name = "Andrej Sakal";
 
-                _context.Rerpresentatives.Add(repr);
+                _context.Representatives.Add(repr);
                 _context.SaveChanges();
                 repre.Add(repr);
 

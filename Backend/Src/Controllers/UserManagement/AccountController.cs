@@ -17,9 +17,9 @@ namespace Backend.Controllers.UserManagement
     public class AccountController : Controller
     {
         private IUnitOfWork uow;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<FitUser> _userManager;
 
-        public AccountController(UserManager<IdentityUser> userManager, IUnitOfWork uow)
+        public AccountController(UserManager<FitUser> userManager, IUnitOfWork uow)
         {
             _userManager = userManager;
             this.uow = uow;
@@ -27,15 +27,15 @@ namespace Backend.Controllers.UserManagement
 
         // POST api/accounts
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]RegistrationUser registered)
+        public async Task<IActionResult> Post([FromBody]UserCredentials userCredentials)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            var result = await _userManager.CreateAsync(registered.User, registered.RegistrationPassword);
-            await _userManager.AddToRoleAsync(registered.User, "Admin");
+            userCredentials.FitUser.UserName = userCredentials.FitUser.Email;
+            var result = await _userManager.CreateAsync(userCredentials.FitUser, userCredentials.Password);
+            await _userManager.AddToRoleAsync(userCredentials.FitUser, userCredentials.FitUser.Role);
 
             if (!result.Succeeded) return new BadRequestObjectResult(result);
 
@@ -43,5 +43,10 @@ namespace Backend.Controllers.UserManagement
 
             return new OkObjectResult("Account created");
         }
+    }
+
+    public class UserCredentials {
+        public FitUser FitUser { get; set; }
+        public string Password { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace Backend
         //aus einer text file laden ode enviroment variable und zufällige zeichenkette (secretkey)
         private const string SecretKey = "needtogetthisfromenvironment";
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -37,16 +38,28 @@ namespace Backend
         {
             services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders().AddUserManager<UserManager<IdentityUser>>();
+            services.AddIdentity<FitUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders().AddUserManager<UserManager<FitUser>>();
             services.Configure<IdentityOptions>(options => { });
             services.AddSingleton<IJwtFactory, JwtFactory>();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(nameof(IdentityUser), policy => policy.RequireClaim("rol", "admin"));
+                options.AddPolicy(nameof(FitUser), policy => policy.RequireClaim("rol", "admin"));
                 //options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).
 
             });
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Default Password settings.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 0;
+            });
+
             //services.AddAuthentication(o => {
             //    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             //    o.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -119,13 +132,15 @@ namespace Backend
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                if (!await roleManager.RoleExistsAsync("Admin"))
-                {
-                    IdentityRole newRole = new IdentityRole() { Name = "Admin" };
-                    await roleManager.CreateAsync(newRole);
-                    await roleManager.AddClaimAsync(newRole, new Claim("rol", "admin"));
-                }
+                string[] roles = new string[] { "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly" };
 
+                foreach (var role in roles) {
+                    if (!await roleManager.RoleExistsAsync(role)) {
+                        IdentityRole newRole = new IdentityRole() { Name = role };
+                        await roleManager.CreateAsync(newRole);
+                        await roleManager.AddClaimAsync(newRole, new Claim("rol", role));
+                    }
+                }
             }
         }
     }

@@ -107,7 +107,7 @@ namespace Backend.Controllers {
         /// Getting all bookings by event id
         /// </summary>
         [HttpGet("event/{id}")]
-        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "IdentityUser")]
+        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "FitUser")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingByEventId(int id) {
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();

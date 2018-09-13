@@ -6,12 +6,12 @@ using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Backend.Src.Core.Entities;
+using Backend.Core.Entities.UserManagement;
 
 namespace Backend.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Area> Areas { get; set; }
         public DbSet<Company> Companies { get; set; }
@@ -23,7 +23,7 @@ namespace Backend.Persistence
         public DbSet<Location> Locations { get; set; }
         public DbSet<FitPackage> Packages { get; set; }
         public DbSet<Presentation> Presentations { get; set; }
-        public DbSet<Representative> Rerpresentatives { get; set; }
+        public DbSet<Representative> Representatives { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<ResourceBooking> ResourceBookings { get; set; }
         public DbSet<Email> Emails { get; set; }
@@ -32,6 +32,7 @@ namespace Backend.Persistence
         public DbSet<BookingBranch> BookingBranches { get; set; }
         public DbSet<PresentationBranch> PresentationBranches { get; set; }
         public DbSet<SmtpConfig> SmtpConfigs { get; set; }
+        public DbSet<FitUser> FitUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
