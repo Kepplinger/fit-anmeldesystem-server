@@ -15,14 +15,7 @@ using System.Threading.Tasks;
 namespace Backend.Utils {
     public static class FillDbHelper {
 
-        public static void createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
-
-            FitUser fitUser = new FitUser();
-            fitUser.Email = "simon.kepplinger@gmail.com";
-            fitUser.UserName = fitUser.Email;
-            fitUser.Role = "FitAdmin";
-
-            userManager.CreateAsync(fitUser, "test123");
+        public static void createTestData(ApplicationDbContext _context) {
 
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";

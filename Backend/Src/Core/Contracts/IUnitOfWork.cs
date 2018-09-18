@@ -47,7 +47,7 @@ namespace Backend.Core.Contracts {
 
         void DeleteDatabase();
 
-        void FillDb(UserManager<FitUser> userManager);
+        void FillDb();
 
         IDbContextTransaction BeginTransaction();
 

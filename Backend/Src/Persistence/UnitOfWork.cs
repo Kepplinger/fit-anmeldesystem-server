@@ -138,7 +138,7 @@ namespace StoreService.Persistence {
             _context.Database.CommitTransaction();
         }
 
-        public void FillDb(UserManager<FitUser> userManager) {
+        public void FillDb() {
 
             Console.WriteLine("\n\n=====================================================================================================================");
             Console.WriteLine("========================= DATABASE INITIALIZING =====================================================================");
@@ -152,7 +152,7 @@ namespace StoreService.Persistence {
             MigrateDatabase();
 
             // Creates some TestData
-            FillDbHelper.createTestData(_context, userManager);
+            FillDbHelper.createTestData(_context);
             FillDbHelper.createEmails(this);
 
             stopWatch.Stop();

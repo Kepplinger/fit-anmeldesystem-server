@@ -118,15 +118,19 @@ namespace Backend
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
             
-            createRoles(provider);
+            InitDatabase(provider);
         }
 
-        private async void createRoles(IServiceProvider provider)
+        private async void InitDatabase(IServiceProvider provider)
         {
             using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork()) {
+                    uow.FillDb();
+                }
 
                 string[] roles = new string[] { "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly" };
 
@@ -138,9 +142,12 @@ namespace Backend
                     }
                 }
 
-                using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork()) {
-                    uow.FillDb(userManager);
-                }
+                FitUser fitUser = new FitUser();
+                fitUser.Email = "simon.kepplinger@gmail.com";
+                fitUser.UserName = fitUser.Email;
+                fitUser.Role = "FitAdmin";
+
+                await userManager.CreateAsync(fitUser, "test123");
             }
         }
 
