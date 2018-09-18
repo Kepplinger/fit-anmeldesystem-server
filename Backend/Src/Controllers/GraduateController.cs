@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Backend.Core.Entities;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
 
@@ -31,6 +32,7 @@ namespace Backend.Controllers {
         }
 
         [HttpGet]
+        [Authorize(Policy = "AnyAdmin")]
         public IActionResult GetAll() {
             using (IUnitOfWork uow = new UnitOfWork()) {
                 List<Graduate> graduates = uow.GraduateRepository.Get(includeProperties: "Address").ToList();

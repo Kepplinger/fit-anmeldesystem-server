@@ -31,6 +31,7 @@ namespace Backend.Controllers {
         /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        [Authorize(Policy = "AnyAdmin")]
         public IActionResult GetAll() {
             var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,Tags,Branches");
             return new OkObjectResult(companies);
@@ -83,6 +84,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut("accept/{compId}")]
+        [Authorize(Policy = "WritableAdmin")]
         public IActionResult AcceptCompany(int compId, [FromBody] int status) {
             Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
             if (company != null) {
@@ -100,6 +102,7 @@ namespace Backend.Controllers {
         }
 
         [HttpDelete("assign")]
+        [Authorize(Policy = "WritableAdmin")]
         [Consumes("application/json")]
         public IActionResult AssignCompany(int pendingCompanyId, int existingCompanyId) {
 

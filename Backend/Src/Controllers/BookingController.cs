@@ -49,58 +49,6 @@ namespace Backend.Controllers {
             }
         }
 
-        [HttpPut]
-        [Consumes("application/json")]
-        public IActionResult Update([FromBody] Booking booking, [FromQuery] bool isAdminChange) {
-            Contract.Ensures(Contract.Result<IActionResult>() != null);
-            try {
-                _bookingFacade.Update(booking, true, isAdminChange);
-                return new OkObjectResult(booking);
-            } catch (DbUpdateException ex) {
-
-                return DbErrorHelper.CatchDbError(ex);
-            }
-        }
-
-        /// <summary>
-        /// Returns all saved Bookings
-        /// </summary>
-        /// <response code="200">Returns all available Bookings</response>
-        [HttpGet]
-        [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
-        public IActionResult GetAll() {
-            List<Booking> bookings = _unitOfWork.BookingRepository.Get(includeProperties: "Event,Branches,Company,Package,Location,Presentation,Contact").ToList();
-            if (bookings != null && bookings.Count > 0)
-                return new OkObjectResult(bookings);
-            else
-                return new NoContentResult();
-        }
-
-        /// <response code="200">Returning Booking by id</response>
-        /// <summary>
-        /// Getting a booking by the id
-        /// </summary>
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetById(int id) {
-            Booking booking = _unitOfWork.BookingRepository.GetById(id);
-            if (booking != null) {
-                return new OkObjectResult(booking);
-            }
-            return new NoContentResult();
-        }
-
-        /// <response code="200">Returns the available bookings by company id</response>
-        /// <summary>
-        /// Getting all bookings by company id
-        /// </summary>
-        [HttpGet("getBookingByCompanyId/{id}")]
-        [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
-        public IActionResult GetBookingByCompanyId(int id) {
-            var bookings = _unitOfWork.BookingRepository.Get(p => p.Company.Id == id);
-            return new ObjectResult(bookings);
-        }
-
         /// <response code="200">Returns the available bookings by event id</response>
         /// <summary>
         /// Getting all bookings by event id
@@ -123,6 +71,7 @@ namespace Backend.Controllers {
         /// <param name="status"></param>
         /// <returns></returns>
         [HttpPut("accept/{id}")]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult AcceptBooking(int id, [FromBody] int status) {
             Booking booking = _unitOfWork.BookingRepository.GetById(id);

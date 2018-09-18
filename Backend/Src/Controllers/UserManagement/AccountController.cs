@@ -2,6 +2,7 @@
 using Backend.Core.Entities;
 using Backend.Core.Entities.UserManagement;
 using Backend.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StoreService.Persistence;
@@ -23,6 +24,7 @@ namespace Backend.Controllers.UserManagement {
         }
 
         [HttpGet]
+        [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult Get() {
             return new OkObjectResult(_userManager.Users.Select(u => new {
                 id = u.Id,
@@ -33,6 +35,7 @@ namespace Backend.Controllers.UserManagement {
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Policy = "WritableFitAdmin")]
         public async Task<IActionResult> Delete(string id) {
             FitUser user = await _userManager.FindByIdAsync(id);
             await _userManager.DeleteAsync(user);
@@ -41,6 +44,7 @@ namespace Backend.Controllers.UserManagement {
         }
 
         [HttpPost]
+        [Authorize(Policy = "WritableFitAdmin")]
         public async Task<IActionResult> Post([FromBody]UserCredentials userCredentials) {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);

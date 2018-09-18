@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using StoreService.Persistence;
 using Backend.Utils;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
 
@@ -41,6 +42,7 @@ namespace Backend.Controllers {
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
+        [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult CreateEventWithAreasAndLocations([FromBody] Event jsonEvent) {
             try {
                 if (jsonEvent.Id > 0) {

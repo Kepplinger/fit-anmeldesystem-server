@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Backend.Src.Persistence.Facades;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
     [Route("api/[controller]")]
@@ -22,6 +23,7 @@ namespace Backend.Controllers {
         }
 
         [HttpGet("{eventId}")]
+        [Authorize(Policy = "FitAdmin")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult GetByEvent(int eventID) {
             List<PresentationDTO> presentations = _unitOfWork.BookingRepository
@@ -36,6 +38,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut()]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult Update(int id, [FromBody] Presentation presentation) {
             if (presentation != null) {
@@ -46,6 +49,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut("accept/{id}")]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult Accept(int id, [FromBody] int status) {
             Presentation presentation = _unitOfWork.PresentationRepository.Get(filter: p => p.Id == id).FirstOrDefault();

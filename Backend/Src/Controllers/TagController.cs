@@ -7,6 +7,7 @@ using Backend.Core.Contracts;
 using StoreService.Persistence;
 using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
 
@@ -21,6 +22,7 @@ namespace Backend.Controllers {
         }
 
         [HttpGet]
+        [Authorize(Policy = "AnyAdmin")]
         [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public IActionResult Get() {
@@ -33,6 +35,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Put([FromBody] List<Tag> tags) {

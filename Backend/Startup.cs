@@ -43,23 +43,14 @@ namespace Backend {
                     policy.RequireClaim("rol", "FitAdmin");
                     policy.AddAuthenticationSchemes("Bearer");
                 });
-            });
-
-            services.AddAuthorization(options => {
                 options.AddPolicy("FitAdmin", policy => {
                     policy.RequireClaim("rol", "FitAdmin", "FitReadOnly");
                     policy.AddAuthenticationSchemes("Bearer");
                 });
-            });
-
-            services.AddAuthorization(options => {
-                options.AddPolicy("WriteableAdmin", policy => {
+                options.AddPolicy("WritableAdmin", policy => {
                     policy.RequireClaim("rol", "FitAdmin", "MemberAdmin");
                     policy.AddAuthenticationSchemes("Bearer");
                 });
-            });
-
-            services.AddAuthorization(options => {
                 options.AddPolicy("AnyAdmin", policy => {
                     policy.RequireClaim("rol", "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly");
                     policy.AddAuthenticationSchemes("Bearer");

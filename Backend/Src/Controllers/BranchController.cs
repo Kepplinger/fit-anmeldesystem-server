@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Core.Contracts;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers
 {
@@ -17,10 +18,6 @@ namespace Backend.Controllers
             this._unitOfWork = uow;
         }
 
-        /// <response code="200">Returns all available Addresses</response>
-        /// <summary>
-        /// Getting all Addresses from Database
-        /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
         public IActionResult GetAll()
@@ -29,12 +26,9 @@ namespace Backend.Controllers
             return new OkObjectResult(branches);
         }
 
-        /// <response code="200">Returns all available Addresses</response>
-        /// <summary>
-        /// Getting all Addresses from Database
-        /// </summary>
         [HttpGet]
         [Route("archive")]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
         public IActionResult GetAllArchived() {
             var branches = _unitOfWork.BranchRepository.Get(filter: b => b.IsArchive);
@@ -42,6 +36,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Put([FromBody] List<Branch> branches) {

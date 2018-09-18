@@ -10,8 +10,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers.UserManagement {
-    [Route("api/[controller]")]
 
+    [Route("api/[controller]")]
     public class AuthController : Controller {
         private readonly UserManager<FitUser> _userManager;
         private readonly RoleManager<IdentityRole> roleManager;
