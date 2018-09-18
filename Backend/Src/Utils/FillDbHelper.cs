@@ -1,8 +1,11 @@
 ﻿using Backend.Core;
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Core.Entities.UserManagement;
 using Backend.Persistence;
 using Backend.Src.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
@@ -11,7 +14,15 @@ using System.Threading.Tasks;
 
 namespace Backend.Utils {
     public static class FillDbHelper {
-        public static void createTestData(ApplicationDbContext _context) {
+
+        public static void createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
+
+            FitUser fitUser = new FitUser();
+            fitUser.Email = "simon.kepplinger@gmail.com";
+            fitUser.UserName = fitUser.Email;
+            fitUser.Role = "FitAdmin";
+
+            userManager.CreateAsync(fitUser, "test123");
 
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";

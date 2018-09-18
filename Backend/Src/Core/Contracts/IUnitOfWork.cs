@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Backend.Core.Contracts.Repositories;
 using Backend.Src.Core.Entities;
 using Backend.Core.Entities.UserManagement;
+using Microsoft.AspNetCore.Identity;
 
 namespace Backend.Core.Contracts {
     public interface IUnitOfWork : IDisposable {
@@ -46,7 +47,7 @@ namespace Backend.Core.Contracts {
 
         void DeleteDatabase();
 
-        void FillDb();
+        void FillDb(UserManager<FitUser> userManager);
 
         IDbContextTransaction BeginTransaction();
 

@@ -126,6 +126,7 @@ namespace Backend
             using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
 
                 string[] roles = new string[] { "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly" };
 
@@ -135,6 +136,10 @@ namespace Backend
                         await roleManager.CreateAsync(newRole);
                         await roleManager.AddClaimAsync(newRole, new Claim("rol", role));
                     }
+                }
+
+                using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork()) {
+                    uow.FillDb(userManager);
                 }
             }
         }
