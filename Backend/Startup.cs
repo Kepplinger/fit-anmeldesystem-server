@@ -20,37 +20,53 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.IO;
 
-namespace Backend
-{
-    public class Startup
-    {
+namespace Backend {
+    public class Startup {
         private static string secretKey = ReadPrivateKey();
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
 
-        public Startup(IConfiguration configuration)
-        {
+        public Startup(IConfiguration configuration) {
             this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services) {
             services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddIdentity<FitUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders().AddUserManager<UserManager<FitUser>>();
+            services.AddIdentity<FitUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddUserManager<UserManager<FitUser>>();
             services.Configure<IdentityOptions>(options => { });
             services.AddSingleton<IJwtFactory, JwtFactory>();
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(nameof(FitUser), policy => policy.RequireClaim("rol", "admin"));
-                //options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).
 
+            services.AddAuthorization(options => {
+                options.AddPolicy("WritableFitAdmin", policy => {
+                    policy.RequireClaim("rol", "FitAdmin");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
             });
 
-            services.Configure<IdentityOptions>(options =>
-            {
+            services.AddAuthorization(options => {
+                options.AddPolicy("FitAdmin", policy => {
+                    policy.RequireClaim("rol", "FitAdmin", "FitReadOnly");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
+            });
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("WriteableAdmin", policy => {
+                    policy.RequireClaim("rol", "FitAdmin", "MemberAdmin");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
+            });
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("AnyAdmin", policy => {
+                    policy.RequireClaim("rol", "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
+            });
+
+            services.Configure<IdentityOptions>(options => {
                 // Default Password settings.
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
@@ -64,12 +80,11 @@ namespace Backend
             //    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             //    o.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             //}).AddJwtBearer();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
+                    .AddJwtBearer(options => {
                         options.TokenValidationParameters =
-                             new TokenValidationParameters
-                             {
+                             new TokenValidationParameters {
                                  ValidateIssuer = false,
                                  ValidateAudience = false,
                                  ValidateLifetime = true,
@@ -78,9 +93,9 @@ namespace Backend
                                  IssuerSigningKey = _signingKey
                              };
                     });
+
             services.AddMvc();
-            services.AddSwaggerGen(c =>
-            {
+            services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v2", new Info { Title = "FIT Anmelde System - V2.0", Version = "v2" });
             });
 
@@ -91,40 +106,34 @@ namespace Backend
             string connectionString = configuration["Urls:ServerUrl"];
 
             // Configure JwtIssuerOptions
-            services.Configure<JwtIssuerOptions>(options =>
-            {
+            services.Configure<JwtIssuerOptions>(options => {
                 options.Issuer = "FIT-Backend";
                 options.Audience = connectionString;
                 options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider provider)
-        {
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider provider) {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-            app.UseCors(builder =>
-            {
+            app.UseCors(builder => {
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
             });
             app.UseAuthentication();
             app.UseMvc();
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
+            app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "FITAS2.0");
             });
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
-            
+
             InitDatabase(provider);
         }
 
-        private async void InitDatabase(IServiceProvider provider)
-        {
-            using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
+        private async void InitDatabase(IServiceProvider provider) {
+            using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope()) {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 

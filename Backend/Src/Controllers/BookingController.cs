@@ -17,7 +17,6 @@ using Backend.Src.Persistence.Facades;
 namespace Backend.Controllers {
 
     [Route("api/[controller]")]
-    //[Authorize(Roles = "Admin")]
     [Produces("application/json", "application/xml")]
     public class BookingController : Controller {
 
@@ -107,7 +106,7 @@ namespace Backend.Controllers {
         /// Getting all bookings by event id
         /// </summary>
         [HttpGet("event/{id}")]
-        [Authorize(ActiveAuthenticationSchemes = "Bearer", Policy = "FitUser")]
+        [Authorize(Policy = "FitAdmin")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult GetBookingByEventId(int id) {
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
