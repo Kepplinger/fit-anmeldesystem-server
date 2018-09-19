@@ -15,7 +15,15 @@ using System.Threading.Tasks;
 namespace Backend.Utils {
     public static class FillDbHelper {
 
-        public static void createTestData(ApplicationDbContext _context) {
+        public async static Task createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
+
+            // Admin
+            FitUser fitUser = new FitUser();
+            fitUser.Email = "simon.kepplinger@gmail.com";
+            fitUser.UserName = fitUser.Email;
+            fitUser.Role = "FitAdmin";
+
+            await userManager.CreateAsync(fitUser, "test123");
 
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";
@@ -58,6 +66,16 @@ namespace Backend.Utils {
             company.Address = address;
 
             _context.Companies.Add(company);
+            _context.SaveChanges();
+
+            FitUser companyUser = new FitUser();
+            companyUser.UserName = new Guid().ToString();
+            companyUser.Role = "Member";
+            company.FitUser = companyUser;
+
+            await userManager.CreateAsync(companyUser, company.RegistrationToken);
+
+            _context.Companies.Update(company);
             _context.SaveChanges();
 
             Console.WriteLine("Search for Resources in the HTL Leonding ...");
@@ -154,13 +172,6 @@ namespace Backend.Utils {
 
             Console.WriteLine("Set up some students in the database ...");
 
-            Address address1 = new Address();
-            address1.Street = "Dr. Karl Rennerstraße";
-            address1.StreetNumber = "17a";
-            address1.ZipCode = "4061";
-            address1.City = "Pasching";
-            address1.Addition = "A Haus hoid";
-
             Graduate g = new Graduate();
             g.LastName = "Kepplinger";
             g.FirstName = "Simon";
@@ -168,16 +179,30 @@ namespace Backend.Utils {
             g.Email = "simon.kepplinger@gmail.com";
             g.PhoneNumber = "seiFlammenTelNr";
             g.RegistrationToken = "GraduateToken1";
+
+            Address address1 = new Address();
+            address1.Street = "Dr. Karl Rennerstraße";
+            address1.StreetNumber = "17a";
+            address1.ZipCode = "4061";
+            address1.City = "Pasching";
+            address1.Addition = "A Haus hoid";
+
+            _context.Addresses.Add(address1);
+            _context.SaveChanges();
+
             g.Address = address1;
 
             _context.Graduates.Add(g);
+            _context.SaveChanges();
 
-            Address address2 = new Address();
-            address1.Street = "Asphaltstraße";
-            address1.StreetNumber = "32";
-            address1.ZipCode = "4040";
-            address1.City = "Linz";
-            address1.Addition = "";
+            FitUser graduateUser = new FitUser();
+            graduateUser.UserName = new Guid().ToString();
+            graduateUser.Role = "Member";
+            g.FitUser = graduateUser;
+
+            await userManager.CreateAsync(graduateUser, g.RegistrationToken);
+            _context.Graduates.Update(g);
+            _context.SaveChanges();
 
             Graduate g2 = new Graduate();
             g2.LastName = "Sakal";
@@ -186,9 +211,30 @@ namespace Backend.Utils {
             g2.Email = "andra.sakal@gmail.com";
             g2.PhoneNumber = "000000007";
             g2.RegistrationToken = "GraduateToken2";
-            g2.Address = address1;
+
+            Address address2 = new Address();
+            address2.Street = "Asphaltstraße";
+            address2.StreetNumber = "32";
+            address2.ZipCode = "4040";
+            address2.City = "Linz";
+            address2.Addition = "";
+
+            _context.Addresses.Add(address2);
+            _context.SaveChanges();
+
+            g2.Address = address2;
 
             _context.Graduates.Add(g2);
+            _context.SaveChanges();
+
+
+            FitUser graduateUser2 = new FitUser();
+            graduateUser2.UserName = new Guid().ToString();
+            graduateUser2.Role = "Member";
+            g2.FitUser = graduateUser2;
+
+            await userManager.CreateAsync(graduateUser2, g2.RegistrationToken);
+            _context.Graduates.Update(g2);
             _context.SaveChanges();
 
             for (int i = 0; i < 1; i++) {

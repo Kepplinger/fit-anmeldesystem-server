@@ -264,6 +264,8 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("FitUserId");
+
                     b.Property<int>("IsAccepted");
 
                     b.Property<double>("MemberPaymentAmount");
@@ -288,6 +290,8 @@ namespace Backend.Migrations
                     b.Property<int>("fk_Contact");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FitUserId");
 
                     b.HasIndex("fk_Address");
 
@@ -494,6 +498,8 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
+                    b.Property<string>("FitUserId");
+
                     b.Property<string>("Gender")
                         .IsRequired();
 
@@ -514,6 +520,8 @@ namespace Backend.Migrations
                     b.Property<int>("fk_Address");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FitUserId");
 
                     b.HasIndex("fk_Address");
 
@@ -967,6 +975,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Company", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("FitUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
                         .HasForeignKey("fk_Address")
@@ -1027,6 +1040,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Graduate", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("FitUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
                         .HasForeignKey("fk_Address")

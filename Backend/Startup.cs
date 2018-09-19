@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Backend {
     public class Startup {
@@ -53,6 +54,14 @@ namespace Backend {
                 });
                 options.AddPolicy("AnyAdmin", policy => {
                     policy.RequireClaim("rol", "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
+                options.AddPolicy("Member", policy => {
+                    policy.RequireClaim("rol", "Member");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
+                options.AddPolicy("Anyone", policy => {
+                    policy.RequireClaim("rol", "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly", "Member");
                     policy.AddAuthenticationSchemes("Bearer");
                 });
             });
@@ -120,34 +129,17 @@ namespace Backend {
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
-            InitDatabase(provider);
+            InitDb(provider);
         }
 
-        private async void InitDatabase(IServiceProvider provider) {
-            using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope()) {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
+        private static async Task InitDb(IServiceProvider provider) {
+            try {
                 using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork()) {
-                    uow.FillDb();
+                    await uow.FillDb(provider);
                 }
-
-                string[] roles = new string[] { "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly" };
-
-                foreach (var role in roles) {
-                    if (!await roleManager.RoleExistsAsync(role)) {
-                        IdentityRole newRole = new IdentityRole() { Name = role };
-                        await roleManager.CreateAsync(newRole);
-                        await roleManager.AddClaimAsync(newRole, new Claim("rol", role));
-                    }
-                }
-
-                FitUser fitUser = new FitUser();
-                fitUser.Email = "simon.kepplinger@gmail.com";
-                fitUser.UserName = fitUser.Email;
-                fitUser.Role = "FitAdmin";
-
-                await userManager.CreateAsync(fitUser, "test123");
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+                throw ex;
             }
         }
 
