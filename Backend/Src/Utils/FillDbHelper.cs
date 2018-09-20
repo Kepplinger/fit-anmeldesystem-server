@@ -65,19 +65,17 @@ namespace Backend.Utils {
             company.Contact = contact;
             company.Address = address;
 
-            _context.Companies.Add(company);
-            _context.SaveChanges();
-
             FitUser companyUser = new FitUser();
-            companyUser.UserName = new Guid().ToString();
+            companyUser.UserName = company.RegistrationToken;
             companyUser.Role = "Member";
-            company.FitUser = companyUser;
 
             await userManager.CreateAsync(companyUser, company.RegistrationToken);
 
-            _context.Companies.Update(company);
-            _context.SaveChanges();
+            company.fk_FitUser = companyUser.Id;
 
+            _context.Companies.Add(company);
+            _context.SaveChanges();
+            
             Console.WriteLine("Search for Resources in the HTL Leonding ...");
             //Set up Ressources
             Resource resource = new Resource();
@@ -192,16 +190,15 @@ namespace Backend.Utils {
 
             g.Address = address1;
 
-            _context.Graduates.Add(g);
-            _context.SaveChanges();
-
             FitUser graduateUser = new FitUser();
-            graduateUser.UserName = new Guid().ToString();
+            graduateUser.UserName = g.RegistrationToken;
             graduateUser.Role = "Member";
-            g.FitUser = graduateUser;
 
             await userManager.CreateAsync(graduateUser, g.RegistrationToken);
-            _context.Graduates.Update(g);
+
+            g.fk_FitUser = graduateUser.Id;
+
+            _context.Graduates.Add(g);
             _context.SaveChanges();
 
             Graduate g2 = new Graduate();
@@ -224,17 +221,14 @@ namespace Backend.Utils {
 
             g2.Address = address2;
 
-            _context.Graduates.Add(g2);
-            _context.SaveChanges();
-
-
             FitUser graduateUser2 = new FitUser();
-            graduateUser2.UserName = new Guid().ToString();
+            graduateUser2.UserName = g2.RegistrationToken;
             graduateUser2.Role = "Member";
-            g2.FitUser = graduateUser2;
 
             await userManager.CreateAsync(graduateUser2, g2.RegistrationToken);
-            _context.Graduates.Update(g2);
+            g2.fk_FitUser = graduateUser2.Id;
+
+            _context.Graduates.Add(g2);
             _context.SaveChanges();
 
             for (int i = 0; i < 1; i++) {

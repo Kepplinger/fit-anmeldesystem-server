@@ -11,32 +11,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Backend.Controllers.UserManagement {
+namespace Backend.Controllers.UserManagement
+{
     [Route("api/[controller]")]
 
-    public class AccountController : Controller {
+    public class AccountController : Controller
+    {
         private IUnitOfWork _unitOfWork;
         private readonly UserManager<FitUser> _userManager;
 
-        public AccountController(UserManager<FitUser> userManager, IUnitOfWork uow) {
+        public AccountController(UserManager<FitUser> userManager, IUnitOfWork uow)
+        {
             _userManager = userManager;
             _unitOfWork = uow;
         }
 
         [HttpGet]
         [Authorize(Policy = "WritableFitAdmin")]
-        public IActionResult Get() {
-            return new OkObjectResult(_userManager.Users.Select(u => new {
-                id = u.Id,
-                email = u.Email,
-                role = u.Role
-            }));
+        public IActionResult Get()
+        {
+            return new OkObjectResult(_userManager.Users.Where(u => u.Role != "Member")
+                .Select(u => new {
+                    id = u.Id,
+                    email = u.Email,
+                    role = u.Role
+                }));
         }
 
         [HttpDelete]
         [Route("{id}")]
         [Authorize(Policy = "WritableFitAdmin")]
-        public async Task<IActionResult> Delete(string id) {
+        public async Task<IActionResult> Delete(string id)
+        {
             FitUser user = await _userManager.FindByIdAsync(id);
             await _userManager.DeleteAsync(user);
 
@@ -45,8 +51,10 @@ namespace Backend.Controllers.UserManagement {
 
         [HttpPost]
         [Authorize(Policy = "WritableFitAdmin")]
-        public async Task<IActionResult> Post([FromBody]UserCredentials userCredentials) {
-            if (!ModelState.IsValid) {
+        public async Task<IActionResult> Post([FromBody]UserCredentials userCredentials)
+        {
+            if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
             }
             userCredentials.FitUser.UserName = userCredentials.FitUser.Email;
@@ -61,7 +69,8 @@ namespace Backend.Controllers.UserManagement {
         }
     }
 
-    public class UserCredentials {
+    public class UserCredentials
+    {
         public FitUser FitUser { get; set; }
         public string Password { get; set; }
     }

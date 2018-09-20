@@ -12,9 +12,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180920111612_ForeignKey")]
+    partial class ForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -498,6 +499,8 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
+                    b.Property<string>("FitUserId");
+
                     b.Property<string>("Gender")
                         .IsRequired();
 
@@ -517,13 +520,11 @@ namespace Backend.Migrations
 
                     b.Property<int>("fk_Address");
 
-                    b.Property<string>("fk_FitUser");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("fk_Address");
+                    b.HasIndex("FitUserId");
 
-                    b.HasIndex("fk_FitUser");
+                    b.HasIndex("fk_Address");
 
                     b.ToTable("Graduates");
                 });
@@ -1040,14 +1041,14 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Graduate", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("FitUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
                         .HasForeignKey("fk_Address")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
-                        .WithMany()
-                        .HasForeignKey("fk_FitUser")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

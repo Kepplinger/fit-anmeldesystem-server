@@ -10,6 +10,10 @@ namespace Backend.Core.Entities
         [JsonIgnore]
         public FitUser FitUser { get; set; }
 
+        [JsonIgnore]
+        [ForeignKey(nameof(FitUser))]
+        public string fk_FitUser { get; set; }
+
         [Required]
         [MaxLength(30)]
         public string FirstName { get; set; }
