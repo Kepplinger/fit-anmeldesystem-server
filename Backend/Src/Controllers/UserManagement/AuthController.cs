@@ -1,4 +1,5 @@
 ﻿using Backend.Core.Entities.UserManagement;
+using Backend.Src.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -17,14 +18,11 @@ namespace Backend.Controllers.UserManagement {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IJwtFactory _jwtFactory;
         private readonly JsonSerializerSettings _serializerSettings;
-        private readonly JwtIssuerOptions _jwtOptions;
 
         public AuthController(UserManager<FitUser> userManager,
-                              IJwtFactory jwtFactory,
-                              IOptions<JwtIssuerOptions> jwtOptions) {
+                              IJwtFactory jwtFactory) {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
-            _jwtOptions = jwtOptions.Value;
 
             _serializerSettings = new JsonSerializerSettings {
                 Formatting = Formatting.Indented
@@ -38,37 +36,20 @@ namespace Backend.Controllers.UserManagement {
                 return BadRequest(ModelState);
             }
 
-            var identity = await GetClaimsIdentity(credentials.UserName, credentials.Password);
+            var identity = await UserClaimsHelper.GetClaimsIdentity(credentials.UserName, credentials.Password, _jwtFactory, _userManager);
             if (identity == null) {
-                return BadRequest("Login failed invalid Username or Passsword");
+                return BadRequest(new {
+                    errorMessage = "Falsche E-Mail oder Passwort!"
+                });
             }
 
             // Serialize and return the response
             var response = new {
-                id = identity.Claims.Single(c => c.Type == "id").Value,
                 auth_token = await _jwtFactory.GenerateEncodedToken(credentials.UserName, identity),
-                expires_in = (int)_jwtOptions.ValidFor.TotalSeconds
             };
 
             var json = JsonConvert.SerializeObject(response, _serializerSettings);
             return new OkObjectResult(json);
-        }
-
-        private async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password) {
-            if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password)) {
-                // get the user to verifty
-                FitUser userToVerify = await _userManager.FindByNameAsync(userName);
-
-                if (userToVerify != null) {
-                    // check the credentials  
-                    if (await _userManager.CheckPasswordAsync(userToVerify, password)) {
-                        return await Task.FromResult(_jwtFactory.GenerateClaimsIdentity(userToVerify));
-                    }
-                }
-            }
-
-            // Credentials are invalid, or account doesn't exist
-            return await Task.FromResult<ClaimsIdentity>(null);
         }
     }
 }

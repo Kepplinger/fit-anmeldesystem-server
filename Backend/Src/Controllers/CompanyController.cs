@@ -1,9 +1,11 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Core.Entities.UserManagement;
 using Backend.Src.Persistence.Facades;
 using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Controllers {
     [Route("api/[controller]")]
@@ -19,10 +22,12 @@ namespace Backend.Controllers {
 
         private IUnitOfWork _unitOfWork;
         private CompanyFacade _companyFacade;
+        private readonly UserManager<FitUser> _userManager;
 
-        public CompanyController(IUnitOfWork uow) {
+        public CompanyController(UserManager<FitUser> userManager, IUnitOfWork uow) {
             _unitOfWork = uow;
             _companyFacade = new CompanyFacade(_unitOfWork);
+            _userManager = userManager;
         }
 
         /// <response code="200">Returns all available Companies</response>
@@ -39,10 +44,10 @@ namespace Backend.Controllers {
 
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult CreateCompany([FromBody] Company jsonComp) {
+        public async Task<IActionResult> CreateCompany([FromBody] Company jsonComp) {
 
             if (jsonComp != null) {
-                Company storeCompany = jsonComp;
+                Company company = jsonComp;
                 if (jsonComp.Address.Addition == null) {
                     jsonComp.Address.Addition = "";
                 }
@@ -56,18 +61,26 @@ namespace Backend.Controllers {
                     loginCode = loginCode.Insert(4, "-").Insert(9, "-");
                 } while (_unitOfWork.CompanyRepository.Get(filter: c => c.RegistrationToken == loginCode).Count() != 0);
 
-                storeCompany.RegistrationToken = loginCode;
-                _unitOfWork.ContactRepository.Insert(storeCompany.Contact);
+                company.RegistrationToken = loginCode;
+                _unitOfWork.ContactRepository.Insert(company.Contact);
                 _unitOfWork.Save();
-                _unitOfWork.AddressRepository.Insert(storeCompany.Address);
+                _unitOfWork.AddressRepository.Insert(company.Address);
                 _unitOfWork.Save();
 
-                _unitOfWork.CompanyRepository.Insert(storeCompany);
-                _unitOfWork.Save();
-                EmailHelper.SendMailByIdentifier("PGC", storeCompany, storeCompany.Contact.Email, _unitOfWork);
-                EmailHelper.SendMailByIdentifier("PGA", storeCompany, storeCompany.Contact.Email, _unitOfWork);
+                FitUser companyUser = new FitUser();
+                companyUser.UserName = company.RegistrationToken;
+                companyUser.Role = "Member";
 
-                return new ObjectResult(storeCompany);
+                await _userManager.CreateAsync(companyUser, company.RegistrationToken);
+
+                company.fk_FitUser = companyUser.Id;
+
+                _unitOfWork.CompanyRepository.Insert(company);
+                _unitOfWork.Save();
+                EmailHelper.SendMailByIdentifier("PGC", company, company.Contact.Email, _unitOfWork);
+                EmailHelper.SendMailByIdentifier("PGA", company, company.Contact.Email, _unitOfWork);
+
+                return new ObjectResult(company);
             }
             return new BadRequestResult();
         }
