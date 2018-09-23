@@ -107,30 +107,28 @@ namespace Backend.Controllers {
         [HttpPost("token")]
         [Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public async Task<IActionResult> LoginAsync([FromBody] JToken json) {
-            string token = json["token"].Value<string>();
+            string registrationCode = json["token"].Value<string>();
 
-            var identity = await UserClaimsHelper.GetClaimsIdentity(token, token, _jwtFactory, _userManager);
+            var identity = await UserClaimsHelper.GetClaimsIdentity(registrationCode, registrationCode, _jwtFactory, _userManager);
+
             if (identity == null) {
                 return BadRequest(new {
-                    errorMessage = "Falsche E-Mail oder Passwort!"
+                    errorMessage = "Es ist kein Account mit diesem Token bekannt."
                 });
             }
 
-            // Serialize and return the response
-            var response = new {
-                auth_token = await _jwtFactory.GenerateEncodedToken(token, identity),
-            };
+            string authToken = await _jwtFactory.GenerateEncodedToken(registrationCode, identity);
 
-            Graduate actGraduate = this._unitOfWork.GraduateRepository.Get(g => g.RegistrationToken.ToUpper().Equals(token.ToUpper()), includeProperties: "Address").FirstOrDefault();
+            Graduate actGraduate = this._unitOfWork.GraduateRepository.Get(g => g.RegistrationToken.ToUpper().Equals(registrationCode.ToUpper()), includeProperties: "Address").FirstOrDefault();
 
             if (actGraduate != null) {
                 var graduateJson = new {
                     graduate = actGraduate
                 };
-                return new OkObjectResult(graduateJson);
+                return GetEntityTokenResponse(graduateJson, authToken);
             }
 
-            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.ToUpper().Equals(token.ToUpper()), includeProperties: "Address,Contact").FirstOrDefault();
+            Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.ToUpper().Equals(registrationCode.ToUpper()), includeProperties: "Address,Contact").FirstOrDefault();
 
             if (actCompany == null) {
                 var error = new {
@@ -142,25 +140,32 @@ namespace Backend.Controllers {
             // Get Booking
             List<Booking> lastBooking = _unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).ToList();
 
-            // If there is no last Booking send just Company
+            // If there is no last Booking just send Company
             if (lastBooking == null || lastBooking.Count() == 0) {
                 var companyJson = new {
                     company = actCompany
                 };
-                return new OkObjectResult(companyJson);
+                return GetEntityTokenResponse(companyJson, authToken);
             } else {
                 if (lastBooking.ElementAt(0).Event.RegistrationState.IsCurrent) {
                     var booking = new {
                         currentBooking = lastBooking.ElementAt(0)
                     };
-                    return new OkObjectResult(booking);
+                    return GetEntityTokenResponse(booking, authToken);
                 } else {
                     var booking = new {
                         oldBooking = lastBooking
                     };
-                    return new OkObjectResult(booking);
+                    return GetEntityTokenResponse(booking, authToken);
                 }
             }
+        }
+
+        private IActionResult GetEntityTokenResponse(object entity, string token) {
+            return new OkObjectResult(new {
+                authToken = token,
+                entity = entity
+            });
         }
     }
 }

@@ -87,6 +87,7 @@ namespace Backend.Controllers {
 
         [HttpPut]
         [Consumes("application/json")]
+        [Authorize(Policy = "MemberAndWriteableAdmins")]
         public IActionResult Update([FromBody]Company company, [FromQuery] bool isAdminChange) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
             try {

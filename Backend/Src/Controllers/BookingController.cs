@@ -37,6 +37,7 @@ namespace Backend.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
+        [Authorize(Policy = "MemberAndWriteableAdmins")]
         public IActionResult Create([FromBody] Booking jsonBooking, [FromQuery] bool isAdminChange) {
             Booking booking = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
 

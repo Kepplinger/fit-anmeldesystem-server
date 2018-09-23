@@ -16,6 +16,7 @@ namespace Backend.Controllers {
     public class GraduateController : Controller {
 
         [HttpPut]
+        [Authorize(Policy = "MemberAndWriteableAdmins")]
         public IActionResult updateGraduate([FromBody] Graduate graduate) {
             using (IUnitOfWork uow = new UnitOfWork()) {
                 Graduate toUpdate = uow.GraduateRepository.Get(g => g.Id == graduate.Id).FirstOrDefault();

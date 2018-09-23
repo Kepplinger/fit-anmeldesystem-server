@@ -60,6 +60,10 @@ namespace Backend {
                     policy.RequireClaim("rol", "Member");
                     policy.AddAuthenticationSchemes("Bearer");
                 });
+                options.AddPolicy("MemberAndWriteableAdmins", policy => {
+                    policy.RequireClaim("rol", "Member");
+                    policy.AddAuthenticationSchemes("Bearer");
+                });
                 options.AddPolicy("Anyone", policy => {
                     policy.RequireClaim("rol", "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly", "Member");
                     policy.AddAuthenticationSchemes("Bearer");
