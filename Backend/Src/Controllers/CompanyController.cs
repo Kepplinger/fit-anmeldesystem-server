@@ -78,7 +78,7 @@ namespace Backend.Controllers {
                 _unitOfWork.CompanyRepository.Insert(company);
                 _unitOfWork.Save();
                 EmailHelper.SendMailByIdentifier("PGC", company, company.Contact.Email, _unitOfWork);
-                EmailHelper.SendMailByIdentifier("PGA", company, company.Contact.Email, _unitOfWork);
+                EmailHelper.SendMailToAllFitAdmins("PGA", company, _unitOfWork, _userManager);
 
                 return new ObjectResult(company);
             }
@@ -127,7 +127,7 @@ namespace Backend.Controllers {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
             } else {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
-                EmailHelper.SendMailByIdentifier("CA", pendingCompany, existingCompany.Contact.Email, _unitOfWork);
+                EmailHelper.SendMailByIdentifier("CA", pendingCompany, pendingCompany.Contact.Email, _unitOfWork);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);

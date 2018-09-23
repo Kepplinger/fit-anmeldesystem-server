@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using Backend.Core;
 using System.Text.RegularExpressions;
 using Backend.Src.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Backend.Core.Entities.UserManagement;
 
 namespace Backend.Utils {
     public static class EmailHelper {
@@ -69,6 +71,14 @@ namespace Backend.Utils {
                 return SendMail(mail, param, reciever, unitOfWork);
             } else {
                 return false;
+            }
+        }
+
+        public static void SendMailToAllFitAdmins(String mailName, object param, IUnitOfWork unitOfWork, UserManager<FitUser> userManager) {
+            List<string> adminMails = userManager.Users.Where(u => u.Role == "FitAdmin").Select(u => u.Email).ToList();
+
+            foreach (string mail in adminMails) {
+                SendMailByIdentifier(mailName, param, mail, unitOfWork);
             }
         }
 
