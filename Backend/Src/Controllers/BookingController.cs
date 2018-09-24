@@ -193,12 +193,13 @@ namespace Backend.Controllers {
                     }
 
                     transaction.Commit();
-                    _unitOfWork.Dispose();
 
                     //Senden der Bestätigungs E-Mail
                     DocumentBuilder doc = new DocumentBuilder();
                     doc.CreatePdfOfBooking(jsonBooking);
                     EmailHelper.SendMailByIdentifier("SBA", jsonBooking, jsonBooking.Contact.Email, _unitOfWork);
+
+                    _unitOfWork.Dispose();
 
                     return new OkObjectResult(jsonBooking);
                 } catch (DbUpdateException ex) {

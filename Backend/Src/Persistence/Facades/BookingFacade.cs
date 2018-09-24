@@ -46,7 +46,9 @@ namespace Backend.Src.Persistence.Facades {
                     _dataFileFacade.UpdateOrInsert(booking.Logo, false);
 
                     foreach (Representative representative in booking.Representatives) {
-                        _representativeFacade.UpdateOrInsert(representative, false);
+                        if (representative.Id > 0) {
+                            _representativeFacade.Update(representative, false);
+                        }
                     }
                     ClearDeletedRepresentatives(booking, false);
 

@@ -61,7 +61,7 @@ namespace Backend {
                     policy.AddAuthenticationSchemes("Bearer");
                 });
                 options.AddPolicy("MemberAndWriteableAdmins", policy => {
-                    policy.RequireClaim("rol", "Member");
+                    policy.RequireClaim("rol", "Member", "FitAdmin", "MemberAdmin");
                     policy.AddAuthenticationSchemes("Bearer");
                 });
                 options.AddPolicy("Anyone", policy => {
@@ -133,7 +133,7 @@ namespace Backend {
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
-            InitDb(provider);
+            // InitDb(provider);
         }
 
         private static async Task InitDb(IServiceProvider provider) {
