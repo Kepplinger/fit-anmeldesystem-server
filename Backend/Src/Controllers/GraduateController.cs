@@ -23,6 +23,7 @@ namespace Backend.Controllers {
 
                 if (toUpdate != null) {
                     graduate.RegistrationToken = toUpdate.RegistrationToken;
+                    uow.AddressRepository.Update(graduate.Address);
                     uow.GraduateRepository.Update(graduate);
                     uow.Save();
                     return new OkObjectResult(graduate);

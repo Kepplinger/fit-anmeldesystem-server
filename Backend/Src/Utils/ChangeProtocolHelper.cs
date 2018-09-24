@@ -45,6 +45,7 @@ namespace Backend.Utils {
                 && !p.Name.ToLower().Contains("representatives")
                 && !p.Name.ToLower().Contains("resources")
                 && !p.Name.ToLower().Contains("contact")
+                && !p.Name.ToLower().Contains("presentation")
                 && !p.Name.ToLower().Contains("creationdate")
                 && !p.Name.ToLower().Contains("logo")
                 && !p.Name.ToLower().Contains("file")
