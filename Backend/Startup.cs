@@ -133,7 +133,7 @@ namespace Backend {
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
-            // InitDb(provider);
+            InitDb(provider);
         }
 
         private static async Task InitDb(IServiceProvider provider) {
