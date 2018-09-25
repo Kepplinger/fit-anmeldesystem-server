@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers {
+
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class CompanyController : Controller {
@@ -127,12 +128,26 @@ namespace Backend.Controllers {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
             } else {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
+                pendingCompany = CopyPropertiesFromExistingToPendingCompanies(pendingCompany, existingCompany);
                 EmailHelper.SendMailByIdentifier("CA", pendingCompany, pendingCompany.Contact.Email, _unitOfWork);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);
             _unitOfWork.Save();
             return new NoContentResult();
+        }
+
+        private Company CopyPropertiesFromExistingToPendingCompanies(Company pending, Company existing)
+        {
+            pending.Name = existing.Name;
+            pending.Branches = existing.Branches;
+            pending.MemberPaymentAmount = existing.MemberPaymentAmount;
+            pending.MemberSince = existing.MemberSince;
+            pending.MemberStatus = existing.MemberStatus;
+            pending.Address = existing.Address;
+            pending.RegistrationToken = existing.RegistrationToken;
+
+            return pending;
         }
     }
 }

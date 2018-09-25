@@ -20,7 +20,7 @@ namespace Backend {
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            bindurl = configuration["Urls:ServerUrl"];
+            bindurl = configuration["Urls:ServerUrl"] + configuration["Urls:ApiPort"];
             System.Console.WriteLine("Server reachable at: " + bindurl);
             BuildWebHost(args).Run();
         }

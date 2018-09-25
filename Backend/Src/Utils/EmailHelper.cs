@@ -92,18 +92,6 @@ namespace Backend.Utils {
 
             if (param != null) {
 
-                email.Template = Regex.Replace(
-                email.Template,
-                "{{ GENDER_TITLE }}",
-                (Match m) => {
-
-                    if ((param as Company).Contact.Gender == "M") {
-                        return "geehrter";
-                    } else {
-                        return "geehrte";
-                    }
-                });
-
                 // replace every variable within double curly braces
                 email.Template = Regex.Replace(
                     email.Template,
@@ -116,17 +104,16 @@ namespace Backend.Utils {
 
                         try {
                             if (variable.Contains("DEAR_")) {
-                                variable = Regex.Replace(m.Value, "DEAR_", string.Empty);
+                                variable = Regex.Replace(variable, "DEAR_", string.Empty);
                                 value = param.GetPropValue(variable).ToString();
 
                                 switch (value) {
                                     case "M":
-                                        return "geehrter Herr";
+                                        return "geehrter";
                                         break;
                                     case "F":
-                                        return "geehrte Frau";
+                                        return "geehrte";
                                 }
-
                             } else {
                                 value = param.GetPropValue(variable).ToString();
 

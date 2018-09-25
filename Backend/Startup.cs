@@ -107,7 +107,7 @@ namespace Backend {
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
-            string connectionString = configuration["Urls:ServerUrl"];
+            string connectionString = configuration["Urls:ServerUrl"] + configuration["Urls:ApiPort"];
 
             // Configure JwtIssuerOptions
             services.Configure<JwtIssuerOptions>(options => {

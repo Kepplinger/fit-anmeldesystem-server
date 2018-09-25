@@ -27,7 +27,7 @@ namespace Backend.Controllers {
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult GetByEvent(int eventID) {
             List<PresentationDTO> presentations = _unitOfWork.BookingRepository
-                .Get(b => b.fk_Event == eventID)
+                .Get(b => b.fk_Event == eventID && b.Presentation != null)
                 .Select(b => new PresentationDTO { presentation = b.Presentation, company = b.Company })
                 .ToList();
 
