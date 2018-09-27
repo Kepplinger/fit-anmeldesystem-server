@@ -76,6 +76,7 @@ namespace Backend.Src.Persistence.Facades {
             foreach (CompanyBranch companyBranch in company.Branches) {
                 if (companyBranch.Id <= 0) {
                     _unitOfWork.CompanyBranchRepository.Insert(companyBranch);
+                    companyBranch.Branch = _unitOfWork.BranchRepository.GetById(companyBranch.fk_Branch);
                 }
             }
 
