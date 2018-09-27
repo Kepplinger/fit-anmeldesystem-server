@@ -75,7 +75,7 @@ namespace Backend.Utils {
 
             _context.Companies.Add(company);
             _context.SaveChanges();
-            
+
             Console.WriteLine("Search for Resources in the HTL Leonding ...");
             //Set up Ressources
             Resource resource = new Resource();
@@ -176,6 +176,7 @@ namespace Backend.Utils {
             g.Gender = "M";
             g.Email = "simon.kepplinger@gmail.com";
             g.PhoneNumber = "seiFlammenTelNr";
+            g.GraduationYear = 2018;
             g.RegistrationToken = "GraduateToken1";
 
             Address address1 = new Address();
@@ -207,6 +208,7 @@ namespace Backend.Utils {
             g2.Gender = "F";
             g2.Email = "andra.sakal@gmail.com";
             g2.PhoneNumber = "000000007";
+            g2.GraduationYear = 2017;
             g2.RegistrationToken = "GraduateToken2";
 
             Address address2 = new Address();
@@ -335,7 +337,7 @@ namespace Backend.Utils {
                                                        "<br>Hier ist der Zugangstoken: {{Company.RegistrationToken}}" +
                                                        "</p></body>" +
                                              "</html>",
-                               "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding FIT");
+                               "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding");
 
             Email IsPendingDeniedCompany = new Email("PDC", "Firma abgelehnt (Firma)",
                                 "Diese Email wird versendet wenn ein Firmenantrag abgelehnt wurde",
@@ -347,7 +349,7 @@ namespace Backend.Utils {
                                              "<p>Ihr Firmenantrag wurde abgelehnt!" +
                                              "</p></body>" +
                                              "</html>",
-                               "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT");
+                               "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding");
 
             Email CompanyAssigned = new Email("CA", "Firma einer bestehenden zugewiesen (Firma)",
                       "Diese Email wird an die Firma verschickt wenn es die Firma bereits gibt und Sie dieser zugewiesen wurde",
@@ -359,7 +361,7 @@ namespace Backend.Utils {
                                    "<p>Firma bereits vorhanden wurde {{Company.RegistrationToken}}" +
                                    "</body>" +
                                    "</html>",
-                     "Firma bereits vorhande - ABSLEO HTL Leonding FIT");
+                     "Firma bereits vorhanden - ABSLEO HTL Leonding");
 
             Email SendBookingAcceptedMail = new Email("SBA", "FIT-Anmeldung eingereicht (Firma)",
                                 "Diese Email wird an die Firma versendet wenn die FIT-Buchung akzeptiert wurde",
@@ -387,22 +389,48 @@ namespace Backend.Utils {
                                              "</html>",
                                "FIT-Buchung wurde akzeptiert - ABSLEO HTL Leonding FIT");
 
-            Email SendForgotten = new Email("SF", "Firma-Code vergessen (Firma)",
+            Email SendForgottenCompany = new Email("SFC", "Firma-Code vergessen (Firma)",
                                 "Dies ist eine FirmenCode vergessen Email",
                                             "<!DOCTYPE html>" +
                                              "<html>" +
                                              "<head>" +
                                              "</head>" +
                                              "<body>" +
-                                            "<p>Ihr Token: {{Company.RegistrationToken}}" +
+                                            "<p>Ihr Token: {{ Company.RegistrationToken }}" +
                                              "</body>" +
                                              "</html>",
-                               "FIT-Anmeldung - ABSLEO HTL Leonding FIT");
+                               "ABSLEO HTL Leonding");
+
+            Email SendForgottenGraduate = new Email("SFG", "Firma-Code vergessen (Absolvent)",
+                                "Dies ist eine FirmenCode vergessen Email",
+                                            "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                            "<p>Ihr Token: {{ Graduate.RegistrationToken }}" +
+                                             "</body>" +
+                                             "</html>",
+                               "ABSLEO HTL Leonding");
             #endregion
 
             // generate email variables
             List<EmailVariable> variables = new List<EmailVariable> {
                 
+                // GRADUATE
+                new EmailVariable("Absolvent-Vorname", concatFieldPath(nameof(Graduate.FirstName)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Nachname", concatFieldPath(nameof(Graduate.LastName)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Anrede", concatFieldPath(nameof(Graduate.Gender)), nameof(Graduate)),
+                new EmailVariable("geehrte/r Absolvent-Anrede",  "DEAR_" + concatFieldPath(nameof(Graduate.Gender)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Abschlussjahr", concatFieldPath(nameof(Graduate.GraduationYear)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Telefon", concatFieldPath(nameof(Graduate.PhoneNumber)), nameof(Graduate)),
+                new EmailVariable("Login-Token", concatFieldPath(nameof(Graduate.RegistrationToken)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Straße", concatFieldPath(nameof(Graduate.Address), nameof(Address.Street)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Hausnummer", concatFieldPath(nameof(Graduate.Address), nameof(Address.StreetNumber)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Ort", concatFieldPath(nameof(Graduate.Address), nameof(Address.City)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Postleitzahl", concatFieldPath(nameof(Graduate.Address), nameof(Address.ZipCode)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Zusatz", concatFieldPath(nameof(Graduate.Address), nameof(Address.Addition)), nameof(Graduate)),
+
                 // COMPANY
                 new EmailVariable("Firma-Name", concatFieldPath(nameof(Company.Name)), nameof(Company)),
                 new EmailVariable("Firma-Kontakt-Anrede",  concatFieldPath(nameof(Company.Contact), nameof(Contact.Gender)), nameof(Company)),
@@ -458,6 +486,7 @@ namespace Backend.Utils {
             uow.EmailVariableRepository.InsertMany(variables);
             uow.Save();
 
+            List<EmailVariable> gradauteVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Graduate)).ToList();
             List<EmailVariable> companyVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Company)).ToList();
             List<EmailVariable> bookingVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Booking)).ToList();
 
@@ -468,7 +497,8 @@ namespace Backend.Utils {
             isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).ToList();
             isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).ToList();
             SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).ToList();
-            SendForgotten.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgotten, v)).ToList();
+            SendForgottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgottenCompany, v)).ToList();
+            SendForgottenGraduate.AvailableVariables = gradauteVariables.Select(v => new EmailVariableUsage(SendForgottenGraduate, v)).ToList();
 
             // persist emails
             uow.EmailRepository.Insert(CompanyAssigned);
@@ -477,7 +507,8 @@ namespace Backend.Utils {
             uow.EmailRepository.Insert(isPendingGottenAdmin);
             uow.EmailRepository.Insert(isPendingGottenCompany);
             uow.EmailRepository.Insert(SendBookingAcceptedMail);
-            uow.EmailRepository.Insert(SendForgotten);
+            uow.EmailRepository.Insert(SendForgottenCompany);
+            uow.EmailRepository.Insert(SendForgottenGraduate);
             uow.Save();
         }
 

@@ -37,70 +37,52 @@ namespace Backend.Controllers {
         [HttpPost]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public IActionResult CheckIfCompanyExists([FromBody] JToken json) {
-            Company existing;
             string mail = json["email"].Value<string>();
+            bool useGraduateMails = json["useGraduateMails"].Value<bool>();
 
-            using (IUnitOfWork uow = new UnitOfWork()) {
-                existing = uow.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail)).FirstOrDefault();
+            bool existing = _unitOfWork.CompanyRepository.Get(filter: c => c.Contact.Email.Equals(mail) && c.IsAccepted == 1).Count() >= 1;
 
-                if (existing == null) {
-                    List<Booking> bookings = uow.BookingRepository.Get().ToList();
-
-                    for (int i = 0; i < bookings.Count; i++) {
-                        if (bookings.ElementAt(i).Email.Equals(mail)) {
-                            existing = bookings.ElementAt(i).Company;
-                        }
-                    }
-                }
+            if (!existing) {
+                existing = _unitOfWork.BookingRepository.Get(filter: b => b.Contact.Email == mail || b.Email == mail).Count() >= 1;
             }
-            if (existing != null) {
-                var a = new {
-                    existing = true
-                };
-                return new OkObjectResult(a);
-            } else {
-                var a = new {
-                    existing = false
-                };
-                return new OkObjectResult(a);
+
+            if (!existing && useGraduateMails) {
+                existing = _unitOfWork.GraduateRepository.Get(filter: g => g.Email == mail).Count() >= 1;
             }
+
+            return new OkObjectResult(new {
+                existing = existing
+            });
 
         }
 
         [HttpPost("mail/code")]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult SendCompanyCodeForgotten([FromBody] JToken json) {
+        public IActionResult SendCodeForgottenMail([FromBody] JToken json) {
+            string mail = json["email"].Value<string>();
+            bool useGraduateMails = json["useGraduateMails"].Value<bool>();
 
-            string mail = String.Empty;
-            try {
-                mail = json["email"].Value<string>();
-            } catch (NullReferenceException e) {
-                var error = new {
-                    errorMessage = "Es wurde keine E-Mail übermittelt!"
-                };
-                return new BadRequestObjectResult(error);
-            }
-
-            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Contact.Email.Equals(mail), includeProperties: "Contact").FirstOrDefault();
+            Graduate graduate = null;
+            Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Contact.Email.Equals(mail) && c.IsAccepted == 1).FirstOrDefault();
 
             if (company == null) {
-                List<Booking> bookings = _unitOfWork.BookingRepository.Get().ToList();
+                company = _unitOfWork.BookingRepository.Get(filter: b => b.Contact.Email == mail || b.Email == mail).Select(b => b.Company).FirstOrDefault();
+            }
 
-                for (int i = 0; i < bookings.Count; i++) {
-                    if (bookings.ElementAt(i).Email.Equals(mail)) {
-                        company = bookings.ElementAt(i).Company;
-                    }
-                }
+            if (company == null && useGraduateMails) {
+                graduate = _unitOfWork.GraduateRepository.Get(filter: g => g.Email == mail).FirstOrDefault();
             }
 
             if (company != null) {
-                EmailHelper.SendMailByIdentifier("SF", company, company.Contact.Email, _unitOfWork);
+                EmailHelper.SendMailByIdentifier("SFC", company, company.Contact.Email, _unitOfWork);
+                return new NoContentResult();
+            } else if (graduate != null && useGraduateMails) {
+                EmailHelper.SendMailByIdentifier("SFG", graduate, graduate.Email, _unitOfWork);
                 return new NoContentResult();
             } else {
-                var error = new {
+                return new BadRequestObjectResult(new {
                     errorMessage = "Es gibt kein Unternehmen mit dieser E-Mail!"
-                };
-                return new BadRequestObjectResult(error);
+                });
             }
         }
 

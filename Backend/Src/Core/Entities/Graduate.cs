@@ -35,6 +35,9 @@ namespace Backend.Core.Entities
         [Required]
         public string Gender { get; set; }
 
+        [Required]
+        public int GraduationYear { get; set; }
+
         [Required, JsonIgnore]
         public string RegistrationToken { get; set; }
     }
