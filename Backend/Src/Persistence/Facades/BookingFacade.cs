@@ -40,6 +40,19 @@ namespace Backend.Src.Persistence.Facades {
                         ChangeProtocolHelper.GenerateChangeProtocolForType(_unitOfWork, typeof(Contact), booking.Contact, bookingToUpdate.Contact, nameof(Contact), bookingToUpdate.Company.Id, isAdminChange);
                     }
 
+                    if (bookingToUpdate.fk_Location != booking.fk_Location) {
+                        if (bookingToUpdate.Location != null) {
+                            bookingToUpdate.Location.isOccupied = false;
+                            _unitOfWork.LocationRepository.Update(bookingToUpdate.Location);
+                        }
+
+                        if (booking.fk_Location != null && booking.fk_Location != 0) {
+                            Location location = _unitOfWork.LocationRepository.GetById(booking.fk_Location);
+                            location.isOccupied = true;
+                            _unitOfWork.LocationRepository.Update(location);
+                        }
+                    }
+
                     _presentationFacade.UpdateOrInsert(booking.Presentation);
 
                     ImageHelper.ManageBookingImages(booking);
