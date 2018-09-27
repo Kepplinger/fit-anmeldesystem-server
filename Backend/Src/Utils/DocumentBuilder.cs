@@ -67,7 +67,11 @@ namespace Backend.Utils
                 uow.BookingRepository.Update(boo);
                 uow.Save();
             }
-            writer = new PdfWriter(file);
+
+            try {
+                writer = new PdfWriter(file);
+            } catch (IOException) { }
+            
 
             PdfDocument pdf = new PdfDocument(writer);
             pdf.GetDocumentInfo()
