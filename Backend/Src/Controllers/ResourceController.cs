@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace Backend.Controllers
         /// <response code="200">Returns the newly-created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Create([FromBody] Resource temp)
@@ -59,6 +61,7 @@ namespace Backend.Controllers
 
         [HttpGet]
         [Route("archive")]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
         public IActionResult GetAllArchived() {
             var resources = _unitOfWork.ResourceRepository.Get(filter: r => r.IsArchive);
@@ -66,6 +69,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Resource), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         public IActionResult Put([FromBody] List<Resource> resources) {

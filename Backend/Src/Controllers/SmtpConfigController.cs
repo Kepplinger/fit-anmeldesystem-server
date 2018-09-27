@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Src.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -20,6 +21,7 @@ namespace Backend.Src.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(SmtpConfig), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public IActionResult Get() {
@@ -32,6 +34,7 @@ namespace Backend.Src.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult Update([FromBody] SmtpConfig smtpConfig) {
             if (smtpConfig != null) {
                 _unitOfWork.SmtpConfigRepository.Update(smtpConfig);

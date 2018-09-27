@@ -10,6 +10,7 @@ using Backend.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using Backend.Core;
 using Backend.Src.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
     [Route("api/[controller]")]
@@ -23,6 +24,7 @@ namespace Backend.Controllers {
         }
 
         [HttpGet]
+        [Authorize(Policy = "WritableAdmin")]
         [ProducesResponseType(typeof(Email), StatusCodes.Status200OK)]
         public IActionResult GetAllEmails() {
             Email test = _unitOfWork.EmailRepository.Get().FirstOrDefault();
@@ -36,6 +38,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut]
+        [Authorize(Policy = "WritableAdmin")]
         public IActionResult UpdateMail([FromBody] EmailDTO email) {
             Email emailEntity = mapDtoToEmail(email, _unitOfWork);
 
@@ -49,6 +52,7 @@ namespace Backend.Controllers {
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Policy = "WritableAdmin")]
         public IActionResult SendTestMail(int id, [FromQuery] string emailAddress, [FromQuery] int entityId, [FromQuery] string entityType) {
             Email email = _unitOfWork.EmailRepository.GetById(id);
 
@@ -64,6 +68,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPost("smtp")]
+        [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult SendSmtpTestMail([FromBody] SmtpConfig smtpConfig, [FromQuery] string emailAddress) {
             if (smtpConfig != null && emailAddress !=string.Empty) {
                 Email email = new Email("SMTP-Test-Mail", "SMTP-Test-Mail");

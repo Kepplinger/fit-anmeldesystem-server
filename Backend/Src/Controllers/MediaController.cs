@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "FitAdmin")]
         [Produces("application/zip")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public FileContentResult ZipArchive()

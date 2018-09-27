@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,6 +20,7 @@ namespace Backend.Controllers {
         }
 
         [HttpGet]
+        [Authorize(Policy = "WritableAdmin")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
         public IActionResult GetAll() {
 
@@ -31,6 +33,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut("apply")]
+        [Authorize(Policy = "WritableAdmin")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
         public IActionResult ApplyChange([FromBody] int id) {
             if (id != null) {
@@ -46,6 +49,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut("revert")]
+        [Authorize(Policy = "WritableAdmin")]
         [ProducesResponseType(typeof(ChangeProtocol), StatusCodes.Status200OK)]
         public IActionResult RevertChange([FromBody] int id) {
 

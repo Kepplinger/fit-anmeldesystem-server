@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Backend.Core.Entities;
 using Backend.Core.Contracts;
 using StoreService.Persistence;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
 
@@ -15,12 +16,14 @@ namespace Backend.Controllers {
     public class GraduateController : Controller {
 
         [HttpPut]
+        [Authorize(Policy = "MemberAndWriteableAdmins")]
         public IActionResult updateGraduate([FromBody] Graduate graduate) {
             using (IUnitOfWork uow = new UnitOfWork()) {
                 Graduate toUpdate = uow.GraduateRepository.Get(g => g.Id == graduate.Id).FirstOrDefault();
 
                 if (toUpdate != null) {
                     graduate.RegistrationToken = toUpdate.RegistrationToken;
+                    uow.AddressRepository.Update(graduate.Address);
                     uow.GraduateRepository.Update(graduate);
                     uow.Save();
                     return new OkObjectResult(graduate);
@@ -31,6 +34,7 @@ namespace Backend.Controllers {
         }
 
         [HttpGet]
+        [Authorize(Policy = "AnyAdmin")]
         public IActionResult GetAll() {
             using (IUnitOfWork uow = new UnitOfWork()) {
                 List<Graduate> graduates = uow.GraduateRepository.Get(includeProperties: "Address").ToList();

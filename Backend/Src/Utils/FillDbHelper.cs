@@ -1,8 +1,11 @@
 ﻿using Backend.Core;
 using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Core.Entities.UserManagement;
 using Backend.Persistence;
 using Backend.Src.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
@@ -11,7 +14,16 @@ using System.Threading.Tasks;
 
 namespace Backend.Utils {
     public static class FillDbHelper {
-        public static void createTestData(ApplicationDbContext _context) {
+
+        public async static Task createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
+
+            // Admin
+            FitUser fitUser = new FitUser();
+            fitUser.Email = "simon.kepplinger@gmail.com";
+            fitUser.UserName = fitUser.Email;
+            fitUser.Role = "FitAdmin";
+
+            await userManager.CreateAsync(fitUser, "test123");
 
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";
@@ -52,6 +64,14 @@ namespace Backend.Utils {
             // Set up Company
             company.Contact = contact;
             company.Address = address;
+
+            FitUser companyUser = new FitUser();
+            companyUser.UserName = company.RegistrationToken;
+            companyUser.Role = "Member";
+
+            await userManager.CreateAsync(companyUser, company.RegistrationToken);
+
+            company.fk_FitUser = companyUser.Id;
 
             _context.Companies.Add(company);
             _context.SaveChanges();
@@ -150,6 +170,15 @@ namespace Backend.Utils {
 
             Console.WriteLine("Set up some students in the database ...");
 
+            Graduate g = new Graduate();
+            g.LastName = "Kepplinger";
+            g.FirstName = "Simon";
+            g.Gender = "M";
+            g.Email = "simon.kepplinger@gmail.com";
+            g.PhoneNumber = "seiFlammenTelNr";
+            g.GraduationYear = 2018;
+            g.RegistrationToken = "GraduateToken1";
+
             Address address1 = new Address();
             address1.Street = "Dr. Karl Rennerstraße";
             address1.StreetNumber = "17a";
@@ -157,23 +186,21 @@ namespace Backend.Utils {
             address1.City = "Pasching";
             address1.Addition = "A Haus hoid";
 
-            Graduate g = new Graduate();
-            g.LastName = "Kepplinger";
-            g.FirstName = "Simon";
-            g.Gender = "M";
-            g.Email = "simon.kepplinger@gmail.com";
-            g.PhoneNumber = "seiFlammenTelNr";
-            g.RegistrationToken = "GraduateToken1";
+            _context.Addresses.Add(address1);
+            _context.SaveChanges();
+
             g.Address = address1;
 
-            _context.Graduates.Add(g);
+            FitUser graduateUser = new FitUser();
+            graduateUser.UserName = g.RegistrationToken;
+            graduateUser.Role = "Member";
 
-            Address address2 = new Address();
-            address1.Street = "Asphaltstraße";
-            address1.StreetNumber = "32";
-            address1.ZipCode = "4040";
-            address1.City = "Linz";
-            address1.Addition = "";
+            await userManager.CreateAsync(graduateUser, g.RegistrationToken);
+
+            g.fk_FitUser = graduateUser.Id;
+
+            _context.Graduates.Add(g);
+            _context.SaveChanges();
 
             Graduate g2 = new Graduate();
             g2.LastName = "Sakal";
@@ -181,8 +208,27 @@ namespace Backend.Utils {
             g2.Gender = "F";
             g2.Email = "andra.sakal@gmail.com";
             g2.PhoneNumber = "000000007";
+            g2.GraduationYear = 2017;
             g2.RegistrationToken = "GraduateToken2";
-            g2.Address = address1;
+
+            Address address2 = new Address();
+            address2.Street = "Asphaltstraße";
+            address2.StreetNumber = "32";
+            address2.ZipCode = "4040";
+            address2.City = "Linz";
+            address2.Addition = "";
+
+            _context.Addresses.Add(address2);
+            _context.SaveChanges();
+
+            g2.Address = address2;
+
+            FitUser graduateUser2 = new FitUser();
+            graduateUser2.UserName = g2.RegistrationToken;
+            graduateUser2.Role = "Member";
+
+            await userManager.CreateAsync(graduateUser2, g2.RegistrationToken);
+            g2.fk_FitUser = graduateUser2.Id;
 
             _context.Graduates.Add(g2);
             _context.SaveChanges();
@@ -195,7 +241,7 @@ namespace Backend.Utils {
                 repr.Image = null;
                 repr.Name = "Andrej Sakal";
 
-                _context.Rerpresentatives.Add(repr);
+                _context.Representatives.Add(repr);
                 _context.SaveChanges();
                 repre.Add(repr);
 
@@ -291,7 +337,7 @@ namespace Backend.Utils {
                                                        "<br>Hier ist der Zugangstoken: {{Company.RegistrationToken}}" +
                                                        "</p></body>" +
                                              "</html>",
-                               "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding FIT");
+                               "Ihr Firmenantrag wurde akzeptiert - ABSLEO HTL Leonding");
 
             Email IsPendingDeniedCompany = new Email("PDC", "Firma abgelehnt (Firma)",
                                 "Diese Email wird versendet wenn ein Firmenantrag abgelehnt wurde",
@@ -303,7 +349,7 @@ namespace Backend.Utils {
                                              "<p>Ihr Firmenantrag wurde abgelehnt!" +
                                              "</p></body>" +
                                              "</html>",
-                               "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding FIT");
+                               "Ihr Firmenantrag wurde abgelehnt - ABSLEO HTL Leonding");
 
             Email CompanyAssigned = new Email("CA", "Firma einer bestehenden zugewiesen (Firma)",
                       "Diese Email wird an die Firma verschickt wenn es die Firma bereits gibt und Sie dieser zugewiesen wurde",
@@ -315,7 +361,7 @@ namespace Backend.Utils {
                                    "<p>Firma bereits vorhanden wurde {{Company.RegistrationToken}}" +
                                    "</body>" +
                                    "</html>",
-                     "Firma bereits vorhande - ABSLEO HTL Leonding FIT");
+                     "Firma bereits vorhanden - ABSLEO HTL Leonding");
 
             Email SendBookingAcceptedMail = new Email("SBA", "FIT-Anmeldung eingereicht (Firma)",
                                 "Diese Email wird an die Firma versendet wenn die FIT-Buchung akzeptiert wurde",
@@ -343,22 +389,48 @@ namespace Backend.Utils {
                                              "</html>",
                                "FIT-Buchung wurde akzeptiert - ABSLEO HTL Leonding FIT");
 
-            Email SendForgotten = new Email("SF", "Firma-Code vergessen (Firma)",
+            Email SendForgottenCompany = new Email("SFC", "Firma-Code vergessen (Firma)",
                                 "Dies ist eine FirmenCode vergessen Email",
                                             "<!DOCTYPE html>" +
                                              "<html>" +
                                              "<head>" +
                                              "</head>" +
                                              "<body>" +
-                                            "<p>Ihr Token: {{Company.RegistrationToken}}" +
+                                            "<p>Ihr Token: {{ Company.RegistrationToken }}" +
                                              "</body>" +
                                              "</html>",
-                               "FIT-Anmeldung - ABSLEO HTL Leonding FIT");
+                               "ABSLEO HTL Leonding");
+
+            Email SendForgottenGraduate = new Email("SFG", "Firma-Code vergessen (Absolvent)",
+                                "Dies ist eine FirmenCode vergessen Email",
+                                            "<!DOCTYPE html>" +
+                                             "<html>" +
+                                             "<head>" +
+                                             "</head>" +
+                                             "<body>" +
+                                            "<p>Ihr Token: {{ Graduate.RegistrationToken }}" +
+                                             "</body>" +
+                                             "</html>",
+                               "ABSLEO HTL Leonding");
             #endregion
 
             // generate email variables
             List<EmailVariable> variables = new List<EmailVariable> {
                 
+                // GRADUATE
+                new EmailVariable("Absolvent-Vorname", concatFieldPath(nameof(Graduate.FirstName)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Nachname", concatFieldPath(nameof(Graduate.LastName)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Anrede", concatFieldPath(nameof(Graduate.Gender)), nameof(Graduate)),
+                new EmailVariable("geehrte/r Absolvent-Anrede",  "DEAR_" + concatFieldPath(nameof(Graduate.Gender)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Abschlussjahr", concatFieldPath(nameof(Graduate.GraduationYear)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Telefon", concatFieldPath(nameof(Graduate.PhoneNumber)), nameof(Graduate)),
+                new EmailVariable("Login-Token", concatFieldPath(nameof(Graduate.RegistrationToken)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Straße", concatFieldPath(nameof(Graduate.Address), nameof(Address.Street)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Hausnummer", concatFieldPath(nameof(Graduate.Address), nameof(Address.StreetNumber)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Ort", concatFieldPath(nameof(Graduate.Address), nameof(Address.City)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Postleitzahl", concatFieldPath(nameof(Graduate.Address), nameof(Address.ZipCode)), nameof(Graduate)),
+                new EmailVariable("Absolvent-Adresse-Zusatz", concatFieldPath(nameof(Graduate.Address), nameof(Address.Addition)), nameof(Graduate)),
+
                 // COMPANY
                 new EmailVariable("Firma-Name", concatFieldPath(nameof(Company.Name)), nameof(Company)),
                 new EmailVariable("Firma-Kontakt-Anrede",  concatFieldPath(nameof(Company.Contact), nameof(Contact.Gender)), nameof(Company)),
@@ -414,6 +486,7 @@ namespace Backend.Utils {
             uow.EmailVariableRepository.InsertMany(variables);
             uow.Save();
 
+            List<EmailVariable> gradauteVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Graduate)).ToList();
             List<EmailVariable> companyVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Company)).ToList();
             List<EmailVariable> bookingVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Booking)).ToList();
 
@@ -424,7 +497,8 @@ namespace Backend.Utils {
             isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).ToList();
             isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).ToList();
             SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).ToList();
-            SendForgotten.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgotten, v)).ToList();
+            SendForgottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgottenCompany, v)).ToList();
+            SendForgottenGraduate.AvailableVariables = gradauteVariables.Select(v => new EmailVariableUsage(SendForgottenGraduate, v)).ToList();
 
             // persist emails
             uow.EmailRepository.Insert(CompanyAssigned);
@@ -433,7 +507,8 @@ namespace Backend.Utils {
             uow.EmailRepository.Insert(isPendingGottenAdmin);
             uow.EmailRepository.Insert(isPendingGottenCompany);
             uow.EmailRepository.Insert(SendBookingAcceptedMail);
-            uow.EmailRepository.Insert(SendForgotten);
+            uow.EmailRepository.Insert(SendForgottenCompany);
+            uow.EmailRepository.Insert(SendForgottenGraduate);
             uow.Save();
         }
 

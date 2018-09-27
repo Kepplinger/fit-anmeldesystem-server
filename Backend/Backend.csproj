@@ -19,7 +19,6 @@
     <None Remove="ConsoleFillDb\**" />
     <None Remove="Data\**" />
     <None Remove="Media\**" />
-    <Compile Remove="Migrations\20180417193849_initial.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Src\Controllers\ValuesController.cs" />

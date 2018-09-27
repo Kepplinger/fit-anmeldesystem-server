@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180810115643_Removed Constraint")]
-    partial class RemovedConstraint
+    [Migration("20180920111612_ForeignKey")]
+    partial class ForeignKey
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -211,6 +212,8 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("IsArchive");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -262,7 +265,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<bool>("IsPending");
+                    b.Property<int>("IsAccepted");
 
                     b.Property<double>("MemberPaymentAmount");
 
@@ -285,11 +288,15 @@ namespace Backend.Migrations
 
                     b.Property<int>("fk_Contact");
 
+                    b.Property<string>("fk_FitUser");
+
                     b.HasKey("Id");
 
                     b.HasIndex("fk_Address");
 
                     b.HasIndex("fk_Contact");
+
+                    b.HasIndex("fk_FitUser");
 
                     b.ToTable("Companies");
                 });
@@ -395,9 +402,11 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
+                    b.Property<string>("Identifier")
+                        .IsRequired();
+
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(25);
+                        .IsRequired();
 
                     b.Property<string>("Subject")
                         .IsRequired();
@@ -490,6 +499,8 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
+                    b.Property<string>("FitUserId");
+
                     b.Property<string>("Gender")
                         .IsRequired();
 
@@ -510,6 +521,8 @@ namespace Backend.Migrations
                     b.Property<int>("fk_Address");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FitUserId");
 
                     b.HasIndex("fk_Address");
 
@@ -635,7 +648,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("Rerpresentatives");
+                    b.ToTable("Representatives");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Resource", b =>
@@ -643,8 +656,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Description")
-                        .IsRequired();
+                    b.Property<bool>("IsArchive");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -696,6 +708,31 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("Backend.Src.Core.Entities.SmtpConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Host")
+                        .IsRequired();
+
+                    b.Property<string>("MailAddress")
+                        .IsRequired();
+
+                    b.Property<string>("Password")
+                        .IsRequired();
+
+                    b.Property<int>("Port");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SmtpConfigs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -751,6 +788,9 @@ namespace Backend.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -790,6 +830,8 @@ namespace Backend.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -855,6 +897,17 @@ namespace Backend.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.UserManagement.FitUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("Role");
+
+                    b.ToTable("FitUser");
+
+                    b.HasDiscriminator().HasValue("FitUser");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
@@ -932,6 +985,11 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("fk_Contact")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("fk_FitUser")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.CompanyBranch", b =>
@@ -983,6 +1041,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Core.Entities.Graduate", b =>
                 {
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("FitUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
                         .HasForeignKey("fk_Address")

@@ -1,9 +1,11 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Backend.Core.Entities.UserManagement;
 using Backend.Src.Persistence.Facades;
 using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,18 +13,22 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Controllers {
+
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class CompanyController : Controller {
 
         private IUnitOfWork _unitOfWork;
         private CompanyFacade _companyFacade;
+        private readonly UserManager<FitUser> _userManager;
 
-        public CompanyController(IUnitOfWork uow) {
+        public CompanyController(UserManager<FitUser> userManager, IUnitOfWork uow) {
             _unitOfWork = uow;
             _companyFacade = new CompanyFacade(_unitOfWork);
+            _userManager = userManager;
         }
 
         /// <response code="200">Returns all available Companies</response>
@@ -31,6 +37,7 @@ namespace Backend.Controllers {
         /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
+        [Authorize(Policy = "AnyAdmin")]
         public IActionResult GetAll() {
             var companies = _unitOfWork.CompanyRepository.Get(includeProperties: "Address,Contact,Tags,Branches");
             return new OkObjectResult(companies);
@@ -38,10 +45,10 @@ namespace Backend.Controllers {
 
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public IActionResult CreateCompany([FromBody] Company jsonComp) {
+        public async Task<IActionResult> CreateCompany([FromBody] Company jsonComp) {
 
             if (jsonComp != null) {
-                Company storeCompany = jsonComp;
+                Company company = jsonComp;
                 if (jsonComp.Address.Addition == null) {
                     jsonComp.Address.Addition = "";
                 }
@@ -55,24 +62,33 @@ namespace Backend.Controllers {
                     loginCode = loginCode.Insert(4, "-").Insert(9, "-");
                 } while (_unitOfWork.CompanyRepository.Get(filter: c => c.RegistrationToken == loginCode).Count() != 0);
 
-                storeCompany.RegistrationToken = loginCode;
-                _unitOfWork.ContactRepository.Insert(storeCompany.Contact);
+                company.RegistrationToken = loginCode;
+                _unitOfWork.ContactRepository.Insert(company.Contact);
                 _unitOfWork.Save();
-                _unitOfWork.AddressRepository.Insert(storeCompany.Address);
+                _unitOfWork.AddressRepository.Insert(company.Address);
                 _unitOfWork.Save();
 
-                _unitOfWork.CompanyRepository.Insert(storeCompany);
-                _unitOfWork.Save();
-                EmailHelper.SendMailByIdentifier("PGC", storeCompany, storeCompany.Contact.Email, _unitOfWork);
-                EmailHelper.SendMailByIdentifier("PGA", storeCompany, storeCompany.Contact.Email, _unitOfWork);
+                FitUser companyUser = new FitUser();
+                companyUser.UserName = company.RegistrationToken;
+                companyUser.Role = "Member";
 
-                return new ObjectResult(storeCompany);
+                await _userManager.CreateAsync(companyUser, company.RegistrationToken);
+
+                company.fk_FitUser = companyUser.Id;
+
+                _unitOfWork.CompanyRepository.Insert(company);
+                _unitOfWork.Save();
+                EmailHelper.SendMailByIdentifier("PGC", company, company.Contact.Email, _unitOfWork);
+                EmailHelper.SendMailToAllFitAdmins("PGA", company, _unitOfWork, _userManager);
+
+                return new ObjectResult(company);
             }
             return new BadRequestResult();
         }
 
         [HttpPut]
         [Consumes("application/json")]
+        [Authorize(Policy = "MemberAndWriteableAdmins")]
         public IActionResult Update([FromBody]Company company, [FromQuery] bool isAdminChange) {
             Contract.Ensures(Contract.Result<IActionResult>() != null);
             try {
@@ -83,6 +99,7 @@ namespace Backend.Controllers {
         }
 
         [HttpPut("accept/{compId}")]
+        [Authorize(Policy = "WritableAdmin")]
         public IActionResult AcceptCompany(int compId, [FromBody] int status) {
             Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
             if (company != null) {
@@ -100,6 +117,7 @@ namespace Backend.Controllers {
         }
 
         [HttpDelete("assign")]
+        [Authorize(Policy = "WritableAdmin")]
         [Consumes("application/json")]
         public IActionResult AssignCompany(int pendingCompanyId, int existingCompanyId) {
 
@@ -110,12 +128,26 @@ namespace Backend.Controllers {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
             } else {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
-                EmailHelper.SendMailByIdentifier("CA", pendingCompany, existingCompany.Contact.Email, _unitOfWork);
+                pendingCompany = CopyPropertiesFromExistingToPendingCompanies(pendingCompany, existingCompany);
+                EmailHelper.SendMailByIdentifier("CA", pendingCompany, pendingCompany.Contact.Email, _unitOfWork);
             }
 
             _unitOfWork.CompanyRepository.Delete(pendingCompany);
             _unitOfWork.Save();
             return new NoContentResult();
+        }
+
+        private Company CopyPropertiesFromExistingToPendingCompanies(Company pending, Company existing)
+        {
+            pending.Name = existing.Name;
+            pending.Branches = existing.Branches;
+            pending.MemberPaymentAmount = existing.MemberPaymentAmount;
+            pending.MemberSince = existing.MemberSince;
+            pending.MemberStatus = existing.MemberStatus;
+            pending.Address = existing.Address;
+            pending.RegistrationToken = existing.RegistrationToken;
+
+            return pending;
         }
     }
 }

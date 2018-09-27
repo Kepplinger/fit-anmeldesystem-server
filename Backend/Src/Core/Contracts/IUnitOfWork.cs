@@ -4,6 +4,9 @@ using System;
 using Microsoft.EntityFrameworkCore.Storage;
 using Backend.Core.Contracts.Repositories;
 using Backend.Src.Core.Entities;
+using Backend.Core.Entities.UserManagement;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace Backend.Core.Contracts {
     public interface IUnitOfWork : IDisposable {
@@ -45,7 +48,7 @@ namespace Backend.Core.Contracts {
 
         void DeleteDatabase();
 
-        void FillDb();
+        Task FillDb(IServiceProvider provider);
 
         IDbContextTransaction BeginTransaction();
 

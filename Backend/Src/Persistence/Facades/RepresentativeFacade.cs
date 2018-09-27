@@ -17,15 +17,15 @@ namespace Backend.Src.Persistence.Facades
             _dataFileFacade = new DataFileFacade(_unitOfWork);
         }
 
-        public Representative UpdateOrInsert(Representative representative, bool doSave = true) {
+        public Representative Update(Representative representative, bool doSave = true) {
 
             if (representative != null) {
                 _dataFileFacade.UpdateOrInsert(representative.Image, doSave);
 
                 if (representative.Id > 0)
                     _unitOfWork.RepresentativeRepository.Update(representative);
-                else
-                    _unitOfWork.RepresentativeRepository.Insert(representative);
+                //else
+                //    _unitOfWork.RepresentativeRepository.Insert(representative);
 
                 if (doSave)
                     _unitOfWork.Save();

@@ -4,22 +4,22 @@ using System.Collections.Generic;
 
 namespace Backend.Migrations
 {
-    public partial class EmailIdentifier : Migration
+    public partial class graduationYear : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Identifier",
-                table: "Emails",
+            migrationBuilder.AddColumn<int>(
+                name: "GraduationYear",
+                table: "Graduates",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Identifier",
-                table: "Emails");
+                name: "GraduationYear",
+                table: "Graduates");
         }
     }
 }

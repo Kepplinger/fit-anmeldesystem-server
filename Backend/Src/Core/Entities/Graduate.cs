@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Backend.Core.Entities.UserManagement;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -6,6 +7,13 @@ namespace Backend.Core.Entities
 {
     public class Graduate : TimestampEntityObject
     {
+        [JsonIgnore]
+        public FitUser FitUser { get; set; }
+
+        [JsonIgnore]
+        [ForeignKey(nameof(FitUser))]
+        public string fk_FitUser { get; set; }
+
         [Required]
         [MaxLength(30)]
         public string FirstName { get; set; }
@@ -26,6 +34,9 @@ namespace Backend.Core.Entities
 
         [Required]
         public string Gender { get; set; }
+
+        [Required]
+        public int GraduationYear { get; set; }
 
         [Required, JsonIgnore]
         public string RegistrationToken { get; set; }

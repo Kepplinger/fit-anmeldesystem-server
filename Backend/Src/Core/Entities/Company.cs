@@ -1,3 +1,4 @@
+using Backend.Core.Entities.UserManagement;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,6 +8,13 @@ namespace Backend.Core.Entities
 {
     public class Company : TimestampEntityObject
     {
+        [JsonIgnore]
+        public FitUser FitUser { get; set; }
+
+        [JsonIgnore]
+        [ForeignKey(nameof(FitUser))]
+        public string fk_FitUser { get; set; }
+
         [Required]
         [MaxLength(30)]
         public string Name { get; set; }

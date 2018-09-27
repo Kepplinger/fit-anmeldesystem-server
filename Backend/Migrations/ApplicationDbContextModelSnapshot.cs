@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
 namespace Backend.Migrations
@@ -286,11 +287,15 @@ namespace Backend.Migrations
 
                     b.Property<int>("fk_Contact");
 
+                    b.Property<string>("fk_FitUser");
+
                     b.HasKey("Id");
 
                     b.HasIndex("fk_Address");
 
                     b.HasIndex("fk_Contact");
+
+                    b.HasIndex("fk_FitUser");
 
                     b.ToTable("Companies");
                 });
@@ -496,6 +501,8 @@ namespace Backend.Migrations
                     b.Property<string>("Gender")
                         .IsRequired();
 
+                    b.Property<int>("GraduationYear");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(30);
@@ -512,9 +519,13 @@ namespace Backend.Migrations
 
                     b.Property<int>("fk_Address");
 
+                    b.Property<string>("fk_FitUser");
+
                     b.HasKey("Id");
 
                     b.HasIndex("fk_Address");
+
+                    b.HasIndex("fk_FitUser");
 
                     b.ToTable("Graduates");
                 });
@@ -638,7 +649,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("Rerpresentatives");
+                    b.ToTable("Representatives");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Resource", b =>
@@ -778,6 +789,9 @@ namespace Backend.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -817,6 +831,8 @@ namespace Backend.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -882,6 +898,17 @@ namespace Backend.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Backend.Core.Entities.UserManagement.FitUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("Role");
+
+                    b.ToTable("FitUser");
+
+                    b.HasDiscriminator().HasValue("FitUser");
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.Area", b =>
@@ -959,6 +986,11 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("fk_Contact")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("fk_FitUser")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Backend.Core.Entities.CompanyBranch", b =>
@@ -1013,6 +1045,11 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.Address", "Address")
                         .WithMany()
                         .HasForeignKey("fk_Address")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
+                        .WithMany()
+                        .HasForeignKey("fk_FitUser")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

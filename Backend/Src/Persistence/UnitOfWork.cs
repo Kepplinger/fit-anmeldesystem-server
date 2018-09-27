@@ -14,6 +14,11 @@ using System.Diagnostics;
 using Backend.Core;
 using Backend.Utils;
 using Backend.Src.Core.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using Backend.Core.Entities.UserManagement;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace StoreService.Persistence {
 
@@ -135,7 +140,12 @@ namespace StoreService.Persistence {
             _context.Database.CommitTransaction();
         }
 
-        public void FillDb() {
+        public async Task FillDb(IServiceProvider provider) {
+
+            Console.WriteLine("\n\n=====================================================================================================================");
+            Console.WriteLine("========================= DATABASE INITIALIZING =====================================================================");
+            Console.WriteLine("=====================================================================================================================");
+
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             Console.WriteLine("Delete Database ...");
@@ -143,9 +153,24 @@ namespace StoreService.Persistence {
             Console.WriteLine("Make Migrations ...");
             MigrateDatabase();
 
-            // Creates some TestData
-            FillDbHelper.createTestData(_context);
-            FillDbHelper.createEmails(this);
+            using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope()) {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                string[] roles = new string[] { "FitAdmin", "FitReadOnly", "MemberAdmin", "MemberReadOnly", "Member" };
+
+                foreach (var role in roles) {
+                    if (!await roleManager.RoleExistsAsync(role)) {
+                        IdentityRole newRole = new IdentityRole() { Name = role };
+                        await roleManager.CreateAsync(newRole);
+                        await roleManager.AddClaimAsync(newRole, new Claim("rol", role));
+                    }
+                }
+
+                // Creates some TestData
+                await FillDbHelper.createTestData(_context, userManager);
+                FillDbHelper.createEmails(this);
+            }
 
             stopWatch.Stop();
             TimeSpan ts = stopWatch.Elapsed;
@@ -155,7 +180,7 @@ namespace StoreService.Persistence {
             Console.WriteLine("RunTime " + elapsedTime);
             Console.WriteLine("=====================================================================================================================");
             Console.WriteLine("========================= DATABASE OPERATION SUCCESFULL TOOK " + elapsedTime + " ===============================================");
-            Console.WriteLine("=====================================================================================================================\n\n");
+            Console.WriteLine("=====================================================================================================================");
         }
     }
 }

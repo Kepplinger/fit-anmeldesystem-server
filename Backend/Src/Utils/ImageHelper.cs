@@ -41,7 +41,7 @@ namespace Backend.Utils
                .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
 
-            string baseUrl = configuration["Urls:ServerUrl"];
+            string baseUrl = configuration["Urls:ServerUrl"] + "\\images";
             string filePath = configuration["ImageFilePaths:ServerImages"];
 
             using (IUnitOfWork uow = new UnitOfWork())

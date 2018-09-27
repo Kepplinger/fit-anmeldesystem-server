@@ -2,6 +2,7 @@
 using Backend.Core.Entities;
 using Backend.Core.Entities.UserManagement;
 using Backend.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StoreService.Persistence;
@@ -16,32 +17,61 @@ namespace Backend.Controllers.UserManagement
 
     public class AccountController : Controller
     {
-        private IUnitOfWork uow;
-        private readonly UserManager<IdentityUser> _userManager;
+        private IUnitOfWork _unitOfWork;
+        private readonly UserManager<FitUser> _userManager;
 
-        public AccountController(UserManager<IdentityUser> userManager, IUnitOfWork uow)
+        public AccountController(UserManager<FitUser> userManager, IUnitOfWork uow)
         {
             _userManager = userManager;
-            this.uow = uow;
+            _unitOfWork = uow;
         }
 
-        // POST api/accounts
+        [HttpGet]
+        [Authorize(Policy = "WritableFitAdmin")]
+        public IActionResult Get()
+        {
+            return new OkObjectResult(_userManager.Users.Where(u => u.Role != "Member")
+                .Select(u => new {
+                    id = u.Id,
+                    email = u.Email,
+                    role = u.Role
+                }));
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize(Policy = "WritableFitAdmin")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            FitUser user = await _userManager.FindByIdAsync(id);
+            await _userManager.DeleteAsync(user);
+
+            return new NoContentResult();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]RegistrationUser registered)
+        [Authorize(Policy = "WritableFitAdmin")]
+        public async Task<IActionResult> Post([FromBody]UserCredentials userCredentials)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            var result = await _userManager.CreateAsync(registered.User, registered.RegistrationPassword);
-            await _userManager.AddToRoleAsync(registered.User, "Admin");
+            userCredentials.FitUser.UserName = userCredentials.FitUser.Email;
+            var result = await _userManager.CreateAsync(userCredentials.FitUser, userCredentials.Password);
+            await _userManager.AddToRoleAsync(userCredentials.FitUser, userCredentials.FitUser.Role);
 
             if (!result.Succeeded) return new BadRequestObjectResult(result);
 
-            uow.Save();
+            _unitOfWork.Save();
 
-            return new OkObjectResult("Account created");
+            return new OkObjectResult(userCredentials.FitUser);
         }
+    }
+
+    public class UserCredentials
+    {
+        public FitUser FitUser { get; set; }
+        public string Password { get; set; }
     }
 }

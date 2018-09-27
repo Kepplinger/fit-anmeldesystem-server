@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using Backend.Core;
 using System.Text.RegularExpressions;
 using Backend.Src.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Backend.Core.Entities.UserManagement;
 
 namespace Backend.Utils {
     public static class EmailHelper {
@@ -72,6 +74,14 @@ namespace Backend.Utils {
             }
         }
 
+        public static void SendMailToAllFitAdmins(String mailName, object param, IUnitOfWork unitOfWork, UserManager<FitUser> userManager) {
+            List<string> adminMails = userManager.Users.Where(u => u.Role == "FitAdmin").Select(u => u.Email).ToList();
+
+            foreach (string mail in adminMails) {
+                SendMailByIdentifier(mailName, param, mail, unitOfWork);
+            }
+        }
+
         /// <summary>
         /// Searches mail for {{ variableName }} occurrences an replaces them with the corresponding value.
         /// </summary>
@@ -81,18 +91,6 @@ namespace Backend.Utils {
         public static void replaceParamsWithValues(Email email, object param) {
 
             if (param != null) {
-
-                email.Template = Regex.Replace(
-                email.Template,
-                "{{ GENDER_TITLE }}",
-                (Match m) => {
-
-                    if ((param as Company).Contact.Gender == "M") {
-                        return "geehrter";
-                    } else {
-                        return "geehrte";
-                    }
-                });
 
                 // replace every variable within double curly braces
                 email.Template = Regex.Replace(
@@ -106,17 +104,16 @@ namespace Backend.Utils {
 
                         try {
                             if (variable.Contains("DEAR_")) {
-                                variable = Regex.Replace(m.Value, "DEAR_", string.Empty);
+                                variable = Regex.Replace(variable, "DEAR_", string.Empty);
                                 value = param.GetPropValue(variable).ToString();
 
                                 switch (value) {
                                     case "M":
-                                        return "geehrter Herr";
+                                        return "geehrter";
                                         break;
                                     case "F":
-                                        return "geehrte Frau";
+                                        return "geehrte";
                                 }
-
                             } else {
                                 value = param.GetPropValue(variable).ToString();
 

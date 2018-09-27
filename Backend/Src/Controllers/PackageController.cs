@@ -1,5 +1,6 @@
 ﻿using Backend.Core.Contracts;
 using Backend.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult Update([FromBody] FitPackage fitPackage) {
             _unitOfWork.PackageRepository.Update(fitPackage);
             _unitOfWork.Save();

@@ -45,9 +45,11 @@ namespace Backend.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
+                    Role = table.Column<string>(nullable: true),
                     Id = table.Column<string>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
+                    Discriminator = table.Column<string>(nullable: false),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
                     LockoutEnabled = table.Column<bool>(nullable: false),
@@ -72,6 +74,7 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    IsArchive = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
@@ -143,7 +146,8 @@ namespace Backend.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 25, nullable: false),
+                    Identifier = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Subject = table.Column<string>(nullable: false),
                     Template = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
@@ -206,13 +210,30 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(nullable: false),
+                    IsArchive = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Resources", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SmtpConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Host = table.Column<string>(nullable: false),
+                    MailAddress = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: false),
+                    Port = table.Column<int>(nullable: false),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SmtpConfigs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -228,32 +249,6 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Graduates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Email = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(maxLength: 30, nullable: false),
-                    Gender = table.Column<string>(nullable: false),
-                    LastName = table.Column<string>(maxLength: 30, nullable: false),
-                    PhoneNumber = table.Column<string>(nullable: false),
-                    RegistrationToken = table.Column<string>(nullable: false),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    fk_Address = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Graduates", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Graduates_Addresses_fk_Address",
-                        column: x => x.fk_Address,
-                        principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -363,12 +358,46 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Graduates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Email = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(maxLength: 30, nullable: false),
+                    FitUserId = table.Column<string>(nullable: true),
+                    Gender = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(maxLength: 30, nullable: false),
+                    PhoneNumber = table.Column<string>(nullable: false),
+                    RegistrationToken = table.Column<string>(nullable: false),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true),
+                    fk_Address = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Graduates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Graduates_AspNetUsers_FitUserId",
+                        column: x => x.FitUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Graduates_Addresses_fk_Address",
+                        column: x => x.fk_Address,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Companies",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    IsPending = table.Column<bool>(nullable: false),
+                    FitUserId = table.Column<string>(nullable: true),
+                    IsAccepted = table.Column<int>(nullable: false),
                     MemberPaymentAmount = table.Column<double>(nullable: false),
                     MemberSince = table.Column<int>(nullable: false),
                     MemberStatus = table.Column<int>(nullable: false),
@@ -381,6 +410,12 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Companies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Companies_AspNetUsers_FitUserId",
+                        column: x => x.FitUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Companies_Addresses_fk_Address",
                         column: x => x.fk_Address,
@@ -403,10 +438,10 @@ namespace Backend.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     FileId = table.Column<int>(nullable: true),
-                    IsAccepted = table.Column<bool>(nullable: false),
+                    IsAccepted = table.Column<int>(nullable: false),
                     RoomNumber = table.Column<string>(nullable: true),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true),
-                    Title = table.Column<string>(maxLength: 30, nullable: false)
+                    Title = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -631,7 +666,7 @@ namespace Backend.Migrations
                     fk_FitPackage = table.Column<int>(nullable: false),
                     fk_Location = table.Column<int>(nullable: true),
                     fk_Presentation = table.Column<int>(nullable: true),
-                    isAccepted = table.Column<bool>(nullable: false)
+                    isAccepted = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -708,7 +743,7 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rerpresentatives",
+                name: "Representatives",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -721,15 +756,15 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rerpresentatives", x => x.Id);
+                    table.PrimaryKey("PK_Representatives", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rerpresentatives_Bookings_BookingId",
+                        name: "FK_Representatives_Bookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "Bookings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Rerpresentatives_DataFile_ImageId",
+                        name: "FK_Representatives_DataFile_ImageId",
                         column: x => x.ImageId,
                         principalTable: "DataFile",
                         principalColumn: "Id",
@@ -858,6 +893,11 @@ namespace Backend.Migrations
                 column: "fk_Presentation");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Companies_FitUserId",
+                table: "Companies",
+                column: "FitUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Companies_fk_Address",
                 table: "Companies",
                 column: "fk_Address");
@@ -903,6 +943,11 @@ namespace Backend.Migrations
                 column: "RegistrationStateId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Graduates_FitUserId",
+                table: "Graduates",
+                column: "FitUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Graduates_fk_Address",
                 table: "Graduates",
                 column: "fk_Address");
@@ -928,13 +973,13 @@ namespace Backend.Migrations
                 column: "FileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rerpresentatives_BookingId",
-                table: "Rerpresentatives",
+                name: "IX_Representatives_BookingId",
+                table: "Representatives",
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rerpresentatives_ImageId",
-                table: "Rerpresentatives",
+                name: "IX_Representatives_ImageId",
+                table: "Representatives",
                 column: "ImageId");
 
             migrationBuilder.CreateIndex(
@@ -987,16 +1032,16 @@ namespace Backend.Migrations
                 name: "PresentationBranches");
 
             migrationBuilder.DropTable(
-                name: "Rerpresentatives");
+                name: "Representatives");
 
             migrationBuilder.DropTable(
                 name: "ResourceBookings");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "SmtpConfigs");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Tags");
@@ -1027,6 +1072,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Presentations");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Addresses");
