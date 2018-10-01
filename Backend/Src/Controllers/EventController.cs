@@ -74,16 +74,13 @@ namespace Backend.Controllers {
                 if (eventToUpdate != null) {
 
                     DeleteUntrackedChildren(eventToUpdate, fitEvent);
+                    ImageHelper.ManageEventGraphic(fitEvent);
 
                     foreach (Area area in fitEvent.Areas) {
 
                         area.fk_Event = fitEvent.Id;
 
                         if (area.Graphic != null && area.Graphic.DataUrl != null) {
-                            if (area.Graphic.DataUrl.Contains("base64,")) {
-                                area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
-                            }
-
                             if (area.Graphic.Id > 0) {
                                 _unitOfWork.DataFileRepository.Update(area.Graphic);
                             } else {
@@ -135,20 +132,17 @@ namespace Backend.Controllers {
             fitEvent.RegistrationState.IsCurrent = true;
 
             if (fitEvent != null) {
+                _unitOfWork.EventRepository.Insert(fitEvent);
+                _unitOfWork.Save();
+
+                ImageHelper.ManageEventGraphic(fitEvent);
+
                 foreach (Area area in fitEvent.Areas) {
                     if (area.Graphic != null && area.Graphic.DataUrl != null) {
-
-                        if (area.Graphic.DataUrl.Contains("base64,")) {
-                            area.Graphic.DataUrl = ImageHelper.ManageAreaGraphic(area.Graphic);
-                        }
-
-                        _unitOfWork.DataFileRepository.Insert(area.Graphic);
+                        _unitOfWork.DataFileRepository.Update(area.Graphic);
                         _unitOfWork.Save();
                     }
                 }
-
-                _unitOfWork.EventRepository.Insert(fitEvent);
-                _unitOfWork.Save();
 
                 this.DetermineCurrentEvent();
 

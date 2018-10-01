@@ -55,7 +55,7 @@ namespace Backend.Src.Persistence.Facades {
 
                     _presentationFacade.UpdateOrInsert(booking.Presentation);
 
-                    ImageHelper.ManageBookingImages(booking);
+                    ImageHelper.ManageBookingFiles(booking);
                     _dataFileFacade.UpdateOrInsert(booking.Logo, false);
 
                     foreach (Representative representative in booking.Representatives) {
