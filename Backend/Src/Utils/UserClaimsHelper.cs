@@ -25,5 +25,10 @@ namespace Backend.Src.Utils {
             // Credentials are invalid, or account doesn't exist
             return await Task.FromResult<ClaimsIdentity>(null);
         }
+
+        public static bool IsUserAdmin(ClaimsIdentity identity) {
+            Claim role = identity.Claims.Where(c => c.Type == "rol").FirstOrDefault();
+            return role != null && role.Value != "Member";
+        }
     }
 }

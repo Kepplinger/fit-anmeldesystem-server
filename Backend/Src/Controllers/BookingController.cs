@@ -13,6 +13,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Backend.Src.Persistence.Facades;
+using Backend.Src.Utils;
+using System.Security.Claims;
 
 namespace Backend.Controllers {
 
@@ -38,8 +40,9 @@ namespace Backend.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Authorize(Policy = "MemberAndWriteableAdmins")]
-        public IActionResult Create([FromBody] Booking jsonBooking, [FromQuery] bool isAdminChange) {
+        public IActionResult Create([FromBody] Booking jsonBooking) {
             Booking booking = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
+            bool isAdminChange = UserClaimsHelper.IsUserAdmin(User.Identity as ClaimsIdentity);
 
             if (jsonBooking != null && booking != null) {
                 return new OkObjectResult(_bookingFacade.Update(jsonBooking, true, isAdminChange));

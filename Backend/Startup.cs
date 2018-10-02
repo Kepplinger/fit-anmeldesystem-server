@@ -135,7 +135,7 @@ namespace Backend {
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
-            InitDb(provider);
+            // InitDb(provider);
             
             // CreateTestPDF();
         }
