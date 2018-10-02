@@ -74,6 +74,8 @@ namespace Backend.Src.Persistence.Facades {
                     _unitOfWork.Save();
                     transaction.Commit();
 
+                    booking.FitPackage = _unitOfWork.PackageRepository.GetById(booking.fk_FitPackage);
+
                     return booking;
                 } catch (DbUpdateException ex) {
                     transaction.Rollback();

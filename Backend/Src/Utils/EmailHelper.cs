@@ -42,10 +42,10 @@ namespace Backend.Utils {
                 if (param != null) {
                     // Add PDF-Attachment for Booking-Registrations
                     if (mail.Identifier.Equals("SBA") && param is Booking) {
-                        filePath = EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                        filePath = EmailHelper.AttachRegistrationPdfToMail(objeto_mail, param as Booking);
                     }
 
-                    replaceParamsWithValues(mail, param);
+                    ReplaceParamsWithValues(mail, param);
                 }
 
                 objeto_mail.Body = mail.Template;
@@ -92,7 +92,7 @@ namespace Backend.Utils {
         /// <param name="param"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static void replaceParamsWithValues(Email email, object param) {
+        public static void ReplaceParamsWithValues(Email email, object param) {
 
             if (param != null) {
 
@@ -107,6 +107,10 @@ namespace Backend.Utils {
                         string value = "";
 
                         try {
+                            if (variable == "REQUIRED_DATA") {
+                                return GetListOfRequiredData(param as Booking);
+                            }
+
                             if (variable.Contains("DEAR_")) {
                                 variable = Regex.Replace(variable, "DEAR_", string.Empty);
                                 value = param.GetPropValue(variable).ToString();
@@ -138,7 +142,50 @@ namespace Backend.Utils {
             }
         }
 
-        private static string attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
+        public static bool HasPendingData(Booking booking) {
+
+            bool presentationPending = false;
+
+            if (booking.FitPackage.Discriminator == 3 && booking.Presentation != null) {
+                presentationPending = booking.Presentation.File == null;
+            }
+
+            return booking.Logo == null
+                || booking.Representatives.Any(r => r.Image == null)
+                || booking.Location == null
+                || presentationPending;
+        }
+
+        private static string GetListOfRequiredData(Booking booking) {
+
+            string list = String.Empty;
+
+            if (booking.Logo == null) {
+                list += "<li>Firmen-Logo</li>";
+            }
+
+            if (booking.Representatives.Any(r => r.Image == null)) {
+                list += "<li>Vertreter-Fotos</li>";
+            }
+
+            if (booking.Location == null) {
+                list += "<li>Standplatz</li>";
+            }
+
+            if (booking.FitPackage.Discriminator == 3 && booking.Presentation != null && booking.Presentation.File == null) {
+                list += "<li>Vortrags-Datei</li>";
+            }
+
+            if (list == String.Empty) {
+                list = "Alle nötigen Daten sind angegeben";
+            } else {
+                list = "<ul>" + list + "</ul>";
+            }
+
+            return list;
+        }
+
+        private static string AttachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
             string file;
 
             using (IUnitOfWork uow = new UnitOfWork()) {

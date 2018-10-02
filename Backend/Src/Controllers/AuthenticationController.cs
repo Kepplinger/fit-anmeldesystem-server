@@ -113,10 +113,9 @@ namespace Backend.Controllers {
             Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.ToUpper().Equals(registrationCode.ToUpper()), includeProperties: "Address,Contact").FirstOrDefault();
 
             if (actCompany == null) {
-                var error = new {
+                return new BadRequestObjectResult(new {
                     errorMessage = "Es ist kein Unternehmen mit diesem Token bekannt! Bitte Überprüfen Sie Ihren Token!"
-                };
-                return new BadRequestObjectResult(error);
+                });
             }
 
             // Get Booking
@@ -130,10 +129,16 @@ namespace Backend.Controllers {
                 return GetEntityTokenResponse(companyJson, authToken);
             } else {
                 if (lastBooking.Event.RegistrationState.IsCurrent) {
-                    var booking = new {
-                        currentBooking = lastBooking
-                    };
-                    return GetEntityTokenResponse(booking, authToken);
+                    if (lastBooking.isAccepted >= 0) {
+                        var booking = new {
+                            currentBooking = lastBooking
+                        };
+                        return GetEntityTokenResponse(booking, authToken);
+                    } else {
+                        return new BadRequestObjectResult(new {
+                            errorMessage = "Ihre Anmeldung wurde leider bereits abelehnt!"
+                        });
+                    }
                 } else {
                     var booking = new {
                         oldBooking = lastBooking

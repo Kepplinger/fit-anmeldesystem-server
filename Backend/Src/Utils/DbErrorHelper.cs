@@ -15,13 +15,19 @@ namespace Backend.Utils
             {
                 String error = "*********************\n\nDbUpdateException Message: " + ex.Message + "\n\n*********************\n\nInnerExceptionMessage: " + ex.InnerException.Message;
                 System.Console.WriteLine(error);
-                return new BadRequestObjectResult(error);
+                return new BadRequestObjectResult(new {
+                    errorMessage = "Der Vorgang konnte nicht durchgeführt werden.",
+                    exception = error
+                });
             }
             else
             {
                 String error = "*********************\n\nDbUpdateException Message: " + ex.Message;
                 System.Console.WriteLine(error);
-                return new BadRequestObjectResult(error);
+                return new BadRequestObjectResult(new {
+                    errorMessage = "Der Vorgang konnte nicht durchgeführt werden.",
+                    exception = error
+                });
             }
         }
     }
