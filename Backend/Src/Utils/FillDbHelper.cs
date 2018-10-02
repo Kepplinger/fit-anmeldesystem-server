@@ -10,6 +10,8 @@ using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Utils {
@@ -23,7 +25,10 @@ namespace Backend.Utils {
             fitUser.UserName = fitUser.Email;
             fitUser.Role = "FitAdmin";
 
-            await userManager.CreateAsync(fitUser, "test123");
+            string hashedPassword = GenerateSHA256String("test123");
+            Console.WriteLine(hashedPassword);
+
+            await userManager.CreateAsync(fitUser, hashedPassword);
 
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";
@@ -519,6 +524,21 @@ namespace Backend.Utils {
         /// <returns></returns>
         private static string concatFieldPath(params string[] args) {
             return String.Join('.', args);
+        }
+
+        private static string GenerateSHA256String(string inputString) {
+            SHA256 sha256 = SHA256Managed.Create();
+            byte[] bytes = Encoding.UTF8.GetBytes(inputString);
+            byte[] hash = sha256.ComputeHash(bytes);
+            return GetStringFromHash(hash);
+        }
+
+        private static string GetStringFromHash(byte[] hash) {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++) {
+                result.Append(hash[i].ToString("X2"));
+            }
+            return result.ToString();
         }
     }
 }

@@ -106,7 +106,7 @@ namespace Backend.Utils {
                 string fileName = file.Substring(index);
                 bool found = false;
 
-                if (booking.Logo != null && booking.Logo.DataUrl.Contains(fileName)) {
+                if (booking.Logo != null && booking.Logo.DataUrl != null && booking.Logo.DataUrl.Contains(fileName)) {
                     found = true;
                 }
 

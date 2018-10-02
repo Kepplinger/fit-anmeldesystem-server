@@ -192,7 +192,16 @@ namespace Backend.Controllers {
                         }
                     }
 
+                    _unitOfWork.Save();
                     transaction.Commit();
+
+                    foreach (BookingBranch branch in jsonBooking.Branches) {
+                        branch.Branch = _unitOfWork.BranchRepository.GetById(branch.fk_Branch);
+                    }
+
+                    foreach (ResourceBooking resource in jsonBooking.Resources) {
+                        resource.Resource = _unitOfWork.ResourceRepository.GetById(resource.fk_Resource);
+                    }
 
                     //Senden der Bestätigungs E-Mail
                     DocumentBuilder doc = new DocumentBuilder();

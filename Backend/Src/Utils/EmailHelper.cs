@@ -13,6 +13,8 @@ using System.Text.RegularExpressions;
 using Backend.Src.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Backend.Core.Entities.UserManagement;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Backend.Utils {
     public static class EmailHelper {
@@ -28,6 +30,7 @@ namespace Backend.Utils {
             if (smtpConfig != null) {
 
                 SmtpClient client = EmailHelper.GetSmtpClient(smtpConfig);
+                string filePath = null;
 
                 // Message config 
                 MailMessage objeto_mail = new MailMessage();
@@ -39,14 +42,15 @@ namespace Backend.Utils {
                 if (param != null) {
                     // Add PDF-Attachment for Booking-Registrations
                     if (mail.Identifier.Equals("SBA") && param is Booking) {
-                        EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                        filePath = EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
                     }
 
                     replaceParamsWithValues(mail, param);
                 }
 
                 objeto_mail.Body = mail.Template;
-                client.SendMailAsync(objeto_mail);
+                Task mailTask = client.SendMailAsync(objeto_mail);
+
                 return true;
 
             } else {
@@ -134,15 +138,15 @@ namespace Backend.Utils {
             }
         }
 
-        private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
+        private static string attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
             string file;
 
             using (IUnitOfWork uow = new UnitOfWork()) {
                 file = uow.BookingRepository.GetById(booking.Id).PdfFilePath;
             }
 
-            byte[] bytes = System.IO.File.ReadAllBytes(file);
             objeto_mail.Attachments.Add(new Attachment(file));
+            return file;
         }
 
         private static SmtpClient GetSmtpClient(SmtpConfig smtpConfig) {
