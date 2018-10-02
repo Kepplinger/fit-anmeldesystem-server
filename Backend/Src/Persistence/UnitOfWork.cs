@@ -153,6 +153,8 @@ namespace StoreService.Persistence {
             Console.WriteLine("Make Migrations ...");
             MigrateDatabase();
 
+            Save();
+
             using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope()) {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -166,6 +168,8 @@ namespace StoreService.Persistence {
                         await roleManager.AddClaimAsync(newRole, new Claim("rol", role));
                     }
                 }
+
+                Save();
 
                 // Creates some TestData
                 await FillDbHelper.createTestData(_context, userManager);

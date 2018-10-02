@@ -49,14 +49,6 @@ namespace Backend.Persistence
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
 
-            /*modelBuilder.Entity<BookCategory>()
-            .HasKey(bc => new { bc.BookId, bc.CategoryId });
-
-            modelBuilder.Entity<BookCategory>()
-                .HasOne(bc => bc.Book)
-                .WithMany(b => b.BookCategories)
-                .HasForeignKey(bc => bc.BookId);*/
-
             base.OnModelCreating(modelBuilder);
         }
 

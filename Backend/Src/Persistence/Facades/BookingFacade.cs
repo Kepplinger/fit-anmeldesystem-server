@@ -67,6 +67,7 @@ namespace Backend.Src.Persistence.Facades {
 
                     UpdateBookingBranches(booking);
                     UpdateResourceBookings(booking);
+                    DeletePresentationIfNecessary(booking, bookingToUpdate);
 
                     _unitOfWork.ContactRepository.Update(booking.Contact);
                     _unitOfWork.BookingRepository.Update(booking);
@@ -78,6 +79,21 @@ namespace Backend.Src.Persistence.Facades {
                     transaction.Rollback();
                     throw ex;
                 }
+            }
+        }
+
+        private void DeletePresentationIfNecessary(Booking booking, Booking bookingToUpdate) {
+            if (booking.Presentation == null && bookingToUpdate.Presentation != null) {
+                foreach (PresentationBranch presentationBranch in bookingToUpdate.Presentation.Branches) {
+                    _unitOfWork.PresentationBranchesRepository.Delete(presentationBranch);
+                }
+
+                bookingToUpdate.fk_Presentation = null;
+
+                if (bookingToUpdate.Presentation.File != null) {
+                    _unitOfWork.DataFileRepository.Delete(bookingToUpdate.Presentation.File);
+                }
+                _unitOfWork.PresentationRepository.Delete(bookingToUpdate.Presentation);
             }
         }
 
