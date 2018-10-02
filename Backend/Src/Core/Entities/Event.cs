@@ -16,6 +16,8 @@ namespace Backend.Core.Entities {
         [Required]
         public DateTime RegistrationEnd { get; set; }
 
+        public bool PresentationsLocked { get; set; }
+
         [Required]
         public List<Area> Areas { get; set; }
 

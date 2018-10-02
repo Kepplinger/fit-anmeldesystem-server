@@ -55,6 +55,17 @@ namespace Backend.Controllers {
             }
         }
 
+        [HttpPost("presentationLock/{id}")]
+        [Authorize(Policy = "WritableFitAdmin")]
+        [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+        public IActionResult ChangePresentationLock(int id, [FromBody] bool presentaitonLock) {
+            Event fitEvent = _unitOfWork.EventRepository.Get(e => e.Id == id).FirstOrDefault();
+            fitEvent.PresentationsLocked = presentaitonLock;
+            _unitOfWork.EventRepository.Update(fitEvent);
+            _unitOfWork.Save();
+            return new OkObjectResult(fitEvent);
+        }
+
         [HttpGet("current")]
         [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
         public IActionResult GetLatestEvent() {

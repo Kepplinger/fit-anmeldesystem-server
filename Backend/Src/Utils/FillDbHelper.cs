@@ -161,6 +161,7 @@ namespace Backend.Utils {
 
             Event e = new Event();
             e.EventDate = DateTime.Now;
+            e.PresentationsLocked = false;
             e.RegistrationEnd = DateTime.Now.AddMonths(2);
             e.RegistrationStart = DateTime.Now.AddMonths(-2);
             e.RegistrationState = new RegistrationState();
@@ -305,6 +306,31 @@ namespace Backend.Utils {
 
         public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
+            Email presentationRejected = new Email("PR", "Vortrag abgelehnt (Firma)",
+                              "Diese Email geht an die Firma und gilt als Ablehnung den Vortrag.",
+                              "<!DOCTYPE html>" +
+                                           "<html>" +
+                                           "<head>" +
+                                           "</head>" +
+                                           "<body>" +
+                                           "<p>Ihr Vortrag wurde abeglehnt!</p>" +
+                                           "</body>" +
+                                           "</html>",
+                              "Ihr Vortrag wurde abeglehnt - ABSLEO HTL Leonding FIT");
+
+            Email presentationAccepted = new Email("PA", "Vortrag bestätigt (Firma)",
+                  "Diese Email geht an die Firma und gilt als Bestätigung den Vortrag.",
+                  "<!DOCTYPE html>" +
+                               "<html>" +
+                               "<head>" +
+                               "</head>" +
+                               "<body>" +
+                               "<p>Ihr Vortrag wurde bestätigt!</p>" +
+                               "</body>" +
+                               "</html>",
+                  "Ihr Vortrag wurde bestätigt - ABSLEO HTL Leonding FIT");
+
+
             Email bookingRejected = new Email("BR", "Anmeldung abgelehnt (Firma)",
                               "Diese Email geht an die Firma und gilt als Ablehnung der Anmeldung.",
                               "<!DOCTYPE html>" +
@@ -542,6 +568,8 @@ namespace Backend.Utils {
             bookingAccepted.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingAccepted, v)).ToList();
             bookingRejected.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingAccepted, v)).ToList();
             bookingDataRequired.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).ToList();
+            presentationAccepted.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).ToList();
+            presentationRejected.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).ToList();
 
             // persist emails
             uow.EmailRepository.Insert(CompanyAssigned);
@@ -555,6 +583,8 @@ namespace Backend.Utils {
             uow.EmailRepository.Insert(bookingAccepted);
             uow.EmailRepository.Insert(bookingRejected);
             uow.EmailRepository.Insert(bookingDataRequired);
+            uow.EmailRepository.Insert(presentationAccepted);
+            uow.EmailRepository.Insert(presentationRejected);
             uow.Save();
         }
 
