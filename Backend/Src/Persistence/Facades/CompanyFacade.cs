@@ -25,6 +25,7 @@ namespace Backend.Src.Persistence.Facades {
 
                     UpdateCompanyBranches(company);
                     UpdateCompanyTags(company);
+                    company.fk_MemberStatus = company.MemberStatus.Id;
 
                     if (company.Address.Id > 0) {
                         if (protocolChanges)
@@ -100,8 +101,10 @@ namespace Backend.Src.Persistence.Facades {
 
             foreach (CompanyTag companyTag in company.Tags) {
                 if (companyTag.Id <= 0) {
-                    companyTag.Tag = _unitOfWork.TagRepository.GetById(companyTag.fk_Tag);
+                    companyTag.Tag = null;
                     _unitOfWork.CompanyTagRepository.Insert(companyTag);
+                    _unitOfWork.Save();
+                    companyTag.Tag = _unitOfWork.TagRepository.GetById(companyTag.fk_Tag);
                 }
             }
 
