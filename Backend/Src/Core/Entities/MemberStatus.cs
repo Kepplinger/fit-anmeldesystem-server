@@ -10,5 +10,7 @@ namespace Backend.Src.Core.Entities
         public string Name { get; set; }
 
         public double DefaultPrice { get; set; }
+
+        public bool IsArchive { get; set; }
     }
 }
