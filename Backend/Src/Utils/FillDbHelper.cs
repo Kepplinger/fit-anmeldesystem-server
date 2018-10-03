@@ -37,11 +37,35 @@ namespace Backend.Utils {
             _context.SmtpConfigs.Add(smtpConfig);
 
             Console.WriteLine("Search for Companies who want to join FIT ...");
+
+            MemberStatus memberStatus = new MemberStatus();
+            memberStatus.DefaultPrice = 0;
+            memberStatus.Name = "keine Mitgliedschaft";
+
+            MemberStatus memberStatus2 = new MemberStatus();
+            memberStatus2.DefaultPrice = 0;
+            memberStatus2.Name = "interessiert";
+
+            MemberStatus memberStatus3 = new MemberStatus();
+            memberStatus3.DefaultPrice = 200;
+            memberStatus3.Name = "kleine Mitgliedschaft";
+
+            MemberStatus memberStatus4 = new MemberStatus();
+            memberStatus4.DefaultPrice = 400;
+            memberStatus4.Name = "große Mitgliedschaft";
+
+            _context.MemberStati.Add(memberStatus);
+            _context.MemberStati.Add(memberStatus2);
+            _context.MemberStati.Add(memberStatus3);
+            _context.MemberStati.Add(memberStatus4);
+            _context.SaveChanges();
+
             // Set up Company
             Company company = new Company();
             company.Name = "Kepplinger IT";
             company.IsAccepted = 1;
             company.RegistrationToken = "FirmenToken1";
+            company.MemberStatus = memberStatus3;
 
             // Set up Address
             Address address = new Address();

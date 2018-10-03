@@ -146,7 +146,6 @@ namespace Backend.Controllers {
             pending.Name = existing.Name;
             pending.Branches = existing.Branches;
             pending.MemberPaymentAmount = existing.MemberPaymentAmount;
-            pending.MemberSince = existing.MemberSince;
             pending.MemberStatus = existing.MemberStatus;
             pending.Address = existing.Address;
             pending.RegistrationToken = existing.RegistrationToken;
