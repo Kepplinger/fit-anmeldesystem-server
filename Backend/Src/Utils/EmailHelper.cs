@@ -129,7 +129,6 @@ namespace Backend.Utils {
                                 switch (value) {
                                     case "M":
                                         return "geehrter";
-                                        break;
                                     case "F":
                                         return "geehrte";
                                 }
