@@ -331,8 +331,20 @@ namespace Backend.Utils {
 
         public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
+            Email fitInvation = new Email("FI", "FIT Einladung (Firma)",
+                  "Einladung für den derzeitigen FIT",
+                  "<!DOCTYPE html>" +
+                               "<html>" +
+                               "<head>" +
+                               "</head>" +
+                               "<body>" +
+                               "<p>Sie sind herzlich eingeladen!</p>" +
+                               "</body>" +
+                               "</html>",
+                  "Einladung für den FIT - ABSLEO HTL Leonding FIT");
+
             Email presentationRejected = new Email("PR", "Vortrag abgelehnt (Firma)",
-                              "Diese Email geht an die Firma und gilt als Ablehnung den Vortrag.",
+                              "Ablehnung des Vortrags der jeweiligen Firma.",
                               "<!DOCTYPE html>" +
                                            "<html>" +
                                            "<head>" +
@@ -344,7 +356,7 @@ namespace Backend.Utils {
                               "Ihr Vortrag wurde abeglehnt - ABSLEO HTL Leonding FIT");
 
             Email presentationAccepted = new Email("PA", "Vortrag bestätigt (Firma)",
-                  "Diese Email geht an die Firma und gilt als Bestätigung den Vortrag.",
+                  "Bestätigung des Vortrags der jeweiligen Firma.",
                   "<!DOCTYPE html>" +
                                "<html>" +
                                "<head>" +
@@ -387,7 +399,7 @@ namespace Backend.Utils {
                                             "<head>" +
                                             "</head>" +
                                             "<body>" +
-                                            "<p>Folgende Daten fehlen: {{ REQUIRED_DATA }}</p>" +
+                                            "<p>Folgende Daten fehlen: {{ Booking.REQUIRED_DATA }}</p>" +
                                             "</body>" +
                                             "</html>",
                                "Ausstehende Daten - ABSLEO HTL Leonding FIT");
@@ -561,17 +573,29 @@ namespace Backend.Utils {
                 new EmailVariable("Paket-Name",  concatFieldPath(nameof(Booking.FitPackage), nameof(FitPackage.Name)), nameof(Booking)),
                 new EmailVariable("Paket-Preis",  concatFieldPath(nameof(Booking.FitPackage), nameof(FitPackage.Price)), nameof(Booking)),
 
-                new EmailVariable("Präsentation-Name",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.Title)), nameof(Booking)),
-                new EmailVariable("Präsentation-Raum",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.RoomNumber)), nameof(Booking)),
-                new EmailVariable("Präsentation-Datei",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.File), nameof(DataFile.Name)), nameof(Booking)),
-
                 new EmailVariable("Kontakt-Anrede",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.Gender)), nameof(Booking)),
                 new EmailVariable("geehrte/r Kontakt-Anrede",  "DEAR_" + concatFieldPath(nameof(Booking.Contact), nameof(Contact.Gender)), nameof(Booking)),
                 new EmailVariable("Kontakt-Vorname",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.FirstName)), nameof(Booking)),
                 new EmailVariable("Kontakt-Nachname",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.LastName)), nameof(Booking)),
                 new EmailVariable("Kontakt-Email",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.Email)), nameof(Booking)),
                 new EmailVariable("Kontakt-Telefon",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.PhoneNumber)), nameof(Booking)),
-                new EmailVariable("Ausstehende Daten (Liste)", "REQUIRED_DATA", nameof(Booking))
+                new EmailVariable("Ausstehende Daten (Liste)", "REQUIRED_DATA", nameof(Booking)),
+
+                // EVENT
+                new EmailVariable("FIT-Datum",  concatFieldPath(nameof(Booking.Event), nameof(Event.EventDate)), nameof(Booking)),
+                new EmailVariable("FIT-Anmelde-Anfang",  concatFieldPath(nameof(Booking.Event), nameof(Event.RegistrationStart)), nameof(Booking)),
+                new EmailVariable("FIT-Anmelde-Ende",  concatFieldPath(nameof(Booking.Event), nameof(Event.RegistrationEnd)), nameof(Booking)),
+
+                // PRESENTATION
+                new EmailVariable("Präsentation-Name",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.Title)), nameof(Presentation)),
+                new EmailVariable("Präsentation-Raum",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.RoomNumber)), nameof(Presentation)),
+                new EmailVariable("Präsentation-Datei",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.File), nameof(DataFile.Name)), nameof(Presentation)),
+            };
+
+            List<EmailVariable> invitaionDates = new List<EmailVariable> {
+                new EmailVariable("FIT-Datum",  "FIT_DATE", nameof(Company)),
+                new EmailVariable("FIT-Anmelde-Anfang",  "FIT_REG_START", nameof(Company)),
+                new EmailVariable("FIT-Anmelde-Ende",  "FIT_REG_END", nameof(Company)),
             };
 
             uow.EmailVariableRepository.InsertMany(variables);
@@ -580,21 +604,28 @@ namespace Backend.Utils {
             List<EmailVariable> gradauteVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Graduate)).ToList();
             List<EmailVariable> companyVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Company)).ToList();
             List<EmailVariable> bookingVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Booking)).ToList();
+            List<EmailVariable> presentationVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Presentation)).ToList();
 
             // mapping the variables to the resolve-entity EmailVariableUsage
-            CompanyAssigned.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(CompanyAssigned, v)).ToList();
-            IsPendingAcceptedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingAcceptedCompany, v)).ToList();
-            IsPendingDeniedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingDeniedCompany, v)).ToList();
-            isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).ToList();
-            isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).ToList();
-            SendForgottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgottenCompany, v)).ToList();
-            SendForgottenGraduate.AvailableVariables = gradauteVariables.Select(v => new EmailVariableUsage(SendForgottenGraduate, v)).ToList();
-            SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).ToList();
-            bookingAccepted.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingAccepted, v)).ToList();
-            bookingRejected.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingAccepted, v)).ToList();
-            bookingDataRequired.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).ToList();
-            presentationAccepted.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).ToList();
-            presentationRejected.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).ToList();
+            CompanyAssigned.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(CompanyAssigned, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            IsPendingAcceptedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingAcceptedCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            IsPendingDeniedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingDeniedCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            SendForgottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgottenCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            SendForgottenGraduate.AvailableVariables = gradauteVariables.Select(v => new EmailVariableUsage(SendForgottenGraduate, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+
+            fitInvation.AvailableVariables = companyVariables.Concat(invitaionDates).Select(v => new EmailVariableUsage(fitInvation, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+
+            SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            bookingAccepted.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingAccepted, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            bookingRejected.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingRejected, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            bookingDataRequired.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+
+            presentationAccepted.AvailableVariables = bookingVariables.Concat(presentationVariables)
+                .Select(v => new EmailVariableUsage(presentationAccepted, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            presentationRejected.AvailableVariables = bookingVariables.Concat(presentationVariables)
+                .Select(v => new EmailVariableUsage(presentationRejected, v)).OrderBy(v => v.EmailVariable.Name).ToList();
 
             // persist emails
             uow.EmailRepository.Insert(CompanyAssigned);
@@ -608,6 +639,7 @@ namespace Backend.Utils {
             uow.EmailRepository.Insert(bookingAccepted);
             uow.EmailRepository.Insert(bookingRejected);
             uow.EmailRepository.Insert(bookingDataRequired);
+            uow.EmailRepository.Insert(fitInvation);
             uow.EmailRepository.Insert(presentationAccepted);
             uow.EmailRepository.Insert(presentationRejected);
             uow.Save();

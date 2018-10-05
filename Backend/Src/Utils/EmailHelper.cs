@@ -18,15 +18,8 @@ using System.Threading;
 
 namespace Backend.Utils {
     public static class EmailHelper {
-        // isPendingGottenCompany
-        // isPendingGottenAdmin
-        // IsPendingAcceptedCompany
-        // IsPendingDeniedCompany
-        // CompanyAssigned
-        // SendBookingAcceptedMail
-        // SendForgotten
 
-        public static bool SendMail(Email mail, string reciever, SmtpConfig smtpConfig, object param = null) {
+        public static bool SendMail(Email mail, string reciever, SmtpConfig smtpConfig, object param = null, IUnitOfWork unitOfWork = null) {
             if (smtpConfig != null) {
 
                 SmtpClient client = EmailHelper.GetSmtpClient(smtpConfig);
@@ -45,7 +38,7 @@ namespace Backend.Utils {
                         filePath = EmailHelper.AttachRegistrationPdfToMail(objeto_mail, param as Booking);
                     }
 
-                    ReplaceParamsWithValues(mail, param);
+                    ReplaceParamsWithValues(mail, param, unitOfWork);
                 }
 
                 objeto_mail.Body = mail.Template;
@@ -61,7 +54,7 @@ namespace Backend.Utils {
         public static bool SendMail(Email mail, object param, string reciever, IUnitOfWork unitOfWork) {
             // Client config
             SmtpConfig smtpConfig = unitOfWork.SmtpConfigRepository.Get().FirstOrDefault();
-            return SendMail(mail, reciever, smtpConfig, param);
+            return SendMail(mail, reciever, smtpConfig, param, unitOfWork);
         }
 
         public static bool SendMailByIdentifier(String mailName, object param, string reciever, IUnitOfWork unitOfWork) {
@@ -92,7 +85,13 @@ namespace Backend.Utils {
         /// <param name="param"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static void ReplaceParamsWithValues(Email email, object param) {
+        public static void ReplaceParamsWithValues(Email email, object param, IUnitOfWork unitOfWork) {
+
+            Event currentEvent = null;
+
+            if (email.Identifier == "FI") {
+                currentEvent = unitOfWork.EventRepository.Get(e => e.RegistrationState.IsCurrent).FirstOrDefault();
+            }
 
             if (param != null) {
 
@@ -107,8 +106,20 @@ namespace Backend.Utils {
                         string value = "";
 
                         try {
-                            if (variable == "REQUIRED_DATA") {
+                            if (variable == "Booking.REQUIRED_DATA") {
                                 return GetListOfRequiredData(param as Booking);
+                            }
+
+                            if (variable == "Company.FIT_DATE") {
+                                return currentEvent.EventDate.ToString("dd.MM.yyyy");
+                            }
+
+                            if (variable == "Company.FIT_REG_START") {
+                                return currentEvent.RegistrationStart.ToString("dd.MM.yyyy");
+                            }
+
+                            if (variable == "Company.FIT_REG_END") {
+                                return currentEvent.RegistrationEnd.ToString("dd.MM.yyyy");
                             }
 
                             if (variable.Contains("DEAR_")) {
@@ -123,7 +134,13 @@ namespace Backend.Utils {
                                         return "geehrte";
                                 }
                             } else {
-                                value = param.GetPropValue(variable).ToString();
+                                object propValue = param.GetPropValue(variable);
+
+                                if (propValue is DateTime) {
+                                    value = ((DateTime)propValue).ToString("dd.MM.yyyy");
+                                } else {
+                                    value = propValue.ToString();
+                                }
 
                                 if (variable.ToLower().Contains("gender")) {
                                     switch (value) {
