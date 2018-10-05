@@ -77,6 +77,7 @@ namespace Backend.Controllers {
                 await _userManager.CreateAsync(companyUser, company.RegistrationToken);
 
                 company.fk_FitUser = companyUser.Id;
+                company.fk_MemberStatus = _unitOfWork.MemberStatusRepository.Get().FirstOrDefault().Id;
 
                 _unitOfWork.CompanyRepository.Insert(company);
                 _unitOfWork.Save();

@@ -50,6 +50,23 @@ namespace Backend.Controllers {
             return new BadRequestResult();
         }
 
+        [HttpPost]
+        [Route("{identifier}")]
+        [Authorize(Policy = "WritableAdmin")]
+        public IActionResult SendTestMail(string identifier, [FromBody] int[] companyIds) {
+
+            foreach (int id in companyIds) {
+                Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == id).FirstOrDefault();
+
+                if (company != null) {
+                    EmailHelper.SendMailByIdentifier(identifier, company, company.Contact.Email, _unitOfWork);
+                }
+            }
+
+            return new OkResult();
+        }
+
+
         [HttpGet]
         [Route("{id}")]
         [Authorize(Policy = "WritableAdmin")]

@@ -23,7 +23,10 @@ namespace Backend.Src.Controllers {
         [HttpGet]
         [ProducesResponseType(typeof(MemberStatus), StatusCodes.Status200OK)]
         public IActionResult GetAll() {
-            List<MemberStatus> meberStati = _unitOfWork.MemberStatusRepository.Get(m => !m.IsArchive).ToList();
+            List<MemberStatus> meberStati = _unitOfWork.MemberStatusRepository
+                .Get(m => !m.IsArchive)
+                .OrderBy(m => m.DefaultPrice)
+                .ToList();
             return new OkObjectResult(meberStati);
         }
 

@@ -40,7 +40,7 @@ namespace Backend.Utils {
 
             MemberStatus memberStatus = new MemberStatus();
             memberStatus.DefaultPrice = 0;
-            memberStatus.Name = "keine Mitgliedschaft";
+            memberStatus.Name = "keinen";
 
             MemberStatus memberStatus2 = new MemberStatus();
             memberStatus2.DefaultPrice = 0;
@@ -66,6 +66,7 @@ namespace Backend.Utils {
             company.IsAccepted = 1;
             company.RegistrationToken = "FirmenToken1";
             company.MemberStatus = memberStatus3;
+            company.MemberPaymentAmount = memberStatus3.DefaultPrice;
 
             // Set up Address
             Address address = new Address();
