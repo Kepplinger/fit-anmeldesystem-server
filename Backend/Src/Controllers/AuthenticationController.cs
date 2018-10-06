@@ -113,27 +113,32 @@ namespace Backend.Controllers {
             Company actCompany = this._unitOfWork.CompanyRepository.Get(filter: g => g.RegistrationToken.ToUpper().Equals(registrationCode.ToUpper()), includeProperties: "Address,Contact").FirstOrDefault();
 
             if (actCompany == null) {
-                var error = new {
+                return new BadRequestObjectResult(new {
                     errorMessage = "Es ist kein Unternehmen mit diesem Token bekannt! Bitte Überprüfen Sie Ihren Token!"
-                };
-                return new BadRequestObjectResult(error);
+                });
             }
 
             // Get Booking
-            List<Booking> lastBooking = _unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).ToList();
+            Booking lastBooking = _unitOfWork.BookingRepository.Get(f => f.Company.Id.Equals(actCompany.Id)).OrderByDescending(p => p.CreationDate).FirstOrDefault();
 
             // If there is no last Booking just send Company
-            if (lastBooking == null || lastBooking.Count() == 0) {
+            if (lastBooking == null) {
                 var companyJson = new {
                     company = actCompany
                 };
                 return GetEntityTokenResponse(companyJson, authToken);
             } else {
-                if (lastBooking.ElementAt(0).Event.RegistrationState.IsCurrent) {
-                    var booking = new {
-                        currentBooking = lastBooking.ElementAt(0)
-                    };
-                    return GetEntityTokenResponse(booking, authToken);
+                if (lastBooking.Event.RegistrationState.IsCurrent) {
+                    if (lastBooking.isAccepted >= 0) {
+                        var booking = new {
+                            currentBooking = lastBooking
+                        };
+                        return GetEntityTokenResponse(booking, authToken);
+                    } else {
+                        return new BadRequestObjectResult(new {
+                            errorMessage = "Ihre Anmeldung wurde leider bereits abelehnt!"
+                        });
+                    }
                 } else {
                     var booking = new {
                         oldBooking = lastBooking

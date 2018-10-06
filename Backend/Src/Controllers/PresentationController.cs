@@ -8,6 +8,7 @@ using Backend.Core.Contracts;
 using Backend.Core.Entities;
 using Backend.Src.Persistence.Facades;
 using Microsoft.AspNetCore.Authorization;
+using Backend.Utils;
 
 namespace Backend.Controllers {
     [Route("api/[controller]")]
@@ -52,10 +53,22 @@ namespace Backend.Controllers {
         [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Presentation), StatusCodes.Status200OK)]
         public IActionResult Accept(int id, [FromBody] int status) {
-            Presentation presentation = _unitOfWork.PresentationRepository.Get(filter: p => p.Id == id).FirstOrDefault();
-            if (presentation != null) {
-                presentation.IsAccepted = status;
-                return new ObjectResult(_presentationFacade.Update(presentation));
+            Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Presentation != null && b.Presentation.Id == id).FirstOrDefault();
+
+            if (booking.Presentation != null) {
+                booking.Presentation.IsAccepted = status;
+                Presentation presentation = _presentationFacade.Update(booking.Presentation);
+
+                if (status == 1) {
+                    EmailHelper.SendMailByIdentifier("PA", booking, booking.Contact.Email, _unitOfWork);
+                } else if (status == -1) {
+                    booking.fk_FitPackage = _unitOfWork.PackageRepository.Get(p => p.Discriminator == 2).FirstOrDefault().Id;
+                    _unitOfWork.BookingRepository.Update(booking);
+                    _unitOfWork.Save();
+                    EmailHelper.SendMailByIdentifier("PR", booking, booking.Contact.Email, _unitOfWork);
+                }
+
+                return new ObjectResult(presentation);
             } else {
                 return new BadRequestResult();
             }

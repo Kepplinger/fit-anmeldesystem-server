@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.IO;
 using System.Threading.Tasks;
+using Backend.Utils;
+using System.Linq;
 
 namespace Backend {
     public class Startup {
@@ -133,7 +135,9 @@ namespace Backend {
             app.UseStaticFiles();
             app.UseDeveloperExceptionPage();
 
-            // InitDb(provider);
+            InitDb(provider);
+            
+            // CreateTestPDF();
         }
 
         private static async Task InitDb(IServiceProvider provider) {
@@ -144,6 +148,13 @@ namespace Backend {
             } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
                 throw ex;
+            }
+        }
+
+        private static async Task CreateTestPDF() {
+            using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork()) {
+                DocumentBuilder builder = new DocumentBuilder();
+                builder.CreatePdfOfBooking(uow.BookingRepository.Get().FirstOrDefault());
             }
         }
 

@@ -50,6 +50,32 @@ namespace Backend.Controllers {
             return new BadRequestResult();
         }
 
+        [HttpPost]
+        [Route("{identifier}")]
+        [Authorize(Policy = "WritableAdmin")]
+        public IActionResult SendTestMail(string identifier, [FromBody] int[] companyIds) {
+            Email mail = _unitOfWork.EmailRepository.Get(m => m.Identifier.ToLower().Equals(identifier.ToLower())).FirstOrDefault();
+
+            foreach (int id in companyIds) {
+                if (mail.AvailableVariables.Any(v => v.EmailVariable.Entity == nameof(Company))) {
+                    Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == id).FirstOrDefault();
+
+                    if (company != null) {
+                        EmailHelper.SendMailByIdentifier(identifier, company, company.Contact.Email, _unitOfWork);
+                    }
+                } else {
+                    Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Company.Id == id).FirstOrDefault();
+
+                    if (booking != null) {
+                        EmailHelper.SendMailByIdentifier(identifier, booking, booking.Contact.Email, _unitOfWork);
+                    }
+                }
+            }
+
+            return new OkResult();
+        }
+
+
         [HttpGet]
         [Route("{id}")]
         [Authorize(Policy = "WritableAdmin")]

@@ -13,21 +13,17 @@ using System.Text.RegularExpressions;
 using Backend.Src.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Backend.Core.Entities.UserManagement;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Backend.Utils {
     public static class EmailHelper {
-        // isPendingGottenCompany
-        // isPendingGottenAdmin
-        // IsPendingAcceptedCompany
-        // IsPendingDeniedCompany
-        // CompanyAssigned
-        // SendBookingAcceptedMail
-        // SendForgotten
 
-        public static bool SendMail(Email mail, string reciever, SmtpConfig smtpConfig, object param = null) {
+        public static bool SendMail(Email mail, string reciever, SmtpConfig smtpConfig, object param = null, IUnitOfWork unitOfWork = null) {
             if (smtpConfig != null) {
 
                 SmtpClient client = EmailHelper.GetSmtpClient(smtpConfig);
+                string filePath = null;
 
                 // Message config 
                 MailMessage objeto_mail = new MailMessage();
@@ -39,14 +35,15 @@ namespace Backend.Utils {
                 if (param != null) {
                     // Add PDF-Attachment for Booking-Registrations
                     if (mail.Identifier.Equals("SBA") && param is Booking) {
-                        EmailHelper.attachRegistrationPdfToMail(objeto_mail, param as Booking);
+                        filePath = EmailHelper.AttachRegistrationPdfToMail(objeto_mail, param as Booking);
                     }
 
-                    replaceParamsWithValues(mail, param);
+                    ReplaceParamsWithValues(mail, param, unitOfWork);
                 }
 
                 objeto_mail.Body = mail.Template;
-                client.SendMailAsync(objeto_mail);
+                Task mailTask = client.SendMailAsync(objeto_mail);
+
                 return true;
 
             } else {
@@ -57,7 +54,7 @@ namespace Backend.Utils {
         public static bool SendMail(Email mail, object param, string reciever, IUnitOfWork unitOfWork) {
             // Client config
             SmtpConfig smtpConfig = unitOfWork.SmtpConfigRepository.Get().FirstOrDefault();
-            return SendMail(mail, reciever, smtpConfig, param);
+            return SendMail(mail, reciever, smtpConfig, param, unitOfWork);
         }
 
         public static bool SendMailByIdentifier(String mailName, object param, string reciever, IUnitOfWork unitOfWork) {
@@ -88,7 +85,13 @@ namespace Backend.Utils {
         /// <param name="param"></param>
         /// <param name="template"></param>
         /// <returns></returns>
-        public static void replaceParamsWithValues(Email email, object param) {
+        public static void ReplaceParamsWithValues(Email email, object param, IUnitOfWork unitOfWork) {
+
+            Event currentEvent = null;
+
+            if (email.Identifier == "FI") {
+                currentEvent = unitOfWork.EventRepository.Get(e => e.RegistrationState.IsCurrent).FirstOrDefault();
+            }
 
             if (param != null) {
 
@@ -103,6 +106,22 @@ namespace Backend.Utils {
                         string value = "";
 
                         try {
+                            if (variable == "Booking.REQUIRED_DATA") {
+                                return GetListOfRequiredData(param as Booking);
+                            }
+
+                            if (variable == "Company.FIT_DATE") {
+                                return currentEvent.EventDate.ToString("dd.MM.yyyy");
+                            }
+
+                            if (variable == "Company.FIT_REG_START") {
+                                return currentEvent.RegistrationStart.ToString("dd.MM.yyyy");
+                            }
+
+                            if (variable == "Company.FIT_REG_END") {
+                                return currentEvent.RegistrationEnd.ToString("dd.MM.yyyy");
+                            }
+
                             if (variable.Contains("DEAR_")) {
                                 variable = Regex.Replace(variable, "DEAR_", string.Empty);
                                 value = param.GetPropValue(variable).ToString();
@@ -110,12 +129,17 @@ namespace Backend.Utils {
                                 switch (value) {
                                     case "M":
                                         return "geehrter";
-                                        break;
                                     case "F":
                                         return "geehrte";
                                 }
                             } else {
-                                value = param.GetPropValue(variable).ToString();
+                                object propValue = param.GetPropValue(variable);
+
+                                if (propValue is DateTime) {
+                                    value = ((DateTime)propValue).ToString("dd.MM.yyyy");
+                                } else {
+                                    value = propValue.ToString();
+                                }
 
                                 if (variable.ToLower().Contains("gender")) {
                                     switch (value) {
@@ -134,15 +158,58 @@ namespace Backend.Utils {
             }
         }
 
-        private static void attachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
+        public static bool HasPendingData(Booking booking) {
+
+            bool presentationPending = false;
+
+            if (booking.FitPackage.Discriminator == 3 && booking.Presentation != null) {
+                presentationPending = booking.Presentation.File == null;
+            }
+
+            return booking.Logo == null
+                || booking.Representatives.Any(r => r.Image == null)
+                || booking.Location == null
+                || presentationPending;
+        }
+
+        private static string GetListOfRequiredData(Booking booking) {
+
+            string list = String.Empty;
+
+            if (booking.Logo == null) {
+                list += "<li>Firmen-Logo</li>";
+            }
+
+            if (booking.Representatives.Any(r => r.Image == null)) {
+                list += "<li>Vertreter-Fotos</li>";
+            }
+
+            if (booking.Location == null) {
+                list += "<li>Standplatz</li>";
+            }
+
+            if (booking.FitPackage.Discriminator == 3 && booking.Presentation != null && booking.Presentation.File == null) {
+                list += "<li>Vortrags-Datei</li>";
+            }
+
+            if (list == String.Empty) {
+                list = "Alle nötigen Daten sind angegeben";
+            } else {
+                list = "<ul>" + list + "</ul>";
+            }
+
+            return list;
+        }
+
+        private static string AttachRegistrationPdfToMail(MailMessage objeto_mail, Booking booking) {
             string file;
 
             using (IUnitOfWork uow = new UnitOfWork()) {
                 file = uow.BookingRepository.GetById(booking.Id).PdfFilePath;
             }
 
-            byte[] bytes = System.IO.File.ReadAllBytes(file);
             objeto_mail.Attachments.Add(new Attachment(file));
+            return file;
         }
 
         private static SmtpClient GetSmtpClient(SmtpConfig smtpConfig) {

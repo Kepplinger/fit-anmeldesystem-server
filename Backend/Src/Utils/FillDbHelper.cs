@@ -10,6 +10,8 @@ using StoreService.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Utils {
@@ -23,7 +25,9 @@ namespace Backend.Utils {
             fitUser.UserName = fitUser.Email;
             fitUser.Role = "FitAdmin";
 
-            await userManager.CreateAsync(fitUser, "test123");
+            string hashedPassword = GenerateSHA256String("test123");
+
+            await userManager.CreateAsync(fitUser, hashedPassword);
 
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";
@@ -33,11 +37,36 @@ namespace Backend.Utils {
             _context.SmtpConfigs.Add(smtpConfig);
 
             Console.WriteLine("Search for Companies who want to join FIT ...");
+
+            MemberStatus memberStatus = new MemberStatus();
+            memberStatus.DefaultPrice = 0;
+            memberStatus.Name = "keinen";
+
+            MemberStatus memberStatus2 = new MemberStatus();
+            memberStatus2.DefaultPrice = 0;
+            memberStatus2.Name = "interessiert";
+
+            MemberStatus memberStatus3 = new MemberStatus();
+            memberStatus3.DefaultPrice = 200;
+            memberStatus3.Name = "kleine Mitgliedschaft";
+
+            MemberStatus memberStatus4 = new MemberStatus();
+            memberStatus4.DefaultPrice = 400;
+            memberStatus4.Name = "große Mitgliedschaft";
+
+            _context.MemberStati.Add(memberStatus);
+            _context.MemberStati.Add(memberStatus2);
+            _context.MemberStati.Add(memberStatus3);
+            _context.MemberStati.Add(memberStatus4);
+            _context.SaveChanges();
+
             // Set up Company
             Company company = new Company();
             company.Name = "Kepplinger IT";
             company.IsAccepted = 1;
             company.RegistrationToken = "FirmenToken1";
+            company.MemberStatus = memberStatus3;
+            company.MemberPaymentAmount = memberStatus3.DefaultPrice;
 
             // Set up Address
             Address address = new Address();
@@ -56,7 +85,7 @@ namespace Backend.Utils {
             contact.LastName = "Sakal";
             contact.Gender = "M";
             contact.PhoneNumber = "+4369917209297";
-            contact.Email = "andi.sakal15@gmail.com";
+            contact.Email = "simon.kepplinger@gmail.com";
 
             _context.Contacts.Add(contact);
             _context.SaveChanges();
@@ -157,6 +186,7 @@ namespace Backend.Utils {
 
             Event e = new Event();
             e.EventDate = DateTime.Now;
+            e.PresentationsLocked = false;
             e.RegistrationEnd = DateTime.Now.AddMonths(2);
             e.RegistrationStart = DateTime.Now.AddMonths(-2);
             e.RegistrationState = new RegistrationState();
@@ -249,7 +279,6 @@ namespace Backend.Utils {
                 p.Branches = new List<PresentationBranch>();
                 p.Description = "Hallo ist da jemand?";
                 p.IsAccepted = 0;
-                p.RoomNumber = "E27";
                 p.Title = "Coole Präsi";
                 p.File = null;
 
@@ -265,7 +294,7 @@ namespace Backend.Utils {
                 booking.ProvidesThesis = false;
                 booking.Remarks = "Remark";
                 booking.CreationDate = DateTime.Now;
-                booking.fk_FitPackage = package.Id;
+                booking.fk_FitPackage = package3.Id;
                 booking.Event = e;
                 booking.Representatives = repre;
                 booking.fk_Company = company.Id;
@@ -302,6 +331,79 @@ namespace Backend.Utils {
 
         public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
+            Email fitInvation = new Email("FI", "FIT Einladung (Firma)",
+                  "Einladung für den derzeitigen FIT",
+                  "<!DOCTYPE html>" +
+                               "<html>" +
+                               "<head>" +
+                               "</head>" +
+                               "<body>" +
+                               "<p>Sie sind herzlich eingeladen!</p>" +
+                               "</body>" +
+                               "</html>",
+                  "Einladung für den FIT - ABSLEO HTL Leonding FIT");
+
+            Email presentationRejected = new Email("PR", "Vortrag abgelehnt (Firma)",
+                              "Ablehnung des Vortrags der jeweiligen Firma.",
+                              "<!DOCTYPE html>" +
+                                           "<html>" +
+                                           "<head>" +
+                                           "</head>" +
+                                           "<body>" +
+                                           "<p>Ihr Vortrag wurde abeglehnt!</p>" +
+                                           "</body>" +
+                                           "</html>",
+                              "Ihr Vortrag wurde abeglehnt - ABSLEO HTL Leonding FIT");
+
+            Email presentationAccepted = new Email("PA", "Vortrag bestätigt (Firma)",
+                  "Bestätigung des Vortrags der jeweiligen Firma.",
+                  "<!DOCTYPE html>" +
+                               "<html>" +
+                               "<head>" +
+                               "</head>" +
+                               "<body>" +
+                               "<p>Ihr Vortrag wurde bestätigt!</p>" +
+                               "</body>" +
+                               "</html>",
+                  "Ihr Vortrag wurde bestätigt - ABSLEO HTL Leonding FIT");
+
+
+            Email bookingRejected = new Email("BR", "Anmeldung abgelehnt (Firma)",
+                              "Diese Email geht an die Firma und gilt als Ablehnung der Anmeldung.",
+                              "<!DOCTYPE html>" +
+                                           "<html>" +
+                                           "<head>" +
+                                           "</head>" +
+                                           "<body>" +
+                                           "<p>Ihre Anmeldung wurde abeglehnt!</p>" +
+                                           "</body>" +
+                                           "</html>",
+                              "Ihre Anmeldung wurde abeglehnt - ABSLEO HTL Leonding FIT");
+
+            Email bookingAccepted = new Email("BA", "Anmeldung bestätigt (Firma)",
+                               "Diese Email geht an die Firma und gilt als Bestätigungs-Email der Anmeldung.",
+                               "<!DOCTYPE html>" +
+                                            "<html>" +
+                                            "<head>" +
+                                            "</head>" +
+                                            "<body>" +
+                                            "<p>Ihre Anmeldung wurde bestätigt!</p>" +
+                                            "</body>" +
+                                            "</html>",
+                               "Ihre Anmeldung wurde bestätigt - ABSLEO HTL Leonding FIT");
+
+            Email bookingDataRequired = new Email("DR", "FIT-Anmeldungs-Daten ausstehend (Firma)",
+                               "Diese Email weist die Firma auf fehlende Daten hin.",
+                               "<!DOCTYPE html>" +
+                                            "<html>" +
+                                            "<head>" +
+                                            "</head>" +
+                                            "<body>" +
+                                            "<p>Folgende Daten fehlen: {{ Booking.REQUIRED_DATA }}</p>" +
+                                            "</body>" +
+                                            "</html>",
+                               "Ausstehende Daten - ABSLEO HTL Leonding FIT");
+
             Email isPendingGottenCompany = new Email("PGC", "Antrag eingereicht (Firma)",
                                 "Diese Email geht an die Firma und gilt als Bestätigungsemail eines erfolgreichen Firmenantrags",
                                 "<!DOCTYPE html>" +
@@ -387,7 +489,7 @@ namespace Backend.Utils {
                                              "<br><br></div><img src=\"http://www.absleo.at/typo3temp/processed/csm_absleo_logo_ohne_Rahmen_ba0c412e5a.png\" alt=\"ABSLEO Logo\"/>" +
                                              "</body>" +
                                              "</html>",
-                               "FIT-Buchung wurde akzeptiert - ABSLEO HTL Leonding FIT");
+                               "FIT-Buchung wurde eingereicht - ABSLEO HTL Leonding FIT");
 
             Email SendForgottenCompany = new Email("SFC", "Firma-Code vergessen (Firma)",
                                 "Dies ist eine FirmenCode vergessen Email",
@@ -471,16 +573,29 @@ namespace Backend.Utils {
                 new EmailVariable("Paket-Name",  concatFieldPath(nameof(Booking.FitPackage), nameof(FitPackage.Name)), nameof(Booking)),
                 new EmailVariable("Paket-Preis",  concatFieldPath(nameof(Booking.FitPackage), nameof(FitPackage.Price)), nameof(Booking)),
 
-                new EmailVariable("Präsentation-Name",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.Title)), nameof(Booking)),
-                new EmailVariable("Präsentation-Raum",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.RoomNumber)), nameof(Booking)),
-                new EmailVariable("Präsentation-Datei",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.File), nameof(DataFile.Name)), nameof(Booking)),
-
                 new EmailVariable("Kontakt-Anrede",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.Gender)), nameof(Booking)),
                 new EmailVariable("geehrte/r Kontakt-Anrede",  "DEAR_" + concatFieldPath(nameof(Booking.Contact), nameof(Contact.Gender)), nameof(Booking)),
                 new EmailVariable("Kontakt-Vorname",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.FirstName)), nameof(Booking)),
                 new EmailVariable("Kontakt-Nachname",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.LastName)), nameof(Booking)),
                 new EmailVariable("Kontakt-Email",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.Email)), nameof(Booking)),
                 new EmailVariable("Kontakt-Telefon",  concatFieldPath(nameof(Booking.Contact), nameof(Contact.PhoneNumber)), nameof(Booking)),
+                new EmailVariable("Ausstehende Daten (Liste)", "REQUIRED_DATA", nameof(Booking)),
+
+                // EVENT
+                new EmailVariable("FIT-Datum",  concatFieldPath(nameof(Booking.Event), nameof(Event.EventDate)), nameof(Booking)),
+                new EmailVariable("FIT-Anmelde-Anfang",  concatFieldPath(nameof(Booking.Event), nameof(Event.RegistrationStart)), nameof(Booking)),
+                new EmailVariable("FIT-Anmelde-Ende",  concatFieldPath(nameof(Booking.Event), nameof(Event.RegistrationEnd)), nameof(Booking)),
+
+                // PRESENTATION
+                new EmailVariable("Präsentation-Name",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.Title)), nameof(Presentation)),
+                new EmailVariable("Präsentation-Raum",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.RoomNumber)), nameof(Presentation)),
+                new EmailVariable("Präsentation-Datei",  concatFieldPath(nameof(Booking.Presentation), nameof(Presentation.File), nameof(DataFile.Name)), nameof(Presentation)),
+            };
+
+            List<EmailVariable> invitaionDates = new List<EmailVariable> {
+                new EmailVariable("FIT-Datum",  "FIT_DATE", nameof(Company)),
+                new EmailVariable("FIT-Anmelde-Anfang",  "FIT_REG_START", nameof(Company)),
+                new EmailVariable("FIT-Anmelde-Ende",  "FIT_REG_END", nameof(Company)),
             };
 
             uow.EmailVariableRepository.InsertMany(variables);
@@ -489,16 +604,28 @@ namespace Backend.Utils {
             List<EmailVariable> gradauteVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Graduate)).ToList();
             List<EmailVariable> companyVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Company)).ToList();
             List<EmailVariable> bookingVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Booking)).ToList();
+            List<EmailVariable> presentationVariables = uow.EmailVariableRepository.Get(filter: v => v.Entity == nameof(Presentation)).ToList();
 
             // mapping the variables to the resolve-entity EmailVariableUsage
-            CompanyAssigned.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(CompanyAssigned, v)).ToList();
-            IsPendingAcceptedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingAcceptedCompany, v)).ToList();
-            IsPendingDeniedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingDeniedCompany, v)).ToList();
-            isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).ToList();
-            isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).ToList();
-            SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).ToList();
-            SendForgottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgottenCompany, v)).ToList();
-            SendForgottenGraduate.AvailableVariables = gradauteVariables.Select(v => new EmailVariableUsage(SendForgottenGraduate, v)).ToList();
+            CompanyAssigned.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(CompanyAssigned, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            IsPendingAcceptedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingAcceptedCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            IsPendingDeniedCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(IsPendingDeniedCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            isPendingGottenAdmin.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenAdmin, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            isPendingGottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(isPendingGottenCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            SendForgottenCompany.AvailableVariables = companyVariables.Select(v => new EmailVariableUsage(SendForgottenCompany, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            SendForgottenGraduate.AvailableVariables = gradauteVariables.Select(v => new EmailVariableUsage(SendForgottenGraduate, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+
+            fitInvation.AvailableVariables = companyVariables.Concat(invitaionDates).Select(v => new EmailVariableUsage(fitInvation, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+
+            SendBookingAcceptedMail.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(SendBookingAcceptedMail, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            bookingAccepted.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingAccepted, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            bookingRejected.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingRejected, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            bookingDataRequired.AvailableVariables = bookingVariables.Select(v => new EmailVariableUsage(bookingDataRequired, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+
+            presentationAccepted.AvailableVariables = bookingVariables.Concat(presentationVariables)
+                .Select(v => new EmailVariableUsage(presentationAccepted, v)).OrderBy(v => v.EmailVariable.Name).ToList();
+            presentationRejected.AvailableVariables = bookingVariables.Concat(presentationVariables)
+                .Select(v => new EmailVariableUsage(presentationRejected, v)).OrderBy(v => v.EmailVariable.Name).ToList();
 
             // persist emails
             uow.EmailRepository.Insert(CompanyAssigned);
@@ -506,9 +633,15 @@ namespace Backend.Utils {
             uow.EmailRepository.Insert(IsPendingDeniedCompany);
             uow.EmailRepository.Insert(isPendingGottenAdmin);
             uow.EmailRepository.Insert(isPendingGottenCompany);
-            uow.EmailRepository.Insert(SendBookingAcceptedMail);
             uow.EmailRepository.Insert(SendForgottenCompany);
             uow.EmailRepository.Insert(SendForgottenGraduate);
+            uow.EmailRepository.Insert(SendBookingAcceptedMail);
+            uow.EmailRepository.Insert(bookingAccepted);
+            uow.EmailRepository.Insert(bookingRejected);
+            uow.EmailRepository.Insert(bookingDataRequired);
+            uow.EmailRepository.Insert(fitInvation);
+            uow.EmailRepository.Insert(presentationAccepted);
+            uow.EmailRepository.Insert(presentationRejected);
             uow.Save();
         }
 
@@ -519,6 +652,21 @@ namespace Backend.Utils {
         /// <returns></returns>
         private static string concatFieldPath(params string[] args) {
             return String.Join('.', args);
+        }
+
+        private static string GenerateSHA256String(string inputString) {
+            SHA256 sha256 = SHA256Managed.Create();
+            byte[] bytes = Encoding.UTF8.GetBytes(inputString);
+            byte[] hash = sha256.ComputeHash(bytes);
+            return GetStringFromHash(hash);
+        }
+
+        private static string GetStringFromHash(byte[] hash) {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++) {
+                result.Append(hash[i].ToString("X2"));
+            }
+            return result.ToString();
         }
     }
 }

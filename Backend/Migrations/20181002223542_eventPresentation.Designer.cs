@@ -12,9 +12,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181002223542_eventPresentation")]
+    partial class eventPresentation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,6 +269,10 @@ namespace Backend.Migrations
 
                     b.Property<double>("MemberPaymentAmount");
 
+                    b.Property<int>("MemberSince");
+
+                    b.Property<int>("MemberStatus");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30);
@@ -285,8 +290,6 @@ namespace Backend.Migrations
 
                     b.Property<string>("fk_FitUser");
 
-                    b.Property<int>("fk_MemberStatus");
-
                     b.HasKey("Id");
 
                     b.HasIndex("fk_Address");
@@ -294,8 +297,6 @@ namespace Backend.Migrations
                     b.HasIndex("fk_Contact");
 
                     b.HasIndex("fk_FitUser");
-
-                    b.HasIndex("fk_MemberStatus");
 
                     b.ToTable("Companies");
                 });
@@ -713,26 +714,6 @@ namespace Backend.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("Backend.Src.Core.Entities.MemberStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<double>("DefaultPrice");
-
-                    b.Property<bool>("IsArchive");
-
-                    b.Property<string>("Name");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MemberStati");
-                });
-
             modelBuilder.Entity("Backend.Src.Core.Entities.SmtpConfig", b =>
                 {
                     b.Property<int>("Id")
@@ -1012,11 +993,6 @@ namespace Backend.Migrations
                     b.HasOne("Backend.Core.Entities.UserManagement.FitUser", "FitUser")
                         .WithMany()
                         .HasForeignKey("fk_FitUser")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Backend.Src.Core.Entities.MemberStatus", "MemberStatus")
-                        .WithMany()
-                        .HasForeignKey("fk_MemberStatus")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

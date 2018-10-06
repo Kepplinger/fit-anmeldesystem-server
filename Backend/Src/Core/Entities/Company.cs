@@ -1,4 +1,5 @@
 using Backend.Core.Entities.UserManagement;
+using Backend.Src.Core.Entities;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -39,9 +40,10 @@ namespace Backend.Core.Entities
 
         public double MemberPaymentAmount { get; set; }
 
-        public int MemberSince { get; set; }
+        public int fk_MemberStatus { get; set; }
 
-        public int MemberStatus { get; set; } // 0 nichts, 1 interessiert, 2 kla, 3 groß
+        [ForeignKey("fk_MemberStatus")]
+        public MemberStatus MemberStatus { get; set; }
 
         public Company() {
             Tags = new List<CompanyTag>();

@@ -13,6 +13,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Backend.Src.Persistence.Facades;
+using Backend.Src.Utils;
+using System.Security.Claims;
 
 namespace Backend.Controllers {
 
@@ -38,8 +40,9 @@ namespace Backend.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("application/json")]
         [Authorize(Policy = "MemberAndWriteableAdmins")]
-        public IActionResult Create([FromBody] Booking jsonBooking, [FromQuery] bool isAdminChange) {
+        public IActionResult Create([FromBody] Booking jsonBooking) {
             Booking booking = this._unitOfWork.BookingRepository.Get(filter: c => c.Id == jsonBooking.Id).FirstOrDefault();
+            bool isAdminChange = UserClaimsHelper.IsUserAdmin(User.Identity as ClaimsIdentity);
 
             if (jsonBooking != null && booking != null) {
                 return new OkObjectResult(_bookingFacade.Update(jsonBooking, true, isAdminChange));
@@ -75,11 +78,35 @@ namespace Backend.Controllers {
         [Authorize(Policy = "WritableFitAdmin")]
         [ProducesResponseType(typeof(Booking), StatusCodes.Status200OK)]
         public IActionResult AcceptBooking(int id, [FromBody] int status) {
-            Booking booking = _unitOfWork.BookingRepository.GetById(id);
+            Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Id == id).FirstOrDefault();
             if (booking != null) {
                 booking.isAccepted = status;
+
+                if (status == -1) {
+                    if (booking.Location != null) {
+                        booking.Location.isOccupied = false;
+                        booking.fk_Location = null;
+                        _unitOfWork.LocationRepository.Update(booking.Location);
+                    }
+
+                    if (booking.Presentation != null) {
+                        booking.Presentation.IsAccepted = -1;
+                        _unitOfWork.PresentationRepository.Update(booking.Presentation);
+                    }
+                }
+                
                 _unitOfWork.BookingRepository.Update(booking);
                 _unitOfWork.Save();
+
+                if (booking.isAccepted == 1) {
+                    EmailHelper.SendMailByIdentifier("BA", booking, booking.Contact.Email, _unitOfWork);
+                    if (EmailHelper.HasPendingData(booking)) {
+                        EmailHelper.SendMailByIdentifier("DR", booking, booking.Contact.Email, _unitOfWork);
+                    }
+                } else if (booking.isAccepted == -1) {
+                    EmailHelper.SendMailByIdentifier("BR", booking, booking.Contact.Email, _unitOfWork);
+                }
+
                 return new ObjectResult(booking);
             } else {
                 return new BadRequestResult();
@@ -117,7 +144,7 @@ namespace Backend.Controllers {
                     }
 
                     // IMAGES 
-                    ImageHelper.ManageBookingImages(jsonBooking);
+                    ImageHelper.ManageBookingFiles(jsonBooking);
 
                     // PACKAGE
                     jsonBooking.FitPackage = _unitOfWork.PackageRepository.Get(filter: p => p.Id == jsonBooking.fk_FitPackage).FirstOrDefault();
@@ -192,7 +219,16 @@ namespace Backend.Controllers {
                         }
                     }
 
+                    _unitOfWork.Save();
                     transaction.Commit();
+
+                    foreach (BookingBranch branch in jsonBooking.Branches) {
+                        branch.Branch = _unitOfWork.BranchRepository.GetById(branch.fk_Branch);
+                    }
+
+                    foreach (ResourceBooking resource in jsonBooking.Resources) {
+                        resource.Resource = _unitOfWork.ResourceRepository.GetById(resource.fk_Resource);
+                    }
 
                     //Senden der Bestätigungs E-Mail
                     DocumentBuilder doc = new DocumentBuilder();

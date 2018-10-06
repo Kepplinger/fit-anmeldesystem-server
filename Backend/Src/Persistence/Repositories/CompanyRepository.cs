@@ -22,6 +22,7 @@ namespace Backend.Persistence.Repositories {
             query = query
                 .Include(p => p.Address)
                 .Include(p => p.Contact)
+                .Include(p => p.MemberStatus)
                 .Include(p => p.Branches).ThenInclude(p => p.Branch)
                 .Include(p => p.Tags).ThenInclude(p => p.Tag);
 

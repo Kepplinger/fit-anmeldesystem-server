@@ -33,6 +33,7 @@ namespace StoreService.Persistence {
         public IGenericRepository<Area> AreaRepository { get; }
         public IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
         public IGenericRepository<Branch> BranchRepository { get; }
+        public IGenericRepository<MemberStatus> MemberStatusRepository { get; }
         public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
         public IGenericRepository<Contact> ContactRepository { get; }
         public IGenericRepository<Location> LocationRepository { get; }
@@ -75,6 +76,7 @@ namespace StoreService.Persistence {
             AddressRepository = new GenericRepository<Address>(_context);
             BookingRepository = new BookingRepository(_context);
             CompanyRepository = new CompanyRepository(_context);
+            MemberStatusRepository = new GenericRepository<MemberStatus>(_context);
             ContactRepository = new GenericRepository<Contact>(_context);
             RepresentativeRepository = new GenericRepository<Representative>(_context);
             BranchRepository = new GenericRepository<Branch>(_context);
@@ -153,6 +155,8 @@ namespace StoreService.Persistence {
             Console.WriteLine("Make Migrations ...");
             MigrateDatabase();
 
+            Save();
+
             using (var scope = provider.GetRequiredService<IServiceScopeFactory>().CreateScope()) {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<FitUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -166,6 +170,8 @@ namespace StoreService.Persistence {
                         await roleManager.AddClaimAsync(newRole, new Claim("rol", role));
                     }
                 }
+
+                Save();
 
                 // Creates some TestData
                 await FillDbHelper.createTestData(_context, userManager);

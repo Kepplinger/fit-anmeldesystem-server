@@ -2,6 +2,7 @@
 using Backend.Core.Entities;
 using Backend.Core.Entities.UserManagement;
 using Backend.Src.Persistence.Facades;
+using Backend.Src.Utils;
 using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers {
@@ -75,6 +77,7 @@ namespace Backend.Controllers {
                 await _userManager.CreateAsync(companyUser, company.RegistrationToken);
 
                 company.fk_FitUser = companyUser.Id;
+                company.fk_MemberStatus = _unitOfWork.MemberStatusRepository.Get().FirstOrDefault().Id;
 
                 _unitOfWork.CompanyRepository.Insert(company);
                 _unitOfWork.Save();
@@ -89,7 +92,9 @@ namespace Backend.Controllers {
         [HttpPut]
         [Consumes("application/json")]
         [Authorize(Policy = "MemberAndWriteableAdmins")]
-        public IActionResult Update([FromBody]Company company, [FromQuery] bool isAdminChange) {
+        public IActionResult Update([FromBody]Company company) {
+            bool isAdminChange = UserClaimsHelper.IsUserAdmin(User.Identity as ClaimsIdentity);
+
             Contract.Ensures(Contract.Result<IActionResult>() != null);
             try {
                 return new OkObjectResult(_companyFacade.Update(company, true, isAdminChange));
@@ -142,7 +147,6 @@ namespace Backend.Controllers {
             pending.Name = existing.Name;
             pending.Branches = existing.Branches;
             pending.MemberPaymentAmount = existing.MemberPaymentAmount;
-            pending.MemberSince = existing.MemberSince;
             pending.MemberStatus = existing.MemberStatus;
             pending.Address = existing.Address;
             pending.RegistrationToken = existing.RegistrationToken;

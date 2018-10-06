@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -81,6 +82,7 @@ namespace Backend.Core.Entities
         [MaxLength(30)]
         public string EstablishmentsAut { get; set; }
 
+        [JsonIgnore]
         public string PdfFilePath { get; set; }
 
     }

@@ -15,6 +15,7 @@ namespace Backend.Persistence
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Area> Areas { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<MemberStatus> MemberStati { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<ChangeProtocol> ChangeProtocols { get; set; }
@@ -48,14 +49,6 @@ namespace Backend.Persistence
         {
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
-
-            /*modelBuilder.Entity<BookCategory>()
-            .HasKey(bc => new { bc.BookId, bc.CategoryId });
-
-            modelBuilder.Entity<BookCategory>()
-                .HasOne(bc => bc.Book)
-                .WithMany(b => b.BookCategories)
-                .HasForeignKey(bc => bc.BookId);*/
 
             base.OnModelCreating(modelBuilder);
         }
