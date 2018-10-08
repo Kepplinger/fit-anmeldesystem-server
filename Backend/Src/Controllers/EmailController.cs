@@ -13,6 +13,7 @@ using Backend.Src.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.Controllers {
+
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class EmailController : Controller {
