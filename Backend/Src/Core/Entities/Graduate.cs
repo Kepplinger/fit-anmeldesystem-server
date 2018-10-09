@@ -15,11 +15,9 @@ namespace Backend.Core.Entities
         public string fk_FitUser { get; set; }
 
         [Required]
-        [MaxLength(30)]
         public string FirstName { get; set; }
 
         [Required]
-        [MaxLength(30)]
         public string LastName { get; set; }
 
         [ForeignKey("fk_Address"), Required]

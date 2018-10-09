@@ -47,12 +47,18 @@ namespace Backend.Controllers {
 
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateCompany([FromBody] Company jsonComp) {
+        public async Task<IActionResult> CreateCompany([FromBody] Company company) {
 
-            if (jsonComp != null) {
-                Company company = jsonComp;
-                if (jsonComp.Address.Addition == null) {
-                    jsonComp.Address.Addition = "";
+            if (company != null) {
+
+                if (_unitOfWork.CompanyRepository.Get(c => c.Name == company.Name).Count() > 0) {
+                    return new BadRequestObjectResult(new {
+                        errorMessage = "Es ist bereits eine Firma mit diesem Namen registriert!",
+                    });
+                }
+
+                if (company.Address.Addition == null) {
+                    company.Address.Addition = "";
                 }
 
                 string loginCode = "";
