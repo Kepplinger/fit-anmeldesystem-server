@@ -64,7 +64,7 @@ namespace Backend.Utils {
             Company company = new Company();
             company.Name = "Kepplinger IT";
             company.IsAccepted = 1;
-            company.RegistrationToken = "FirmenToken1";
+            company.RegistrationToken = "Firm-enTo-ken1";
             company.MemberStatus = memberStatus3;
             company.MemberPaymentAmount = memberStatus3.DefaultPrice;
 

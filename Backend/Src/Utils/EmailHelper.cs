@@ -89,7 +89,7 @@ namespace Backend.Utils {
 
             Event currentEvent = null;
 
-            if (email.Identifier == "FI") {
+            if (email.Identifier == "FI" || email.Identifier == "C") {
                 currentEvent = unitOfWork.EventRepository.Get(e => e.RegistrationState.IsCurrent).FirstOrDefault();
             }
 
