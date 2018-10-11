@@ -32,6 +32,7 @@ namespace StoreService.Persistence {
         /// </summary>
         public IGenericRepository<Area> AreaRepository { get; }
         public IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
+        public IGenericRepository<LockPage> LockPageRepository { get;  }
         public IGenericRepository<Branch> BranchRepository { get; }
         public IGenericRepository<MemberStatus> MemberStatusRepository { get; }
         public IGenericRepository<ChangeProtocol> ChangeRepository { get; }
@@ -74,6 +75,7 @@ namespace StoreService.Persistence {
             AreaRepository = new GenericRepository<Area>(_context);
             RegistrationStateRepository = new GenericRepository<RegistrationState>(_context);
             AddressRepository = new GenericRepository<Address>(_context);
+            LockPageRepository = new GenericRepository<LockPage>(_context);
             BookingRepository = new BookingRepository(_context);
             CompanyRepository = new CompanyRepository(_context);
             MemberStatusRepository = new GenericRepository<MemberStatus>(_context);

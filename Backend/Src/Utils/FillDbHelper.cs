@@ -29,6 +29,26 @@ namespace Backend.Utils {
 
             await userManager.CreateAsync(fitUser, hashedPassword);
 
+            #region LockPage
+            LockPage lockPage = new LockPage();
+            lockPage.Expired = @"<div>
+                                    <p> Leider ist der Anmeldungszeitruam zum FIT leider schon vorüber. Die Ameldung kann nur in einen bestimmten Zeitraum
+                                    durchgeführt werden, und auch nur solange noch Plätze frei sind.</ p >
+  
+                                    <p>Bei Fragen oder anderen Anliegen, können Sie sich gerne mit uns in Kontakt setzen: </p>
+
+                                </div>";
+            lockPage.Incoming = @"<div>
+                                    <div class=""alert alert-info"" role=""alert"">
+                                    Die Anmeldung zum FIT ist erst<span class=""text-bold"">ab dem Versand der Einladungen</span>(Anfang Oktober)
+                                    möglich!</div>
+
+                                    <p>Bei Fragen oder anderen Anliegen, können Sie sich gerne mit uns in Kontakt setzen: </p>
+
+                                </div>";
+            #endregion
+            _context.LockPages.Add(lockPage);
+
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";
             smtpConfig.Port = 587;

@@ -22,6 +22,9 @@ namespace Backend.Core.Entities {
         public List<Area> Areas { get; set; }
 
         [Required]
+        public bool IsExpiredLockMode { get; set; }
+
+        [Required]
         public RegistrationState RegistrationState { get; set; }
     }
 }
