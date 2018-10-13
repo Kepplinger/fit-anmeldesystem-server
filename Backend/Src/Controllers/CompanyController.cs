@@ -51,7 +51,7 @@ namespace Backend.Controllers {
 
             if (company != null) {
 
-                if (_unitOfWork.CompanyRepository.Get(c => c.Name == company.Name).Count() > 0) {
+                if (_unitOfWork.CompanyRepository.Get(c => c.Name == company.Name && c.IsAccepted != -1).Count() > 0) {
                     return new BadRequestObjectResult(new {
                         errorMessage = "Es ist bereits eine Firma mit diesem Namen registriert!",
                     });
@@ -143,9 +143,10 @@ namespace Backend.Controllers {
                 EmailHelper.SendMailByIdentifier("CA", pendingCompany, pendingCompany.Contact.Email, _unitOfWork);
             }
 
-            _unitOfWork.CompanyRepository.Delete(pendingCompany);
+            pendingCompany.IsAccepted = -1;
+            _unitOfWork.CompanyRepository.Update(pendingCompany);
             _unitOfWork.Save();
-            return new NoContentResult();
+            return new OkObjectResult(pendingCompany);
         }
 
         private Company CopyPropertiesFromExistingToPendingCompanies(Company pending, Company existing)

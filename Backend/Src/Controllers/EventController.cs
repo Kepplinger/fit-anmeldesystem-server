@@ -77,6 +77,13 @@ namespace Backend.Controllers {
             }
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(StatusCodes), StatusCodes.Status200OK)]
+        public IActionResult GetEvent(int id) {
+            Event fitEvent = _unitOfWork.EventRepository.Get(e => e.Id == id).FirstOrDefault();
+            return new OkObjectResult(fitEvent);
+        }
+
         private IActionResult UpdateEvent(Event fitEvent) {
 
             Event eventToUpdate = _unitOfWork.EventRepository.Get(p => p.Id == fitEvent.Id).FirstOrDefault();
