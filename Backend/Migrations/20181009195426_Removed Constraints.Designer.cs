@@ -12,9 +12,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181009195426_Removed Constraints")]
+    partial class RemovedConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -440,8 +441,6 @@ namespace Backend.Migrations
 
                     b.Property<DateTime>("EventDate");
 
-                    b.Property<bool>("IsExpiredLockMode");
-
                     b.Property<bool>("PresentationsLocked");
 
                     b.Property<DateTime>("RegistrationEnd");
@@ -699,26 +698,6 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("Backend.Src.Core.Entities.LockPage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Expired")
-                        .IsRequired();
-
-                    b.Property<string>("Incoming")
-                        .IsRequired();
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LockPages");
                 });
 
             modelBuilder.Entity("Backend.Src.Core.Entities.MemberStatus", b =>

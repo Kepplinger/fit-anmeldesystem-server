@@ -39,10 +39,8 @@ namespace Backend.Core.Entities
         public FitPackage FitPackage { get; set; }
         public int fk_FitPackage { get; set; }
 
-        [MaxLength(500)]
         public string AdditionalInfo { get; set; }
 
-        [MaxLength(500)]
         public string Remarks { get; set; }
 
         public bool ProvidesSummerJob { get; set; }
@@ -64,12 +62,11 @@ namespace Backend.Core.Entities
 
         public DataFile Logo { get; set; }
 
-        [Required, MaxLength(20)]
+        [Required]
         public string Branch { get; set; }
 
         public int EstablishmentsCountInt { get; set; }
 
-        [MaxLength(30)]
         public string EstablishmentsInt { get; set; }
 
         public int EstablishmentsCountAut { get; set; }
@@ -79,11 +76,9 @@ namespace Backend.Core.Entities
 
         public int? fk_Contact{ get; set; }
 
-        [MaxLength(30)]
         public string EstablishmentsAut { get; set; }
 
         [JsonIgnore]
         public string PdfFilePath { get; set; }
-
     }
 }

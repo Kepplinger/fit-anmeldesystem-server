@@ -17,6 +17,7 @@ namespace Backend.Core.Contracts {
         IGenericRepository<Area> AreaRepository { get; }
         IGenericRepository<MemberStatus> MemberStatusRepository { get; }
         IGenericRepository<RegistrationState> RegistrationStateRepository { get; }
+        IGenericRepository<LockPage> LockPageRepository { get; }
         IGenericRepository<Branch> BranchRepository { get; }
         IGenericRepository<Contact> ContactRepository { get; }
         IGenericRepository<Location> LocationRepository { get; }

@@ -15,6 +15,7 @@ namespace Backend.Persistence
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Area> Areas { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<LockPage> LockPages { get; set; }
         public DbSet<MemberStatus> MemberStati { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Event> Events { get; set; }

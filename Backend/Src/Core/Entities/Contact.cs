@@ -4,10 +4,10 @@ namespace Backend.Core.Entities
 {
     public class Contact : TimestampEntityObject
     {
-        [Required, MaxLength(15)]
+        [Required]
         public string FirstName { get; set; }
 
-        [Required, MaxLength(15)]
+        [Required]
         public string LastName { get; set; }
 
         [Required, EmailAddress]

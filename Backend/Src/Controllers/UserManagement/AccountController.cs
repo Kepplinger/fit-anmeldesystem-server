@@ -30,12 +30,7 @@ namespace Backend.Controllers.UserManagement
         [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult Get()
         {
-            return new OkObjectResult(_userManager.Users.Where(u => u.Role != "Member")
-                .Select(u => new {
-                    id = u.Id,
-                    email = u.Email,
-                    role = u.Role
-                }));
+            return new OkObjectResult(GetAllAdmins());
         }
 
         [HttpDelete]
@@ -45,8 +40,9 @@ namespace Backend.Controllers.UserManagement
         {
             FitUser user = await _userManager.FindByIdAsync(id);
             await _userManager.DeleteAsync(user);
+            _unitOfWork.Save();
 
-            return new NoContentResult();
+            return new OkObjectResult(GetAllAdmins());
         }
 
         [HttpPost]
@@ -65,7 +61,17 @@ namespace Backend.Controllers.UserManagement
 
             _unitOfWork.Save();
 
-            return new OkObjectResult(userCredentials.FitUser);
+            return new OkObjectResult(GetAllAdmins());
+        }
+
+        private List<object> GetAllAdmins()
+        {
+            return _userManager.Users.Where(u => u.Role != "Member")
+                .Select(u => new {
+                    id = u.Id,
+                    email = u.Email,
+                    role = u.Role
+                } as object).ToList();
         }
     }
 

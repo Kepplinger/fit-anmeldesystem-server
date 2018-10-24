@@ -11,8 +11,11 @@ using Microsoft.AspNetCore.Http;
 using Backend.Core;
 using Backend.Src.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Backend.Src.Core.DTOs;
+using Backend.Src.Core.Mapper;
 
 namespace Backend.Controllers {
+
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
     public class EmailController : Controller {
@@ -31,7 +34,7 @@ namespace Backend.Controllers {
             List<Email> emails = _unitOfWork.EmailRepository.Get(includeProperties: "AvailableVariables").ToList();
 
             if (emails != null && emails.Count > 0) {
-                return new OkObjectResult(emails.Select(e => mapEmailToDto(e)));
+                return new OkObjectResult(emails.Select(e => EmailMapper.MapEmailToDto(e)));
             } else {
                 return new NoContentResult();
             }
@@ -40,12 +43,12 @@ namespace Backend.Controllers {
         [HttpPut]
         [Authorize(Policy = "WritableAdmin")]
         public IActionResult UpdateMail([FromBody] EmailDTO email) {
-            Email emailEntity = mapDtoToEmail(email, _unitOfWork);
+            Email emailEntity = EmailMapper.MapDtoToEmail(email, _unitOfWork);
 
             if (_unitOfWork.EmailRepository.Get(m => m.Id == emailEntity.Id).FirstOrDefault() != null) {
                 _unitOfWork.EmailRepository.Update(emailEntity);
                 _unitOfWork.Save();
-                return new OkObjectResult(mapEmailToDto(emailEntity));
+                return new OkObjectResult(EmailMapper.MapEmailToDto(emailEntity));
             }
             return new BadRequestResult();
         }
@@ -53,19 +56,17 @@ namespace Backend.Controllers {
         [HttpPost]
         [Route("{identifier}")]
         [Authorize(Policy = "WritableAdmin")]
-        public IActionResult SendTestMail(string identifier, [FromBody] int[] companyIds) {
+        public IActionResult SendMails(string identifier, [FromBody] int[] companyIds) {
             Email mail = _unitOfWork.EmailRepository.Get(m => m.Identifier.ToLower().Equals(identifier.ToLower())).FirstOrDefault();
 
             foreach (int id in companyIds) {
                 if (mail.AvailableVariables.Any(v => v.EmailVariable.Entity == nameof(Company))) {
                     Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == id).FirstOrDefault();
-
                     if (company != null) {
                         EmailHelper.SendMailByIdentifier(identifier, company, company.Contact.Email, _unitOfWork);
                     }
                 } else {
                     Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Company.Id == id).FirstOrDefault();
-
                     if (booking != null) {
                         EmailHelper.SendMailByIdentifier(identifier, booking, booking.Contact.Email, _unitOfWork);
                     }
@@ -75,6 +76,56 @@ namespace Backend.Controllers {
             return new OkResult();
         }
 
+        [HttpPost]
+        [Route("custom")]
+        [Authorize(Policy = "WritableAdmin")]
+        public IActionResult SendCustomMails([FromBody] CustomEmailDTO customEmailBody) {
+
+            Email email = new Email();
+            email.Subject = customEmailBody.Subject;
+            email.Template = customEmailBody.Body;
+            email.Identifier = "C";
+
+            foreach (int id in customEmailBody.CompanyIds) {
+                if (customEmailBody.EntityType == nameof(Company)) {
+                    Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == id).FirstOrDefault();
+                    if (company != null) {
+                        EmailHelper.SendMail(email, company, company.Contact.Email, _unitOfWork);
+                    }
+                } else {
+                    Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Company.Id == id).FirstOrDefault();
+                    if (booking != null) {
+                        EmailHelper.SendMail(email, booking, booking.Contact.Email, _unitOfWork);
+                    }
+                }
+            }
+
+            return new OkResult();
+        }
+
+        [HttpPost]
+        [Route("custom/test")]
+        [Authorize(Policy = "WritableAdmin")]
+        public IActionResult SendCustomTestMails([FromBody] CustomTestEmailDTO customEmailBody) {
+            Email email = new Email();
+            email.Subject = customEmailBody.Subject;
+            email.Template = customEmailBody.Body;
+            email.Identifier = "C";
+
+            if (customEmailBody.EntityType == nameof(Company)) {
+                Company company = _unitOfWork.CompanyRepository.Get(filter: c => c.Id == customEmailBody.CompanyId).FirstOrDefault();
+                if (company != null) {
+                    EmailHelper.SendMail(email, company, customEmailBody.Receiver, _unitOfWork);
+                }
+            } else {
+                Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Company.Id == customEmailBody.CompanyId).FirstOrDefault();
+                if (booking != null) {
+                    EmailHelper.SendMail(email, booking, customEmailBody.Receiver, _unitOfWork);
+                }
+            }
+
+            return new OkResult();
+        }
 
         [HttpGet]
         [Route("{id}")]
@@ -96,7 +147,7 @@ namespace Backend.Controllers {
         [HttpPost("smtp")]
         [Authorize(Policy = "WritableFitAdmin")]
         public IActionResult SendSmtpTestMail([FromBody] SmtpConfig smtpConfig, [FromQuery] string emailAddress) {
-            if (smtpConfig != null && emailAddress !=string.Empty) {
+            if (smtpConfig != null && emailAddress != string.Empty) {
                 Email email = new Email("SMTP-Test-Mail", "SMTP-Test-Mail");
                 EmailHelper.SendMail(email, emailAddress, smtpConfig);
                 return new NoContentResult();
@@ -104,40 +155,5 @@ namespace Backend.Controllers {
                 return new BadRequestResult();
             }
         }
-
-        private Email mapDtoToEmail(EmailDTO emailTransfer, IUnitOfWork uow) {
-            return new Email {
-                Id = emailTransfer.Id,
-                Timestamp = emailTransfer.Timestamp,
-                Identifier = emailTransfer.Identifier,
-                Name = emailTransfer.Name,
-                Description = emailTransfer.Description,
-                Subject = emailTransfer.Subject,
-                Template = emailTransfer.Template,
-                AvailableVariables = uow.EmailVariableUsageRepository.Get(ev => ev.fk_Email == emailTransfer.Id).ToList()
-            };
-        }
-
-        private object mapEmailToDto(Email email) {
-            return new EmailDTO {
-                Id = email.Id,
-                Timestamp = email.Timestamp,
-                Identifier = email.Identifier,
-                Name = email.Name,
-                Description = email.Description,
-                Template = email.Template,
-                Subject = email.Subject,
-                AvailableVariables = email.AvailableVariables.Select(v => v.EmailVariable).ToList()
-            };
-        }
     }
-}
-
-public class EmailDTO : TimestampEntityObject {
-    public string Identifier { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Template { get; set; }
-    public string Subject { get; set; }
-    public List<EmailVariable> AvailableVariables { get; set; }
 }

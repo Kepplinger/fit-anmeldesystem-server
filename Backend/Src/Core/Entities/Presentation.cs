@@ -12,7 +12,6 @@ namespace Backend.Core.Entities
         [Required]
         public string Title { get; set; }
 
-        [MaxLength(500)]
         public string Description { get; set; }
 
         public int IsAccepted { get; set; }

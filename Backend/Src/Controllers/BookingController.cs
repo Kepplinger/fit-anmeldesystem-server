@@ -64,8 +64,9 @@ namespace Backend.Controllers {
             List<Booking> bookings = _unitOfWork.BookingRepository.Get(p => p.Event.Id == id).ToList();
             if (bookings != null && bookings.Count > 0) {
                 return new ObjectResult(bookings);
+            } else {
+                return new ObjectResult(new List<Booking>());
             }
-            return new NoContentResult();
         }
 
         /// <summary>
