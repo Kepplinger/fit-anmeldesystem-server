@@ -67,7 +67,7 @@ namespace Backend.Controllers {
                     }
                 } else {
                     Booking booking = _unitOfWork.BookingRepository.Get(filter: b => b.Company.Id == id).FirstOrDefault();
-                    if (booking != null) {
+                    if (booking != null && !EmailHelper.IsInvalidReminderMail(identifier, booking)) {
                         EmailHelper.SendMailByIdentifier(identifier, booking, booking.Contact.Email, _unitOfWork);
                     }
                 }

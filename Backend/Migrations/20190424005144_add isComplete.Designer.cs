@@ -12,9 +12,10 @@ using System;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190424005144_add isComplete")]
+    partial class addisComplete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,9 +155,9 @@ namespace Backend.Migrations
 
                     b.Property<int?>("fk_Presentation");
 
-                    b.Property<int>("isAccepted");
+                    b.Property<bool>("idComplete");
 
-                    b.Property<bool>("isComplete");
+                    b.Property<int>("isAccepted");
 
                     b.HasKey("Id");
 

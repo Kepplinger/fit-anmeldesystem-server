@@ -35,6 +35,8 @@ namespace Backend.Core.Entities
         [Required]
         public int isAccepted { get; set; }
 
+        public bool isComplete { get; set; }
+
         [ForeignKey("fk_FitPackage"), Required]
         public FitPackage FitPackage { get; set; }
         public int fk_FitPackage { get; set; }
