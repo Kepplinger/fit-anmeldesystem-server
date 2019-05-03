@@ -71,6 +71,7 @@ namespace Backend.Src.Persistence.Facades {
 
                     _unitOfWork.ContactRepository.Update(booking.Contact);
                     _unitOfWork.BookingRepository.Update(booking);
+                    booking.isComplete = !EmailHelper.HasPendingData(booking);
                     _unitOfWork.Save();
                     transaction.Commit();
 

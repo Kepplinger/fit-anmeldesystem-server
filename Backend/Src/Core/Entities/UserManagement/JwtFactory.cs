@@ -19,8 +19,7 @@ namespace Backend.Controllers.UserManagement {
         }
 
         public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity) {
-            var claims = new[]
-         {
+            var claims = new[] {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                  new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
@@ -34,7 +33,8 @@ namespace Backend.Controllers.UserManagement {
                 audience: _jwtOptions.Audience,
                 claims: claims,
                 notBefore: _jwtOptions.NotBefore,
-                expires: _jwtOptions.Expiration,
+                expires: DateTime.UtcNow.AddHours(1),
+                // expires: _jwtOptions.Expiration,
                 signingCredentials: _jwtOptions.SigningCredentials);
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
