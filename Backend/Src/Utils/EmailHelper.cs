@@ -172,6 +172,11 @@ namespace Backend.Utils {
                 || presentationPending;
         }
 
+        public static bool IsInvalidReminderMail(string identifier, Booking booking)
+        {
+            return identifier == "DR" && booking.isComplete;
+        }
+
         private static string GetListOfRequiredData(Booking booking) {
 
             string list = String.Empty;

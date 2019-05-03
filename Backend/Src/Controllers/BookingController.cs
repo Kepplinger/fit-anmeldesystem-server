@@ -180,6 +180,7 @@ namespace Backend.Controllers {
                     }
                     jsonBooking.Resources = null;
 
+                    jsonBooking.isComplete = !EmailHelper.HasPendingData(jsonBooking);
                     _unitOfWork.BookingRepository.Insert(jsonBooking);
                     _unitOfWork.Save();
 

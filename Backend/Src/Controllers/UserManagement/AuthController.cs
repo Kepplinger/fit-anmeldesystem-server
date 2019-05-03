@@ -36,7 +36,13 @@ namespace Backend.Controllers.UserManagement {
                 return BadRequest(ModelState);
             }
 
-            var identity = await UserClaimsHelper.GetClaimsIdentity(credentials.UserName, credentials.Password, _jwtFactory, _userManager);
+            var identity = await UserClaimsHelper.GetClaimsIdentity(
+                credentials.UserName, 
+                credentials.Password, 
+                _jwtFactory, 
+                _userManager
+            );
+
             if (identity == null) {
                 return BadRequest(new {
                     errorMessage = "Falsche E-Mail oder Passwort!"

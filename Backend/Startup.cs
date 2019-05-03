@@ -37,8 +37,13 @@ namespace Backend {
         public void ConfigureServices(IServiceCollection services) {
             services.AddDbContext<ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddIdentity<FitUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().AddUserManager<UserManager<FitUser>>();
             services.Configure<IdentityOptions>(options => { });
+
+            services.AddIdentity<FitUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders()
+                .AddUserManager<UserManager<FitUser>>();
+
             services.AddSingleton<IJwtFactory, JwtFactory>();
 
             services.AddAuthorization(options => {
@@ -82,11 +87,6 @@ namespace Backend {
                 options.Password.RequiredUniqueChars = 0;
             });
 
-            //services.AddAuthentication(o => {
-            //    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    o.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //}).AddJwtBearer();
-
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options => {
                         options.TokenValidationParameters =
@@ -95,7 +95,6 @@ namespace Backend {
                                  ValidateAudience = false,
                                  ValidateLifetime = true,
                                  ValidateIssuerSigningKey = true,
-
                                  IssuerSigningKey = _signingKey
                              };
                     });

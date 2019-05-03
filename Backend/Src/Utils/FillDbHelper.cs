@@ -201,6 +201,7 @@ namespace Backend.Utils {
             // AREA
             Area a = new Area();
             a.Designation = "Erdgeschoss";
+            a.Graphic = new DataFile();
             a.Locations = new List<Location>();
             a.Locations.Add(l);
 
