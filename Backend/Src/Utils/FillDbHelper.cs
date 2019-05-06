@@ -4,6 +4,7 @@ using Backend.Core.Entities;
 using Backend.Core.Entities.UserManagement;
 using Backend.Persistence;
 using Backend.Src.Core.Entities;
+using Bogus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StoreService.Persistence;
@@ -16,6 +17,14 @@ using System.Threading.Tasks;
 
 namespace Backend.Utils {
     public static class FillDbHelper {
+
+        public static int GENERATE_AMOUNT = 20;
+
+        public enum Gender
+        {
+            m,
+            f
+        }
 
         public async static Task createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
 
@@ -221,7 +230,57 @@ namespace Backend.Utils {
 
             Console.WriteLine("Set up some students in the database ...");
 
-            Graduate g = new Graduate();
+            #region createGraduates
+            var grad = new Faker<Graduate>()
+                .RuleFor(gr => gr.Gender, f => f.PickRandom<Gender>().ToString())
+                .RuleFor(gr => gr.FirstName, f => f.Name.FirstName())
+                .RuleFor(gr => gr.LastName, f => f.Name.LastName())
+                .RuleFor(gr => gr.Email, (f, u) => f.Internet.ExampleEmail(u.FirstName, u.LastName))
+                .RuleFor(gr => gr.PhoneNumber, f => f.Phone.PhoneNumber())
+                .RuleFor(gr => gr.GraduationYear, f => f.Random.Number(2000, 2019))
+                .RuleFor(gr => gr.RegistrationToken, f => f.Random.String2(12, 12))
+                .FinishWith((f,gr) => Console.WriteLine(gr.LastName));
+            var ad = new Faker<Address>()
+                .RuleFor(adr => adr.Street, f => f.Address.StreetName())
+                .RuleFor(adr => adr.StreetNumber, f => f.Address.StreetAddress())
+                .RuleFor(adr => adr.ZipCode, f => f.Address.ZipCode())
+                .RuleFor(ard => ard.City, f => f.Address.City())
+                .RuleFor(ard => ard.Addition, f => f.Address.SecondaryAddress());
+            try
+            {
+                for (int i = 0; i < GENERATE_AMOUNT; i++)
+                {
+                    var graduate = grad.Generate();
+                    var adr = ad.Generate();
+
+                    _context.Addresses.Add(adr);
+                    _context.SaveChanges();
+
+                    graduate.Address = adr;
+                    FitUser graduateUser = new FitUser();
+                    graduateUser.UserName = graduate.RegistrationToken;
+                    graduateUser.Role = "Member";
+
+                    await userManager.CreateAsync(graduateUser, graduate.RegistrationToken);
+
+                    graduate.fk_FitUser = graduateUser.Id;
+
+                    _context.Graduates.Add(graduate);
+                    _context.SaveChanges();
+
+                }
+            }
+            catch (ObjectDisposedException ex)
+            {
+                Console.WriteLine(ex);
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                Console.WriteLine(ex);
+            }
+            #endregion
+            #region Graduate comment
+            /*Graduate g = new Graduate();
             g.LastName = "Kepplinger";
             g.FirstName = "Simon";
             g.Gender = "M";
@@ -252,37 +311,8 @@ namespace Backend.Utils {
 
             _context.Graduates.Add(g);
             _context.SaveChanges();
-
-            Graduate g2 = new Graduate();
-            g2.LastName = "Sakal";
-            g2.FirstName = "Andrea";
-            g2.Gender = "F";
-            g2.Email = "andra.sakal@gmail.com";
-            g2.PhoneNumber = "000000007";
-            g2.GraduationYear = 2017;
-            g2.RegistrationToken = "GraduateToken2";
-
-            Address address2 = new Address();
-            address2.Street = "Asphaltstraße";
-            address2.StreetNumber = "32";
-            address2.ZipCode = "4040";
-            address2.City = "Linz";
-            address2.Addition = "";
-
-            _context.Addresses.Add(address2);
-            _context.SaveChanges();
-
-            g2.Address = address2;
-
-            FitUser graduateUser2 = new FitUser();
-            graduateUser2.UserName = g2.RegistrationToken;
-            graduateUser2.Role = "Member";
-
-            await userManager.CreateAsync(graduateUser2, g2.RegistrationToken);
-            g2.fk_FitUser = graduateUser2.Id;
-
-            _context.Graduates.Add(g2);
-            _context.SaveChanges();
+            */
+            #endregion
 
             for (int i = 0; i < 100; i++) {
                 //Representatives
