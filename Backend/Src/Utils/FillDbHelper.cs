@@ -18,9 +18,12 @@ using System.Threading.Tasks;
 namespace Backend.Utils {
     public static class FillDbHelper {
 
-        public static int GENERATE_AMOUNT = 20;
-        public static int MEMBERSHIP_AMOUNT = 7;
-
+        public static int NUMBER_GRADUTE = 20;
+        public static int NUMBER_MEMBERSHIP = 7;
+        public static int NUMBER_COMPANY = 10;
+        public static int NUMBER_PACKAGES = 3;
+        public static int NUMBER_RESOURCE = 15;
+        public static int NUMBER_BRANCH = 10;
         public enum Gender
         {
             m,
@@ -67,26 +70,29 @@ namespace Backend.Utils {
             _context.SmtpConfigs.Add(smtpConfig);
 
             Console.WriteLine("Search for Companies who want to join FIT ...");
+
+            #region MemberStati
             var member = new Faker<MemberStatus>()
                 .RuleFor(m => m.DefaultPrice, f => f.Random.Number(1, 1000))
                 .RuleFor(m => m.Name, f => f.Commerce.Product())
                 ;//.FinishWith((f, m) => Console.WriteLine(m.Name));
             Stack<MemberStatus> memberStack = new Stack<MemberStatus>();    
-            for (int i = 0; i < MEMBERSHIP_AMOUNT; i++)
+            for (int i = 0; i < NUMBER_MEMBERSHIP; i++)
             {
                 MemberStatus m = member.Generate();
                 _context.MemberStati.Add(m);
                 memberStack.Push(m);
             }
             _context.SaveChanges();
-
+            #endregion
+            #region Company
             var company = new Company();
             var contact = new Contact();
             var companyGen = new Faker<Company>()
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
                 .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
-                .RuleFor(c => c.MemberStatus, f => memberStack.ElementAt(f.Random.Number(0, MEMBERSHIP_AMOUNT - 1)))
+                .RuleFor(c => c.MemberStatus, f => memberStack.ElementAt(f.Random.Number(0, NUMBER_MEMBERSHIP - 1)))
                 .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
                 ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
             var addressGen = new Faker<Address>()
@@ -105,7 +111,7 @@ namespace Backend.Utils {
                 ;//.FinishWith((f, c) => Console.WriteLine(c.LastName));
 
 
-            for (int i = 0; i < MEMBERSHIP_AMOUNT; i++)
+            for (int i = 0; i < NUMBER_COMPANY; i++)
             {
                 try { 
                 var comp = companyGen.Generate();
@@ -137,64 +143,47 @@ namespace Backend.Utils {
                     Console.WriteLine(ex.Message);
                 }
             }
+            #endregion
+            #region Resource
             Resource resource = null;
             _context.SaveChanges();
             var ress = new Faker<Resource>()
                 .RuleFor(r => r.Name, f => f.Hacker.Noun())
                 ;//.FinishWith((f, r) => Console.WriteLine(r.Name));
-            for (int i = 0; i < GENERATE_AMOUNT; i++)
+            for (int i = 0; i < NUMBER_GRADUTE; i++)
             {
                 Resource res = ress.Generate();
                 _context.Resources.Add(res);
                 resource = res;
             }
             _context.SaveChanges();
+            #endregion
+            #region Package
+            var packageGen = new Faker<FitPackage>()
+                .RuleFor(p => p.Name, f => "Package-" + f.Name.FirstName())
+                .RuleFor(p => p.Description, f => f.Rant.Review())
+                .RuleFor(p => p.Price, f => f.Random.Number(0, 1000));
 
-            FitPackage package = new FitPackage();
-            package.Name = "Basispaket";
-            package.Discriminator = 1;
-            package.Description = "Das Grundpaket bietet Ihnen einen Standplatz am FIT";
-            package.Price = 200;
+            FitPackage package = null;
+            for (int i = 0; i < NUMBER_RESOURCE; i++)
+            {
+                FitPackage pack = packageGen.Generate();
+                _context.Packages.Add(pack);
+                _context.SaveChanges();
+                package = pack;
+            }
+            #endregion
+            #region Branch
+            var branchGen = new Faker<Branch>()
+                .RuleFor(b => b.Name, f => "Branch -" + f.Name.FirstName());
 
-            _context.Packages.Add(package);
-            _context.SaveChanges();
-
-            FitPackage package2 = new FitPackage();
-            package2.Name = "Sponsorpaket";
-            package2.Discriminator = 2;
-            package2.Description = "Beim Sponsorpaket zusätzlich enthalten ist noch anbringung Ihres Firmenlogos auf Werbematerialien des FITs";
-            package2.Price = 400;
-
-            _context.Packages.Add(package2);
-            _context.SaveChanges();
-
-            FitPackage package3 = new FitPackage();
-            package3.Name = "Vortragspaket";
-            package3.Discriminator = 3;
-            package3.Description = "Beim Vortragspaket zuästzlich zu den restlichen Paketen darf man einen Vortrag halten";
-            package3.Price = 600;
-
-            _context.Packages.Add(package3);
-            _context.SaveChanges();
-
-            Branch it = new Branch();
-            it.Name = "Informatik/Medientechnik";
-
-            _context.Branches.Add(it);
-            _context.SaveChanges();
-
-            Branch elektr = new Branch();
-            elektr.Name = "Elektronik/techn. Informatik";
-
-            _context.Branches.Add(elektr);
-            _context.SaveChanges();
-
-            Branch bio = new Branch();
-            bio.Name = "Biomedizin & Gesundheitstechnik";
-
-            _context.Branches.Add(bio);
-            _context.SaveChanges();
-
+            for (int i = 0; i < NUMBER_BRANCH; i++)
+            {
+                Branch b = branchGen.Generate();
+                _context.Branches.Add(b);
+                _context.SaveChanges();
+            }
+            #endregion
             Location l = new Location();
             l.Category = "A";
             l.Number = "31";
@@ -240,7 +229,7 @@ namespace Backend.Utils {
                 
             try
             {
-                for (int i = 0; i < GENERATE_AMOUNT; i++)
+                for (int i = 0; i < NUMBER_GRADUTE; i++)
                 {
                     var graduate = graduateGen.Generate();
                     var adr = addressGen.Generate();
@@ -271,40 +260,6 @@ namespace Backend.Utils {
                 Console.WriteLine(ex);
             }
             #endregion
-            #region Graduate comment
-            /*Graduate g = new Graduate();
-            g.LastName = "Kepplinger";
-            g.FirstName = "Simon";
-            g.Gender = "M";
-            g.Email = "simon.kepplinger@gmail.com";
-            g.PhoneNumber = "seiFlammenTelNr";
-            g.GraduationYear = 2018;
-            g.RegistrationToken = "GraduateToken1";
-
-            Address address1 = new Address();
-            address1.Street = "Dr. Karl Rennerstraße";
-            address1.StreetNumber = "17a";
-            address1.ZipCode = "4061";
-            address1.City = "Pasching";
-            address1.Addition = "A Haus hoid";
-
-            _context.Addresses.Add(address1);
-            _context.SaveChanges();
-
-            g.Address = address1;
-
-            FitUser graduateUser = new FitUser();
-            graduateUser.UserName = g.RegistrationToken;
-            graduateUser.Role = "Member";
-
-            await userManager.CreateAsync(graduateUser, g.RegistrationToken);
-
-            g.fk_FitUser = graduateUser.Id;
-
-            _context.Graduates.Add(g);
-            _context.SaveChanges();
-            */
-#endregion
 
             for (int i = 0; i < 100; i++) {
                 //Representatives
@@ -337,7 +292,7 @@ namespace Backend.Utils {
                 booking.ProvidesThesis = false;
                 booking.Remarks = "Remark";
                 booking.CreationDate = DateTime.Now;
-                booking.fk_FitPackage = package3.Id;
+                booking.fk_FitPackage = package.Id;
                 booking.Event = e;
                 booking.Representatives = repre;
                 booking.fk_Company = company.Id;
