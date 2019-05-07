@@ -107,6 +107,7 @@ namespace Backend.Utils {
 
             for (int i = 0; i < MEMBERSHIP_AMOUNT; i++)
             {
+                try { 
                 var comp = companyGen.Generate();
                 var add = addressGen.Generate();
                 var cont = contactGen.Generate();
@@ -130,25 +131,23 @@ namespace Backend.Utils {
                 _context.SaveChanges();
                 company = comp;
                 contact = cont;
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
-
-            Console.WriteLine("Search for Resources in the HTL Leonding ...");
-            //Set up Ressources
-            Resource resource = new Resource();
-            resource.Name = "Stuhl";
-            _context.Resources.Add(resource);
-            Resource resource2 = new Resource();
-            resource2.Name = "Fernseher";
-            _context.Resources.Add(resource2);
-            resource2 = new Resource();
-            resource2.Name = "Stehtisch";
-            _context.Resources.Add(resource2);
-            resource2 = new Resource();
-            resource2.Name = "WLAN";
-            _context.Resources.Add(resource2);
-            resource2 = new Resource();
-            resource2.Name = "Strom";
-            _context.Resources.Add(resource2);
+            Resource resource = null;
+            _context.SaveChanges();
+            var ress = new Faker<Resource>()
+                .RuleFor(r => r.Name, f => f.Hacker.Noun())
+                ;//.FinishWith((f, r) => Console.WriteLine(r.Name));
+            for (int i = 0; i < GENERATE_AMOUNT; i++)
+            {
+                Resource res = ress.Generate();
+                _context.Resources.Add(res);
+                resource = res;
+            }
             _context.SaveChanges();
 
             FitPackage package = new FitPackage();
