@@ -19,6 +19,7 @@ namespace Backend.Utils {
     public static class FillDbHelper {
 
         public static int GENERATE_AMOUNT = 20;
+        public static int MEMBERSHIP_AMOUNT = 7;
 
         public enum Gender
         {
@@ -30,7 +31,7 @@ namespace Backend.Utils {
 
             // Admin
             FitUser fitUser = new FitUser();
-            fitUser.Email = "simon.kepplinger@gmail.com";
+            fitUser.Email = "fit.website.testing.l@gmail.com";
             fitUser.UserName = fitUser.Email;
             fitUser.Role = "FitAdmin";
 
@@ -66,73 +67,70 @@ namespace Backend.Utils {
             _context.SmtpConfigs.Add(smtpConfig);
 
             Console.WriteLine("Search for Companies who want to join FIT ...");
-
-            MemberStatus memberStatus = new MemberStatus();
-            memberStatus.DefaultPrice = 0;
-            memberStatus.Name = "keinen";
-
-            MemberStatus memberStatus2 = new MemberStatus();
-            memberStatus2.DefaultPrice = 0;
-            memberStatus2.Name = "interessiert";
-
-            MemberStatus memberStatus3 = new MemberStatus();
-            memberStatus3.DefaultPrice = 200;
-            memberStatus3.Name = "kleine Mitgliedschaft";
-
-            MemberStatus memberStatus4 = new MemberStatus();
-            memberStatus4.DefaultPrice = 400;
-            memberStatus4.Name = "große Mitgliedschaft";
-
-            _context.MemberStati.Add(memberStatus);
-            _context.MemberStati.Add(memberStatus2);
-            _context.MemberStati.Add(memberStatus3);
-            _context.MemberStati.Add(memberStatus4);
+            var member = new Faker<MemberStatus>()
+                .RuleFor(m => m.DefaultPrice, f => f.Random.Number(1, 1000))
+                .RuleFor(m => m.Name, f => f.Commerce.Product())
+                ;//.FinishWith((f, m) => Console.WriteLine(m.Name));
+            Stack<MemberStatus> memberStack = new Stack<MemberStatus>();    
+            for (int i = 0; i < MEMBERSHIP_AMOUNT; i++)
+            {
+                MemberStatus m = member.Generate();
+                _context.MemberStati.Add(m);
+                memberStack.Push(m);
+            }
             _context.SaveChanges();
 
-            // Set up Company
-            Company company = new Company();
-            company.Name = "Kepplinger IT";
-            company.IsAccepted = 1;
-            company.RegistrationToken = "Firm-enTo-ken1";
-            company.MemberStatus = memberStatus3;
-            company.MemberPaymentAmount = memberStatus3.DefaultPrice;
+            var company = new Company();
+            var contact = new Contact();
+            var companyGen = new Faker<Company>()
+                .RuleFor(c => c.Name, f => f.Company.CompanyName())
+                .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
+                .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
+                .RuleFor(c => c.MemberStatus, f => memberStack.ElementAt(f.Random.Number(0, MEMBERSHIP_AMOUNT - 1)))
+                .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
+                ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
+            var addressGen = new Faker<Address>()
+                .RuleFor(adr => adr.Street, f => f.Address.StreetName())
+                .RuleFor(adr => adr.StreetNumber, f => f.Address.StreetAddress())
+                .RuleFor(adr => adr.ZipCode, f => f.Address.ZipCode())
+                .RuleFor(ard => ard.City, f => f.Address.City())
+                .RuleFor(ard => ard.Addition, f => f.Address.SecondaryAddress());
+                ;//.FinishWith((f,ard) => Console.WriteLine(ard.Street));
+            var contactGen = new Faker<Contact>()
+                .RuleFor(c => c.Gender, f => f.PickRandom<Gender>().ToString())
+                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
+                .RuleFor(c => c.LastName, f => f.Name.LastName())
+                .RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber())
+                .RuleFor(c => c.Email, f => f.Internet.ExampleEmail())
+                ;//.FinishWith((f, c) => Console.WriteLine(c.LastName));
 
-            // Set up Address
-            Address address = new Address();
-            address.Addition = "Additional Address Info";
-            address.City = "Linz";
-            address.StreetNumber = "14";
-            address.Street = "some Street";
-            address.ZipCode = "4020";
 
-            _context.Addresses.Add(address);
-            _context.SaveChanges();
+            for (int i = 0; i < MEMBERSHIP_AMOUNT; i++)
+            {
+                var comp = companyGen.Generate();
+                var add = addressGen.Generate();
+                var cont = contactGen.Generate();
 
-            // Set Up Contact
-            Contact contact = new Contact();
-            contact.FirstName = "Andrej";
-            contact.LastName = "Sakal";
-            contact.Gender = "M";
-            contact.PhoneNumber = "+4369917209297";
-            contact.Email = "simon.kepplinger@gmail.com";
+                _context.Addresses.Add(add);
+                _context.Contacts.Add(cont);
+                _context.SaveChanges();
 
-            _context.Contacts.Add(contact);
-            _context.SaveChanges();
+                comp.Contact = cont;
+                comp.Address = add;
 
-            // Set up Company
-            company.Contact = contact;
-            company.Address = address;
+                FitUser companyUser = new FitUser();
+                companyUser.UserName = comp.RegistrationToken;
+                companyUser.Role = "Member";
 
-            FitUser companyUser = new FitUser();
-            companyUser.UserName = company.RegistrationToken;
-            companyUser.Role = "Member";
+                await userManager.CreateAsync(companyUser, comp.RegistrationToken);
 
-            await userManager.CreateAsync(companyUser, company.RegistrationToken);
+                comp.fk_FitUser = companyUser.Id;
 
-            company.fk_FitUser = companyUser.Id;
-
-            _context.Companies.Add(company);
-            _context.SaveChanges();
+                _context.Companies.Add(comp);
+                _context.SaveChanges();
+                company = comp;
+                contact = cont;
+            }
 
             Console.WriteLine("Search for Resources in the HTL Leonding ...");
             //Set up Ressources
@@ -231,7 +229,7 @@ namespace Backend.Utils {
             Console.WriteLine("Set up some students in the database ...");
 
             #region createGraduates
-            var grad = new Faker<Graduate>()
+            var graduateGen = new Faker<Graduate>()
                 .RuleFor(gr => gr.Gender, f => f.PickRandom<Gender>().ToString())
                 .RuleFor(gr => gr.FirstName, f => f.Name.FirstName())
                 .RuleFor(gr => gr.LastName, f => f.Name.LastName())
@@ -239,19 +237,14 @@ namespace Backend.Utils {
                 .RuleFor(gr => gr.PhoneNumber, f => f.Phone.PhoneNumber())
                 .RuleFor(gr => gr.GraduationYear, f => f.Random.Number(2000, 2019))
                 .RuleFor(gr => gr.RegistrationToken, f => f.Random.String2(12, 12))
-                .FinishWith((f,gr) => Console.WriteLine(gr.LastName));
-            var ad = new Faker<Address>()
-                .RuleFor(adr => adr.Street, f => f.Address.StreetName())
-                .RuleFor(adr => adr.StreetNumber, f => f.Address.StreetAddress())
-                .RuleFor(adr => adr.ZipCode, f => f.Address.ZipCode())
-                .RuleFor(ard => ard.City, f => f.Address.City())
-                .RuleFor(ard => ard.Addition, f => f.Address.SecondaryAddress());
+                ;//.FinishWith((f,gr) => Console.WriteLine(gr.LastName));
+                
             try
             {
                 for (int i = 0; i < GENERATE_AMOUNT; i++)
                 {
-                    var graduate = grad.Generate();
-                    var adr = ad.Generate();
+                    var graduate = graduateGen.Generate();
+                    var adr = addressGen.Generate();
 
                     _context.Addresses.Add(adr);
                     _context.SaveChanges();
@@ -312,7 +305,7 @@ namespace Backend.Utils {
             _context.Graduates.Add(g);
             _context.SaveChanges();
             */
-            #endregion
+#endregion
 
             for (int i = 0; i < 100; i++) {
                 //Representatives
