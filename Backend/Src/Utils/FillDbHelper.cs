@@ -33,8 +33,9 @@ namespace Backend.Utils {
         public async static Task createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
             List<MemberStatus> memberList = new List<MemberStatus>();
             List<Resource> resourceList = new List<Resource>();
-            
+            #region admin
             // Admin
+            Console.WriteLine("Inserting  Admin-User...");
             FitUser fitUser = new FitUser();
             fitUser.Email = "fit.website.testing.l@gmail.com";
             fitUser.UserName = fitUser.Email;
@@ -43,8 +44,9 @@ namespace Backend.Utils {
             string hashedPassword = GenerateSHA256String("test123");
 
             await userManager.CreateAsync(fitUser, hashedPassword);
-
+            #endregion
             #region LockPage
+            Console.WriteLine("Creating Lockpages...");
             LockPage lockPage = new LockPage();
             lockPage.Expired = @"<div>
                                     <p> Leider ist der Anmeldungszeitruam zum FIT leider schon vorüber. Die Ameldung kann nur in einen bestimmten Zeitraum
@@ -61,19 +63,20 @@ namespace Backend.Utils {
                                     <p>Bei Fragen oder anderen Anliegen, können Sie sich gerne mit uns in Kontakt setzen: </p>
 
                                 </div>";
-            #endregion
+            
             _context.LockPages.Add(lockPage);
-
+            #endregion
+            #region smtpConfig
+            Console.WriteLine("create smtpConfig...");
             SmtpConfig smtpConfig = new SmtpConfig();
             smtpConfig.Host = "smtp.gmail.com";
             smtpConfig.Port = 587;
             smtpConfig.MailAddress = "andi.sakal@gmail.com";
             smtpConfig.Password = "sombor123";
             _context.SmtpConfigs.Add(smtpConfig);
-
-            Console.WriteLine("Search for Companies who want to join FIT ...");
-
-            #region MemberStati
+            #endregion
+            #region MemberStatuses
+            Console.WriteLine("insert Member Statuse...");
             var member = new Faker<MemberStatus>()
                 .RuleFor(m => m.DefaultPrice, f => f.Random.Number(1, 1000))
                 .RuleFor(m => m.Name, f => f.Commerce.Product())
@@ -87,7 +90,8 @@ namespace Backend.Utils {
             }
             _context.SaveChanges();
             #endregion
-            #region Company
+            #region Companies
+            Console.WriteLine("Search for Companies which want to join the FIT ...");
             var companyGen = new Faker<Company>()
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
@@ -140,8 +144,8 @@ namespace Backend.Utils {
                     _context.SaveChanges();
             }
             #endregion
-            #region Resource
-            
+            #region Resources
+            Console.WriteLine("Look for useable Resources for the FIT ...");
             _context.SaveChanges();
             var ress = new Faker<Resource>()
                 .RuleFor(r => r.Name, f => f.Hacker.Noun())
@@ -154,7 +158,8 @@ namespace Backend.Utils {
             }
             _context.SaveChanges();
             #endregion
-            #region Package
+            #region Packages
+            Console.WriteLine("work out Packages...");
             var packageGen = new Faker<FitPackage>()
                 .RuleFor(p => p.Name, f => "Package-" + f.Name.FirstName())
                 .RuleFor(p => p.Description, f => f.Rant.Review())
@@ -167,7 +172,8 @@ namespace Backend.Utils {
                 _context.SaveChanges();
             }
             #endregion
-            #region Branch
+            #region Branches
+            Console.WriteLine("insert Branches...");
             var branchGen = new Faker<Branch>()
                 .RuleFor(b => b.Name, f => "Branch -" + f.Name.FirstName());
 
@@ -178,23 +184,8 @@ namespace Backend.Utils {
                 _context.SaveChanges();
             }
             #endregion
-
-            Location l = new Location();
-            l.Category = "A";
-            l.Number = "31";
-            l.XCoordinate = 1.0;
-            l.XCoordinate = 1.0;
-
-            _context.Locations.Add(l);
-            _context.SaveChanges();
-
-            // AREA
-            Area a = new Area();
-            a.Designation = "Erdgeschoss";
-            a.Graphic = new DataFile();
-            a.Locations = new List<Location>();
-            a.Locations.Add(l);
-
+            #region Event + Area + Locations
+            Console.WriteLine("create Events with ther Locations... ");
             Event e = new Event();
             e.EventDate = DateTime.Now;
             e.PresentationsLocked = false;
@@ -204,14 +195,35 @@ namespace Backend.Utils {
             e.RegistrationState.IsLocked = false;
             e.RegistrationState.IsCurrent = true;
             e.Areas = new List<Area>();
-            e.Areas.Add(a);
-
             _context.Events.Add(e);
             _context.SaveChanges();
 
-            Console.WriteLine("Set up some students in the database ...");
+            var locationGen = new Faker<Location>()
+                .RuleFor(lo => lo.Category, f => f.Random.Char().ToString())
+                .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
+                .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1,20))
+                .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1,20));
+            var areaGen = new Faker<Area>()
+                .RuleFor(ar => ar.Designation, f => f.Name.FullName())
+                .RuleFor(ar => ar.Locations, f => new List<Location>());
+            for (int i = 0; i < 3; i++)
+            {
+                Area area = areaGen.Generate();
+                for (int j = 0; j < 3; j++)
+                {
+                    Location loc = locationGen.Generate();
+                    _context.Locations.Add(loc);
+                    _context.SaveChanges();
 
-            #region createGraduates
+                    area.Locations.Add(loc);
+                }
+                e.Areas.Add(area);
+            }
+
+            Console.WriteLine("Set up some students in the database ...");
+            #endregion
+            #region Graduates
+            Console.WriteLine("Insert finished Students...");
             var graduateGen = new Faker<Graduate>()
                 .RuleFor(gr => gr.Gender, f => f.PickRandom<Gender>().ToString())
                 .RuleFor(gr => gr.FirstName, f => f.Name.FirstName())
@@ -243,8 +255,8 @@ namespace Backend.Utils {
                 _context.SaveChanges();
             }
             #endregion
-
-            #region create Bookings
+            #region Bookings
+            Console.WriteLine("create bookings for each company...");
             var representativeGen = new Faker<Representative>()
                 .RuleFor(r => r.Email, f => f.Internet.ExampleEmail())
                 .RuleFor(r => r.Image, f => null)
