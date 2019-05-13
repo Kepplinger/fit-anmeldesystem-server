@@ -22,8 +22,11 @@ namespace Backend.Utils {
         public static int NUMBER_MEMBERSHIP = 7;
         public static int NUMBER_COMPANY = 10;
         public static int NUMBER_PACKAGES = 3;
-        public static int NUMBER_RESOURCE = 15;
+        public static int NUMBER_RESOURCES = 15;
         public static int NUMBER_BRANCH = 10;
+        public static int NUMBER_LOCATIONS_FOR_AREA = 7;
+        public static int NUMBER_AREAS = 2;
+        public static int NUMBER_RESOURCE_BOOKING_FOR_COMPANY = 3;
         public enum Gender
         {
             m,
@@ -49,7 +52,7 @@ namespace Backend.Utils {
             Console.WriteLine("Creating Lockpages...");
             LockPage lockPage = new LockPage();
             lockPage.Expired = @"<div>
-                                    <p> Leider ist der Anmeldungszeitruam zum FIT leider schon vorüber. Die Ameldung kann nur in einen bestimmten Zeitraum
+                                    <p>Der Anmeldungszeitraum zum FIT ist leider schon vorüber. Die Ameldung kann nur in einen bestimmten Zeitraum
                                     durchgeführt werden, und auch nur solange noch Plätze frei sind.</ p >
   
                                     <p>Bei Fragen oder anderen Anliegen, können Sie sich gerne mit uns in Kontakt setzen: </p>
@@ -57,7 +60,7 @@ namespace Backend.Utils {
                                 </div>";
             lockPage.Incoming = @"<div>
                                     <div class=""alert alert-info"" role=""alert"">
-                                    Die Anmeldung zum FIT ist erst<span class=""text-bold"">ab dem Versand der Einladungen</span>(Anfang Oktober)
+                                    Die Anmeldung zum FIT ist erst <span class=""text-bold""> ab dem Versand der Einladungen</span>
                                     möglich!</div>
 
                                     <p>Bei Fragen oder anderen Anliegen, können Sie sich gerne mit uns in Kontakt setzen: </p>
@@ -150,7 +153,7 @@ namespace Backend.Utils {
             var ress = new Faker<Resource>()
                 .RuleFor(r => r.Name, f => f.Hacker.Noun())
                 ;//.FinishWith((f, r) => Console.WriteLine(r.Name));
-            for (int i = 0; i < NUMBER_GRADUTE; i++)
+            for (int i = 0; i < NUMBER_RESOURCES; i++)
             {
                 Resource res = ress.Generate();
                 _context.Resources.Add(res);
@@ -165,7 +168,7 @@ namespace Backend.Utils {
                 .RuleFor(p => p.Description, f => f.Rant.Review())
                 .RuleFor(p => p.Price, f => f.Random.Number(0, 1000));
 
-            for (int i = 0; i < NUMBER_RESOURCE; i++)
+            for (int i = 0; i < NUMBER_PACKAGES; i++)
             {
                 FitPackage pack = packageGen.Generate();
                 _context.Packages.Add(pack);
@@ -206,10 +209,10 @@ namespace Backend.Utils {
             var areaGen = new Faker<Area>()
                 .RuleFor(ar => ar.Designation, f => f.Name.FullName())
                 .RuleFor(ar => ar.Locations, f => new List<Location>());
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < NUMBER_AREAS; i++)
             {
                 Area area = areaGen.Generate();
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < NUMBER_LOCATIONS_FOR_AREA; j++)
                 {
                     Location loc = locationGen.Generate();
                     _context.Locations.Add(loc);
@@ -293,7 +296,7 @@ namespace Backend.Utils {
             var resourseBookingGen = new Faker<ResourceBooking>()
                 .RuleFor(rb => rb.Resource, f => resourceList.ElementAt(f.Random.Number(0, resourceList.Count -1)));
             Booking book;
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < NUMBER_COMPANY; i++) {
                 //Representatives
                 List<Representative> repre = new List<Representative>();
                 Representative repr = representativeGen.Generate();
@@ -311,15 +314,15 @@ namespace Backend.Utils {
                 Booking booking = bookingGen.Generate();
                 booking.Representatives = repre;
                 booking.Presentation = p;
-                booking.fk_Company = i +1;
-                booking.fk_Contact = i +1;
+                booking.fk_Company = i + 1;
+                booking.fk_Contact = i + 1;
                 book = booking;
 
                 _context.Bookings.Add(booking);
                 _context.SaveChanges();
 
                 booking.Resources = new List<ResourceBooking>();
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < NUMBER_RESOURCE_BOOKING_FOR_COMPANY; j++)
                 {
                     ResourceBooking rb = resourseBookingGen.Generate();
                     _context.ResourceBookings.Add(rb);
