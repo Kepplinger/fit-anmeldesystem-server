@@ -39,7 +39,7 @@ namespace Backend.Utils {
 
             if (!p.Name.ToLower().Contains("timestamp")
                 && !p.Name.ToLower().Contains("id")
-                && (!p.Name.ToLower().Contains("fk") || p.Name.ToLower().Contains("fk_fitpackage"))
+                && (!p.Name.ToLower().Contains("fk") || p.Name.ToLower().Contains("fk_fitpackage") || p.Name.ToLower().Contains("fk_memberstatus"))
                 && !p.Name.ToLower().Contains("tags")
                 && !p.Name.ToLower().Contains("branches")
                 && !p.Name.ToLower().Contains("representatives")
@@ -49,6 +49,7 @@ namespace Backend.Utils {
                 && !p.Name.ToLower().Contains("creationdate")
                 && !p.Name.ToLower().Contains("logo")
                 && !p.Name.ToLower().Contains("file")
+                && !p.Name.ToLower().Contains("memberstatus")
                 && p.GetValue(newObject) != null 
                 && !p.GetValue(newObject).Equals(p.GetValue(oldObject))) {
 
