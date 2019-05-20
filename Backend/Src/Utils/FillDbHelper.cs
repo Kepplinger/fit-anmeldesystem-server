@@ -110,7 +110,7 @@ namespace Backend.Utils {
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
                 .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
-                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(0, memberList.Count())))
+                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(1, 3)))
                 .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
                 ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
             var addressGen = new Faker<Address>()
@@ -294,7 +294,7 @@ namespace Backend.Utils {
             Console.WriteLine("create bookings for each company...");
             var representativeGen = new Faker<Representative>()
                 .RuleFor(r => r.Email, f => f.Internet.ExampleEmail())
-                .RuleFor(r => r.Image, f => null)
+                .RuleFor(r => r.Image, f =>  new DataFile("", f.Image.PicsumUrl(f.Random.Number(100, 200), f.Random.Number(200, 300))))
                 .RuleFor(r => r.Name, f => f.Name.FullName());
             var bookingGen = new Faker<Booking>()
                     .RuleFor(b => b.AdditionalInfo, f => "Additional Information: " + f.Random.String2(10))
@@ -316,7 +316,7 @@ namespace Backend.Utils {
                     .RuleFor(b => b.EstablishmentsCountInt, f => 0)
                     .RuleFor(b => b.EstablishmentsInt, f => "")
                     .RuleFor(b => b.Homepage, f => f.Internet.Url())
-                    .RuleFor(b => b.Logo, f => null)
+                    .RuleFor(b => b.Logo, f => new DataFile("", f.Image.PicsumUrl(f.Random.Number(200, 500), f.Random.Number(300, 600))))
                     .RuleFor(b => b.PhoneNumber, f => f.Phone.PhoneNumber())
                     ;//.RuleFor(b => b.Presentation, f => p);
             var pressentationGen = new Faker<Presentation>()
