@@ -76,8 +76,6 @@ namespace Backend.Utils {
             _context.SmtpConfigs.Add(smtpConfig);
             #endregion
             #region MemberStatuses
-            Console.WriteLine("Search for Companies who want to join FIT ...");
-
             MemberStatus memberStatus = new MemberStatus();
             memberStatus.DefaultPrice = 0;
             memberStatus.Name = "keinen";
@@ -110,7 +108,7 @@ namespace Backend.Utils {
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
                 .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
-                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(0, memberList.Count())))
+                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(1, 3)))
                 .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
                 ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
             var addressGen = new Faker<Address>()
