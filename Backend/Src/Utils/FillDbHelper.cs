@@ -19,11 +19,8 @@ namespace Backend.Utils {
     public static class FillDbHelper {
 
         public static int NUMBER_GRADUTE = 20;
-        public static int NUMBER_MEMBERSHIP = 7;
         public static int NUMBER_COMPANY = 10;
-        public static int NUMBER_PACKAGES = 3;
         public static int NUMBER_RESOURCES = 15;
-        public static int NUMBER_BRANCH = 10;
         public static int NUMBER_LOCATIONS_FOR_AREA = 7;
         public static int NUMBER_AREAS = 2;
         public static int NUMBER_RESOURCE_BOOKING_FOR_COMPANY = 3;
@@ -79,18 +76,32 @@ namespace Backend.Utils {
             _context.SmtpConfigs.Add(smtpConfig);
             #endregion
             #region MemberStatuses
-            Console.WriteLine("insert Member Statuse...");
-            var member = new Faker<MemberStatus>()
-                .RuleFor(m => m.DefaultPrice, f => f.Random.Number(1, 1000))
-                .RuleFor(m => m.Name, f => f.Commerce.Product())
-                ;//.FinishWith((f, m) => Console.WriteLine(m.Name));
-            
-            for (int i = 0; i < NUMBER_MEMBERSHIP; i++)
-            {
-                MemberStatus m = member.Generate();
-                _context.MemberStati.Add(m);
-                memberList.Add(m);
-            }
+            Console.WriteLine("Search for Companies who want to join FIT ...");
+
+            MemberStatus memberStatus = new MemberStatus();
+            memberStatus.DefaultPrice = 0;
+            memberStatus.Name = "keinen";
+            memberList.Add(memberStatus);
+
+            MemberStatus memberStatus2 = new MemberStatus();
+            memberStatus2.DefaultPrice = 0;
+            memberStatus2.Name = "interessiert";
+            memberList.Add(memberStatus2);
+
+            MemberStatus memberStatus3 = new MemberStatus();
+            memberStatus3.DefaultPrice = 200;
+            memberStatus3.Name = "kleine Mitgliedschaft";
+            memberList.Add(memberStatus3);
+
+            MemberStatus memberStatus4 = new MemberStatus();
+            memberStatus4.DefaultPrice = 400;
+            memberStatus4.Name = "große Mitgliedschaft";
+            memberList.Add(memberStatus4);
+
+            _context.MemberStati.Add(memberStatus);
+            _context.MemberStati.Add(memberStatus2);
+            _context.MemberStati.Add(memberStatus3);
+            _context.MemberStati.Add(memberStatus4);
             _context.SaveChanges();
             #endregion
             #region Companies
@@ -99,7 +110,7 @@ namespace Backend.Utils {
                 .RuleFor(c => c.Name, f => f.Company.CompanyName())
                 .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
                 .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
-                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(0, NUMBER_MEMBERSHIP - 1)))
+                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(0, memberList.Count())))
                 .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
                 ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
             var addressGen = new Faker<Address>()
@@ -162,30 +173,51 @@ namespace Backend.Utils {
             _context.SaveChanges();
             #endregion
             #region Packages
-            Console.WriteLine("work out Packages...");
-            var packageGen = new Faker<FitPackage>()
-                .RuleFor(p => p.Name, f => "Package-" + f.Name.FirstName())
-                .RuleFor(p => p.Description, f => f.Rant.Review())
-                .RuleFor(p => p.Price, f => f.Random.Number(0, 1000));
+            FitPackage package = new FitPackage();
+            package.Name = "Basispaket";
+            package.Discriminator = 1;
+            package.Description = "Das Grundpaket bietet Ihnen einen Standplatz am FIT";
+            package.Price = 200;
 
-            for (int i = 0; i < NUMBER_PACKAGES; i++)
-            {
-                FitPackage pack = packageGen.Generate();
-                _context.Packages.Add(pack);
-                _context.SaveChanges();
-            }
+            _context.Packages.Add(package);
+            _context.SaveChanges();
+
+            FitPackage package2 = new FitPackage();
+            package2.Name = "Sponsorpaket";
+            package2.Discriminator = 2;
+            package2.Description = "Beim Sponsorpaket zusätzlich enthalten ist noch anbringung Ihres Firmenlogos auf Werbematerialien des FITs";
+            package2.Price = 400;
+
+            _context.Packages.Add(package2);
+            _context.SaveChanges();
+
+            FitPackage package3 = new FitPackage();
+            package3.Name = "Vortragspaket";
+            package3.Discriminator = 3;
+            package3.Description = "Beim Vortragspaket zuästzlich zu den restlichen Paketen darf man einen Vortrag halten";
+            package3.Price = 600;
+
+            _context.Packages.Add(package3);
+            _context.SaveChanges();
             #endregion
             #region Branches
-            Console.WriteLine("insert Branches...");
-            var branchGen = new Faker<Branch>()
-                .RuleFor(b => b.Name, f => "Branch -" + f.Name.FirstName());
+            Branch it = new Branch();
+            it.Name = "Informatik/Medientechnik";
 
-            for (int i = 0; i < NUMBER_BRANCH; i++)
-            {
-                Branch b = branchGen.Generate();
-                _context.Branches.Add(b);
-                _context.SaveChanges();
-            }
+            _context.Branches.Add(it);
+            _context.SaveChanges();
+
+            Branch elektr = new Branch();
+            elektr.Name = "Elektronik/techn. Informatik";
+
+            _context.Branches.Add(elektr);
+            _context.SaveChanges();
+
+            Branch bio = new Branch();
+            bio.Name = "Biomedizin & Gesundheitstechnik";
+
+            _context.Branches.Add(bio);
+            _context.SaveChanges();
             #endregion
             #region Event + Area + Locations
             Console.WriteLine("create Events with ther Locations... ");
@@ -272,7 +304,7 @@ namespace Backend.Utils {
                     .RuleFor(b => b.ProvidesThesis, f => f.Random.Bool())
                     .RuleFor(b => b.Remarks, f => "Remarks")
                     .RuleFor(b => b.CreationDate, f => f.Date.Past())
-                    .RuleFor(b => b.fk_FitPackage, f => f.Random.Number(1, NUMBER_PACKAGES ))
+                    .RuleFor(b => b.fk_FitPackage, f => f.Random.Number(1,3))
                     .RuleFor(b => b.Event, f => e)
                     //.RuleFor(b => b.Representatives, f => repr)
                     //.RuleFor(b => b.fk_Company, f => f.Random.Number(0, NUMBER_COMPANY - 1))
