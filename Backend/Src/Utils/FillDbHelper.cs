@@ -21,8 +21,11 @@ namespace Backend.Utils {
         public static int NUMBER_GRADUTE = 20;
         public static int NUMBER_COMPANY = 10;
         public static int NUMBER_RESOURCES = 15;
-        public static int NUMBER_LOCATIONS_FOR_AREA = 7;
+
+        public static int NUMBER_EVENTS = 10;
         public static int NUMBER_AREAS = 2;
+        public static int NUMBER_LOCATIONS_FOR_AREA = 7;
+
         public static int NUMBER_RESOURCE_BOOKING_FOR_COMPANY = 3;
         public enum Gender
         {
@@ -30,9 +33,16 @@ namespace Backend.Utils {
             f
         }
 
+        public static ApplicationDbContext context;
+        public static UserManager<FitUser> _userManager;
+        static List<MemberStatus> memberList = new List<MemberStatus>();
+        static List<Resource> resourceList = new List<Resource>();
+        static List<Event> eventList = new List<Event>();
+
         public async static Task createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
-            List<MemberStatus> memberList = new List<MemberStatus>();
-            List<Resource> resourceList = new List<Resource>();
+            context = _context;
+            _userManager = userManager;
+
             #region admin
             // Admin
             Console.WriteLine("Inserting  Admin-User...");
@@ -102,74 +112,6 @@ namespace Backend.Utils {
             _context.MemberStati.Add(memberStatus4);
             _context.SaveChanges();
             #endregion
-            #region Companies
-            Console.WriteLine("Search for Companies which want to join the FIT ...");
-            var companyGen = new Faker<Company>()
-                .RuleFor(c => c.Name, f => f.Company.CompanyName())
-                .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
-                .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
-                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(1, 3)))
-                .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
-                ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
-            var addressGen = new Faker<Address>()
-                .RuleFor(adr => adr.Street, f => f.Address.StreetName())
-                .RuleFor(adr => adr.StreetNumber, f => f.Address.StreetAddress())
-                .RuleFor(adr => adr.ZipCode, f => f.Address.ZipCode())
-                .RuleFor(ard => ard.City, f => f.Address.City())
-                .RuleFor(ard => ard.Addition, f => f.Address.SecondaryAddress());
-                ;//.FinishWith((f,ard) => Console.WriteLine(ard.Street));
-            var contactGen = new Faker<Contact>()
-                .RuleFor(c => c.Gender, f => f.PickRandom<Gender>().ToString())
-                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                .RuleFor(c => c.LastName, f => f.Name.LastName())
-                .RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber())
-                .RuleFor(c => c.Email, f => f.Internet.ExampleEmail())
-                ;//.FinishWith((f, c) => Console.WriteLine(c.LastName));
-
-           
-            for (int i = 0; i < NUMBER_COMPANY; i++)
-            {
-                    var comp = companyGen.Generate();
-                    comp.Name = comp.Name.Substring(0, Math.Min(comp.Name.Length, 30));
-                    
-                    var add = addressGen.Generate();
-                    
-                    var cont = contactGen.Generate();
-                    
-
-                    _context.Addresses.Add(add);
-                    _context.Contacts.Add(cont);
-                    _context.SaveChanges();
-
-                    comp.Contact = cont;
-                    comp.Address = add;
-
-                    FitUser companyUser = new FitUser();
-                    companyUser.UserName = comp.RegistrationToken;
-                    companyUser.Role = "Member";
-
-                    await userManager.CreateAsync(companyUser, comp.RegistrationToken);
-
-                    comp.fk_FitUser = companyUser.Id;
-
-                    _context.Companies.Add(comp);
-                    _context.SaveChanges();
-            }
-            #endregion
-            #region Resources
-            Console.WriteLine("Look for useable Resources for the FIT ...");
-            _context.SaveChanges();
-            var ress = new Faker<Resource>()
-                .RuleFor(r => r.Name, f => f.Hacker.Noun())
-                ;//.FinishWith((f, r) => Console.WriteLine(r.Name));
-            for (int i = 0; i < NUMBER_RESOURCES; i++)
-            {
-                Resource res = ress.Generate();
-                _context.Resources.Add(res);
-                resourceList.Add(res);
-            }
-            _context.SaveChanges();
-            #endregion
             #region Packages
             FitPackage package = new FitPackage();
             package.Name = "Basispaket";
@@ -217,46 +159,25 @@ namespace Backend.Utils {
             _context.Branches.Add(bio);
             _context.SaveChanges();
             #endregion
-            #region Event + Area + Locations
-            Console.WriteLine("create Events with ther Locations... ");
-            Event e = new Event();
-            e.EventDate = DateTime.Now;
-            e.PresentationsLocked = false;
-            e.RegistrationEnd = DateTime.Now.AddMonths(2);
-            e.RegistrationStart = DateTime.Now.AddMonths(-2);
-            e.RegistrationState = new RegistrationState();
-            e.RegistrationState.IsLocked = false;
-            e.RegistrationState.IsCurrent = true;
-            e.Areas = new List<Area>();
-            _context.Events.Add(e);
-            _context.SaveChanges();
 
-            var locationGen = new Faker<Location>()
-                .RuleFor(lo => lo.Category, f => f.Random.Char().ToString())
-                .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
-                .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1,20))
-                .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1,20));
-            var areaGen = new Faker<Area>()
-                .RuleFor(ar => ar.Designation, f => f.Name.FullName())
-                .RuleFor(ar => ar.Locations, f => new List<Location>());
-            for (int i = 0; i < NUMBER_AREAS; i++)
-            {
-                Area area = areaGen.Generate();
-                for (int j = 0; j < NUMBER_LOCATIONS_FOR_AREA; j++)
-                {
-                    Location loc = locationGen.Generate();
-                    _context.Locations.Add(loc);
-                    _context.SaveChanges();
-
-                    area.Locations.Add(loc);
-                }
-                e.Areas.Add(area);
-            }
-
-            Console.WriteLine("Set up some students in the database ...");
-            #endregion
-            #region Graduates
+            await insertEventAreaLocations(NUMBER_EVENTS,NUMBER_AREAS,NUMBER_LOCATIONS_FOR_AREA);
+            await insertCompanies(NUMBER_COMPANY);
+            await insertRessources(NUMBER_RESOURCES);
+            await generateGraduates(NUMBER_GRADUTE);
+            await createBookings();
+            
+        }
+        public static async Task generateGraduates(int amount)
+        {
             Console.WriteLine("Insert finished Students...");
+            var addressGen = new Faker<Address>()
+                .RuleFor(adr => adr.Street, f => f.Address.StreetName())
+                .RuleFor(adr => adr.StreetNumber, f => f.Address.StreetAddress())
+                .RuleFor(adr => adr.ZipCode, f => f.Address.ZipCode())
+                .RuleFor(ard => ard.City, f => f.Address.City())
+                .RuleFor(ard => ard.Addition, f => f.Address.SecondaryAddress())
+                ;//.FinishWith((f,ard) => Console.WriteLine(ard.Street));
+
             var graduateGen = new Faker<Graduate>()
                 .RuleFor(gr => gr.Gender, f => f.PickRandom<Gender>().ToString())
                 .RuleFor(gr => gr.FirstName, f => f.Name.FirstName())
@@ -267,32 +188,145 @@ namespace Backend.Utils {
                 .RuleFor(gr => gr.RegistrationToken, f => f.Random.String2(12, 12))
                 ;//.FinishWith((f,gr) => Console.WriteLine(gr.LastName));
 
-            for (int i = 0; i < NUMBER_GRADUTE; i++)
+            for (int i = 0; i < amount; i++)
             {
                 var graduate = graduateGen.Generate();
                 var adr = addressGen.Generate();
 
-                _context.Addresses.Add(adr);
-                _context.SaveChanges();
+                context.Addresses.Add(adr);
+                context.SaveChanges();
 
                 graduate.Address = adr;
                 FitUser graduateUser = new FitUser();
                 graduateUser.UserName = graduate.RegistrationToken;
                 graduateUser.Role = "Member";
 
-                await userManager.CreateAsync(graduateUser, graduate.RegistrationToken);
+                await _userManager.CreateAsync(graduateUser, graduate.RegistrationToken);
 
                 graduate.fk_FitUser = graduateUser.Id;
 
-                _context.Graduates.Add(graduate);
-                _context.SaveChanges();
+                context.Graduates.Add(graduate);
+                context.SaveChanges();
             }
-            #endregion
-            #region Bookings
-            Console.WriteLine("create bookings for each company...");
+
+        }
+        public static async Task insertRessources(int amount)
+        {
+            Console.WriteLine("Look for useable Resources for the FIT ...");
+            context.SaveChanges();
+            var ress = new Faker<Resource>()
+                .RuleFor(r => r.Name, f => f.Hacker.Noun())
+                ;//.FinishWith((f, r) => Console.WriteLine(r.Name));
+            for (int i = 0; i < NUMBER_RESOURCES; i++)
+            {
+                Resource res = ress.Generate();
+                context.Resources.Add(res);
+                resourceList.Add(res);
+            }
+            context.SaveChanges();
+        }
+        public static async Task insertEventAreaLocations (int amountEvents,int amountAreas,int locationsForAreas)
+        {
+            Console.WriteLine("create Events with there Locations and Areas... ");
+            for (int i = 0; i < amountEvents; i++)
+            {
+                Event e = new Event();
+                e.EventDate = DateTime.Now;
+                e.PresentationsLocked = false;
+                e.RegistrationEnd = DateTime.Now.AddMonths(2);
+                e.RegistrationStart = DateTime.Now.AddMonths(-2);
+                e.RegistrationState = new RegistrationState();
+                e.RegistrationState.IsLocked = false;
+                e.RegistrationState.IsCurrent = true;
+                e.Areas = new List<Area>();
+                context.Events.Add(e);
+                context.SaveChanges();
+
+                var locationGen = new Faker<Location>()
+                    .RuleFor(lo => lo.Category, f => f.Random.Char().ToString())
+                    .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
+                    .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1, 20))
+                    .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1, 20));
+                var areaGen = new Faker<Area>()
+                    .RuleFor(ar => ar.Designation, f => f.Name.FullName())
+                    .RuleFor(ar => ar.Locations, f => new List<Location>());
+                for (int j = 0; j < amountAreas; j++)
+                {
+                    Area area = areaGen.Generate();
+                    for (int k = 0; k < locationsForAreas; k++)
+                    {
+                        Location loc = locationGen.Generate();
+                        context.Locations.Add(loc);
+                        context.SaveChanges();
+
+                        area.Locations.Add(loc);
+                    }
+                    e.Areas.Add(area);
+                }
+                eventList.Add(e);
+            }
+        }
+        public static async Task insertCompanies (int amount)
+        {
+            Console.WriteLine("Search for Companies which want to join the FIT ...");
+            var companyGen = new Faker<Company>()
+                .RuleFor(c => c.Name, f => f.Company.CompanyName())
+                .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
+                .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
+                .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(1, 3)))
+                .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
+            ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
+            var addressGen = new Faker<Address>()
+                .RuleFor(adr => adr.Street, f => f.Address.StreetName())
+                .RuleFor(adr => adr.StreetNumber, f => f.Address.StreetAddress())
+                .RuleFor(adr => adr.ZipCode, f => f.Address.ZipCode())
+                .RuleFor(ard => ard.City, f => f.Address.City())
+                .RuleFor(ard => ard.Addition, f => f.Address.SecondaryAddress());
+            ;//.FinishWith((f,ard) => Console.WriteLine(ard.Street));
+            var contactGen = new Faker<Contact>()
+                .RuleFor(c => c.Gender, f => f.PickRandom<Gender>().ToString())
+                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
+                .RuleFor(c => c.LastName, f => f.Name.LastName())
+                .RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber())
+                .RuleFor(c => c.Email, f => f.Internet.ExampleEmail())
+                ;//.FinishWith((f, c) => Console.WriteLine(c.LastName));
+
+
+            for (int i = 0; i < amount; i++)
+            {
+                var comp = companyGen.Generate();
+                comp.Name = comp.Name.Substring(0, Math.Min(comp.Name.Length, 30));
+
+                var add = addressGen.Generate();
+
+                var cont = contactGen.Generate();
+
+
+                context.Addresses.Add(add);
+                context.Contacts.Add(cont);
+                context.SaveChanges();
+
+                comp.Contact = cont;
+                comp.Address = add;
+
+                FitUser companyUser = new FitUser();
+                companyUser.UserName = comp.RegistrationToken;
+                companyUser.Role = "Member";
+
+                await _userManager.CreateAsync(companyUser, comp.RegistrationToken);
+
+                comp.fk_FitUser = companyUser.Id;
+
+                context.Companies.Add(comp);
+                context.SaveChanges();
+            }
+        }
+        public static async Task createBookings()
+        {
+            Console.WriteLine("create bookings for each company for each FIT...");
             var representativeGen = new Faker<Representative>()
                 .RuleFor(r => r.Email, f => f.Internet.ExampleEmail())
-                .RuleFor(r => r.Image, f =>  new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(f.Random.Number(100, 200), f.Random.Number(150, 250))))
+                .RuleFor(r => r.Image, f => new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(f.Random.Number(100, 200), f.Random.Number(150, 250))))
                 .RuleFor(r => r.Name, f => f.Name.FullName());
             var bookingGen = new Faker<Booking>()
                     .RuleFor(b => b.AdditionalInfo, f => "Additional Information: " + f.Random.String2(10))
@@ -302,8 +336,8 @@ namespace Backend.Utils {
                     .RuleFor(b => b.ProvidesThesis, f => f.Random.Bool())
                     .RuleFor(b => b.Remarks, f => "Remarks")
                     .RuleFor(b => b.CreationDate, f => f.Date.Past())
-                    .RuleFor(b => b.fk_FitPackage, f => f.Random.Number(1,3))
-                    .RuleFor(b => b.Event, f => e)
+                    .RuleFor(b => b.fk_FitPackage, f => f.Random.Number(1, 3))
+                    //.RuleFor(b => b.Event, f => eventList.ElementAt(f.Random.Number(1, eventList.Count()-1)))
                     //.RuleFor(b => b.Representatives, f => repr)
                     //.RuleFor(b => b.fk_Company, f => f.Random.Number(0, NUMBER_COMPANY - 1))
                     //.RuleFor(b => b.fk_Contact, f => f.Random.Number(0, NUMBER_COMPANY - 1))
@@ -324,50 +358,53 @@ namespace Backend.Utils {
                 .RuleFor(p => p.Title, f => "Präsi - " + f.Name.LastName())
                 .RuleFor(p => p.File, f => null);
             var resourseBookingGen = new Faker<ResourceBooking>()
-                .RuleFor(rb => rb.Resource, f => resourceList.ElementAt(f.Random.Number(0, resourceList.Count -1)));
+                .RuleFor(rb => rb.Resource, f => resourceList.ElementAt(f.Random.Number(0, resourceList.Count - 1)));
             Booking book;
-            for (int i = 0; i < NUMBER_COMPANY; i++) {
-                //Representatives
-                List<Representative> repre = new List<Representative>();
-                Representative repr = representativeGen.Generate();
-
-                _context.Representatives.Add(repr);
-                _context.SaveChanges();
-                repre.Add(repr);
-
-                Presentation p = pressentationGen.Generate();
-
-                _context.Presentations.Add(p);
-                _context.SaveChanges();
-
-                // Set up Booking
-                Booking booking = bookingGen.Generate();
-                booking.Representatives = repre;
-                booking.Presentation = p;
-                booking.fk_Company = i + 1;
-                booking.fk_Contact = i + 1;
-                book = booking;
-
-                _context.Bookings.Add(booking);
-                _context.SaveChanges();
-
-                booking.Resources = new List<ResourceBooking>();
-                for (int j = 0; j < NUMBER_RESOURCE_BOOKING_FOR_COMPANY; j++)
+            for (int k = 0; k < NUMBER_EVENTS; k++)
+            {
+                for (int i = 0; i < NUMBER_COMPANY; i++)
                 {
-                    ResourceBooking rb = resourseBookingGen.Generate();
-                    _context.ResourceBookings.Add(rb);
-                    _context.SaveChanges();
+                    //Representatives
+                    List<Representative> repre = new List<Representative>();
+                    Representative repr = representativeGen.Generate();
 
-                    booking.Resources.Add(rb);
-                    _context.Bookings.Update(booking);
-                    _context.SaveChanges();
+                    context.Representatives.Add(repr);
+                    context.SaveChanges();
+                    repre.Add(repr);
+
+                    Presentation p = pressentationGen.Generate();
+
+                    context.Presentations.Add(p);
+                    context.SaveChanges();
+
+                    // Set up Booking
+                    Booking booking = bookingGen.Generate();
+                    booking.Representatives = repre;
+                    booking.Presentation = p;
+                    booking.fk_Company = i + 1;
+                    booking.fk_Contact = i + 1;
+                    booking.fk_Event = k + 1;
+                    book = booking;
+
+                    context.Bookings.Add(booking);
+                    context.SaveChanges();
+
+                    booking.Resources = new List<ResourceBooking>();
+                    for (int j = 0; j < NUMBER_RESOURCE_BOOKING_FOR_COMPANY; j++)
+                    {
+                        ResourceBooking rb = resourseBookingGen.Generate();
+                        context.ResourceBookings.Add(rb);
+                        context.SaveChanges();
+
+                        booking.Resources.Add(rb);
+                        context.Bookings.Update(booking);
+                        context.SaveChanges();
+                    }
+                    // ressourceBookingCreaten
                 }
-                // ressourceBookingCreaten
-
             }
-            #endregion
-        }
 
+        }
         public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
             Email fitInvation = new Email("FI", "FIT Einladung (Firma)",
