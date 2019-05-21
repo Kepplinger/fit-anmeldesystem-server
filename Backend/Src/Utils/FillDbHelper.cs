@@ -292,7 +292,7 @@ namespace Backend.Utils {
             Console.WriteLine("create bookings for each company...");
             var representativeGen = new Faker<Representative>()
                 .RuleFor(r => r.Email, f => f.Internet.ExampleEmail())
-                .RuleFor(r => r.Image, f => null)
+                .RuleFor(r => r.Image, f =>  new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(f.Random.Number(100, 200), f.Random.Number(150, 250))))
                 .RuleFor(r => r.Name, f => f.Name.FullName());
             var bookingGen = new Faker<Booking>()
                     .RuleFor(b => b.AdditionalInfo, f => "Additional Information: " + f.Random.String2(10))
@@ -314,7 +314,7 @@ namespace Backend.Utils {
                     .RuleFor(b => b.EstablishmentsCountInt, f => 0)
                     .RuleFor(b => b.EstablishmentsInt, f => "")
                     .RuleFor(b => b.Homepage, f => f.Internet.Url())
-                    .RuleFor(b => b.Logo, f => null)
+                    .RuleFor(b => b.Logo, f => new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(f.Random.Number(200, 500), f.Random.Number(300, 600))))
                     .RuleFor(b => b.PhoneNumber, f => f.Phone.PhoneNumber())
                     ;//.RuleFor(b => b.Presentation, f => p);
             var pressentationGen = new Faker<Presentation>()
