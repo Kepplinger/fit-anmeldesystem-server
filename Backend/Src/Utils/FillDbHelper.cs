@@ -27,6 +27,8 @@ namespace Backend.Utils {
         public static int NUMBER_LOCATIONS_FOR_AREA = 7;
 
         public static int NUMBER_RESOURCE_BOOKING_FOR_COMPANY = 3;
+
+        public static int NUMBER_TAGS = 10;
         public enum Gender
         {
             m,
@@ -165,6 +167,7 @@ namespace Backend.Utils {
             await insertRessources(NUMBER_RESOURCES);
             await generateGraduates(NUMBER_GRADUTE);
             await createBookings();
+            await generateTags();
             
         }
         public static async Task generateGraduates(int amount)
@@ -405,6 +408,21 @@ namespace Backend.Utils {
             }
 
         }
+        public static async Task generateTags()
+        {
+            Console.WriteLine("Generating random tags");
+            var tagGen = new Faker<Tag>()
+                .RuleFor(t => t.Value, f => f.Commerce.Department())
+                .RuleFor(t => t.IsArchive, f => f.Random.Bool());
+
+            for (int i = 0; i < NUMBER_TAGS; i++)
+            {
+                Tag tag = tagGen.Generate();
+                context.Tags.Add(tag);
+                context.SaveChanges();
+            }
+        }
+
         public static void createEmails(IUnitOfWork uow) {
             #region Mails intialize
             Email fitInvation = new Email("FI", "FIT Einladung (Firma)",
