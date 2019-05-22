@@ -34,6 +34,7 @@ namespace Backend.Utils {
             m,
             f
         }
+        public static string[] floors = new string[] { "UG", "EG", "1OG", "2OG" };
 
         public static ApplicationDbContext context;
         public static UserManager<FitUser> _userManager;
@@ -250,12 +251,16 @@ namespace Backend.Utils {
                     .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
                     .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1, 20))
                     .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1, 20));
-                var areaGen = new Faker<Area>()
-                    .RuleFor(ar => ar.Designation, f => f.Name.FullName())
-                    .RuleFor(ar => ar.Locations, f => new List<Location>());
-                for (int j = 0; j < amountAreas; j++)
+
+                Area area;
+                for (int j = 0; j < NUMBER_AREAS && j < floors.Length; j++)
                 {
-                    Area area = areaGen.Generate();
+                    area = new Area();
+                    area.Designation = floors[j];
+                    // Die Bilder der Etagen sollen Lokal unter 'http://localhost\images\Etagen\...' gespeichert sein (IIS)
+                    area.Graphic = new DataFile($"{floors[j]}", $@"http://localhost\images\Etagen\{floors[j]}.png");
+
+                    area.Locations = new List<Location>();
                     for (int k = 0; k < locationsForAreas; k++)
                     {
                         Location loc = locationGen.Generate();
