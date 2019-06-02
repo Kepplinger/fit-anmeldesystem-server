@@ -22,8 +22,8 @@ namespace Backend.Utils {
         public static int NUMBER_COMPANY = 10;
         public static int NUMBER_RESOURCES = 15;
 
-        public static int NUMBER_EVENTS = 10;
-        public static int NUMBER_AREAS = 2;
+        public static int NUMBER_EVENTS = 3;
+        public static int NUMBER_AREAS = 3;
         public static int NUMBER_LOCATIONS_FOR_AREA = 7;
 
         public static int NUMBER_RESOURCE_BOOKING_FOR_COMPANY = 3;
@@ -41,6 +41,8 @@ namespace Backend.Utils {
         static List<MemberStatus> memberList = new List<MemberStatus>();
         static List<Resource> resourceList = new List<Resource>();
         static List<Event> eventList = new List<Event>();
+        static List<Branch> branches = new List<Branch>();
+        static List<Tag> tags = new List<Tag>();
 
         public async static Task createTestData(ApplicationDbContext _context, UserManager<FitUser> userManager) {
             context = _context;
@@ -159,17 +161,19 @@ namespace Backend.Utils {
             Branch bio = new Branch();
             bio.Name = "Biomedizin & Gesundheitstechnik";
 
+            branches.Add(it);
+            branches.Add(elektr);
+            branches.Add(bio);
             _context.Branches.Add(bio);
             _context.SaveChanges();
             #endregion
 
+            await generateTags();
             await insertEventAreaLocations(NUMBER_EVENTS,NUMBER_AREAS,NUMBER_LOCATIONS_FOR_AREA);
             await insertCompanies(NUMBER_COMPANY);
             await insertRessources(NUMBER_RESOURCES);
             await generateGraduates(NUMBER_GRADUTE);
             await createBookings();
-            await generateTags();
-            
         }
         public static async Task generateGraduates(int amount)
         {
@@ -235,10 +239,10 @@ namespace Backend.Utils {
             for (int i = 0; i < amountEvents; i++)
             {
                 Event e = new Event();
-                e.EventDate = DateTime.Now;
+                e.EventDate = DateTime.Now.AddYears(-1 * i).AddDays(1);
                 e.PresentationsLocked = false;
-                e.RegistrationEnd = DateTime.Now.AddMonths(2);
-                e.RegistrationStart = DateTime.Now.AddMonths(-2);
+                e.RegistrationEnd = e.EventDate.AddMonths(-1);
+                e.RegistrationStart = e.RegistrationEnd.AddMonths(-3);
                 e.RegistrationState = new RegistrationState();
                 e.RegistrationState.IsLocked = false;
                 e.RegistrationState.IsCurrent = true;
@@ -247,20 +251,17 @@ namespace Backend.Utils {
                 context.SaveChanges();
 
                 var locationGen = new Faker<Location>()
-                    .RuleFor(lo => lo.Category, f => f.Random.Char().ToString())
+                    .RuleFor(lo => lo.Category, f => "A")
                     .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
                     .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1, 20))
                     .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1, 20));
 
-                Area area;
-                for (int j = 0; j < NUMBER_AREAS && j < floors.Length; j++)
+                var areaGen = new Faker<Area>()
+                    .RuleFor(ar => ar.Designation, f => f.Name.FullName())
+                    .RuleFor(ar => ar.Locations, f => new List<Location>());
+                for (int j = 0; j < amountAreas; j++)
                 {
-                    area = new Area();
-                    area.Designation = floors[j];
-                    // Die Bilder der Etagen sollen Lokal unter 'http://localhost\images\Etagen\...' gespeichert sein (IIS)
-                    area.Graphic = new DataFile($"{floors[j]}", $@"http://localhost\images\Etagen\{floors[j]}.png");
-
-                    area.Locations = new List<Location>();
+                    Area area = areaGen.Generate();
                     for (int k = 0; k < locationsForAreas; k++)
                     {
                         Location loc = locationGen.Generate();
@@ -282,7 +283,9 @@ namespace Backend.Utils {
                 .RuleFor(c => c.IsAccepted, f => f.Random.Number(0, 1))
                 .RuleFor(c => c.RegistrationToken, f => f.Random.String2(4) + '-' + f.Random.String2(4) + '-' + f.Random.String2(4))
                 .RuleFor(c => c.MemberStatus, f => memberList.ElementAt(f.Random.Number(1, 3)))
-                .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice);
+                .RuleFor(c => c.MemberPaymentAmount, (f, c) => c.MemberStatus.DefaultPrice)
+                .RuleFor(c => c.Tags,(f,c)  => new List<CompanyTag> { new CompanyTag { Comapny=c,Tag=tags.ElementAt(f.Random.Number(0,tags.Count -1))}, new CompanyTag { Comapny = c, Tag = tags.ElementAt(f.Random.Number(0, tags.Count - 1)) } })
+                .RuleFor(c => c.Branches, (f,c) => new List<CompanyBranch> { new CompanyBranch() { Comapny=c,Branch=branches.ElementAt(f.Random.Number(0,2))} });
             ;//.FinishWith((f,c) => Console.WriteLine(c.CompanyName));
             var addressGen = new Faker<Address>()
                 .RuleFor(adr => adr.Street, f => f.Address.StreetName())
@@ -345,24 +348,21 @@ namespace Backend.Utils {
                     .RuleFor(b => b.Remarks, f => "Remarks")
                     .RuleFor(b => b.CreationDate, f => f.Date.Past())
                     .RuleFor(b => b.fk_FitPackage, f => f.Random.Number(1, 3))
-                    //.RuleFor(b => b.Event, f => eventList.ElementAt(f.Random.Number(1, eventList.Count()-1)))
-                    //.RuleFor(b => b.Representatives, f => repr)
-                    //.RuleFor(b => b.fk_Company, f => f.Random.Number(0, NUMBER_COMPANY - 1))
-                    //.RuleFor(b => b.fk_Contact, f => f.Random.Number(0, NUMBER_COMPANY - 1))
                     .RuleFor(b => b.Email, f => f.Internet.ExampleEmail())
                     .RuleFor(b => b.Branch, f => "Branche " + f.Random.String2(10))
                     .RuleFor(b => b.EstablishmentsAut, f => f.Address.City())
                     .RuleFor(b => b.EstablishmentsCountAut, f => 1)
-                    .RuleFor(b => b.EstablishmentsCountInt, f => 0)
-                    .RuleFor(b => b.EstablishmentsInt, f => "")
+                    .RuleFor(b => b.EstablishmentsCountInt, f => 2)
+                    .RuleFor(b => b.EstablishmentsInt, f => f.Address.City() + ";" + f.Address.City())
                     .RuleFor(b => b.Homepage, f => f.Internet.Url())
                     .RuleFor(b => b.Logo, f => new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(f.Random.Number(200, 500), f.Random.Number(300, 600))))
                     .RuleFor(b => b.PhoneNumber, f => f.Phone.PhoneNumber())
+                    .RuleFor(b => b.Branches, (f, b) => new List<BookingBranch> { new BookingBranch() { Booking = b, Branch = branches.ElementAt(f.Random.Number(0, 2)) } });
                     ;//.RuleFor(b => b.Presentation, f => p);
             var pressentationGen = new Faker<Presentation>()
-                .RuleFor(p => p.Branches, f => new List<PresentationBranch>())
+                .RuleFor(p => p.Branches, (f,p) => new List<PresentationBranch>() { new PresentationBranch() { Presentation=p, Branch = branches.ElementAt(f.Random.Number(0, 2)) } })
                 .RuleFor(p => p.Description, f => f.Random.String2(20))
-                .RuleFor(p => p.IsAccepted, f => f.Random.Number(0, 1))
+                .RuleFor(p => p.IsAccepted, f => f.Random.Number(-1, 1))
                 .RuleFor(p => p.Title, f => "Präsi - " + f.Name.LastName())
                 .RuleFor(p => p.File, f => null);
             var resourseBookingGen = new Faker<ResourceBooking>()
@@ -393,6 +393,7 @@ namespace Backend.Utils {
                     booking.fk_Contact = i + 1;
                     booking.fk_Event = k + 1;
                     book = booking;
+                    
 
                     context.Bookings.Add(booking);
                     context.SaveChanges();
@@ -425,6 +426,7 @@ namespace Backend.Utils {
                 Tag tag = tagGen.Generate();
                 context.Tags.Add(tag);
                 context.SaveChanges();
+                tags.Add(tag);
             }
         }
 
