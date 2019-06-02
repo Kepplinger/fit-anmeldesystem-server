@@ -372,42 +372,45 @@ namespace Backend.Utils {
             {
                 for (int i = 0; i < NUMBER_COMPANY; i++)
                 {
-                    //Representatives
-                    List<Representative> repre = new List<Representative>();
-                    Representative repr = representativeGen.Generate();
-
-                    context.Representatives.Add(repr);
-                    context.SaveChanges();
-                    repre.Add(repr);
-
-                    Presentation p = pressentationGen.Generate();
-
-                    context.Presentations.Add(p);
-                    context.SaveChanges();
-
-                    // Set up Booking
-                    Booking booking = bookingGen.Generate();
-                    booking.Representatives = repre;
-                    booking.Presentation = p;
-                    booking.fk_Company = i + 1;
-                    booking.fk_Contact = i + 1;
-                    booking.fk_Event = k + 1;
-                    book = booking;
-                    
-
-                    context.Bookings.Add(booking);
-                    context.SaveChanges();
-
-                    booking.Resources = new List<ResourceBooking>();
-                    for (int j = 0; j < NUMBER_RESOURCE_BOOKING_FOR_COMPANY; j++)
+                    if (k >= i)
                     {
-                        ResourceBooking rb = resourseBookingGen.Generate();
-                        context.ResourceBookings.Add(rb);
+                        //Representatives
+                        List<Representative> repre = new List<Representative>();
+                        Representative repr = representativeGen.Generate();
+
+                        context.Representatives.Add(repr);
+                        context.SaveChanges();
+                        repre.Add(repr);
+
+                        Presentation p = pressentationGen.Generate();
+
+                        context.Presentations.Add(p);
                         context.SaveChanges();
 
-                        booking.Resources.Add(rb);
-                        context.Bookings.Update(booking);
+                        // Set up Booking
+                        Booking booking = bookingGen.Generate();
+                        booking.Representatives = repre;
+                        booking.Presentation = p;
+                        booking.fk_Company = i + 1;
+                        booking.fk_Contact = i + 1;
+                        booking.fk_Event = k + 1;
+                        book = booking;
+
+
+                        context.Bookings.Add(booking);
                         context.SaveChanges();
+
+                        booking.Resources = new List<ResourceBooking>();
+                        for (int j = 0; j < NUMBER_RESOURCE_BOOKING_FOR_COMPANY; j++)
+                        {
+                            ResourceBooking rb = resourseBookingGen.Generate();
+                            context.ResourceBookings.Add(rb);
+                            context.SaveChanges();
+
+                            booking.Resources.Add(rb);
+                            context.Bookings.Update(booking);
+                            context.SaveChanges();
+                        }
                     }
                     // ressourceBookingCreaten
                 }
