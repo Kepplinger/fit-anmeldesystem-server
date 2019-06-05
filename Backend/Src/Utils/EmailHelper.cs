@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Threading;
 
 namespace Backend.Utils {
+
     public static class EmailHelper {
 
         public static bool SendMail(Email mail, string reciever, SmtpConfig smtpConfig, object param = null, IUnitOfWork unitOfWork = null) {

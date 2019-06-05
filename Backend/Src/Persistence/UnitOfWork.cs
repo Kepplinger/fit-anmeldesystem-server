@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Backend.Core.Entities.UserManagement;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using Backend.Src.Utils.TestData;
 
 namespace StoreService.Persistence {
 
@@ -176,8 +177,7 @@ namespace StoreService.Persistence {
                 Save();
 
                 // Creates some TestData
-                await FillDbHelper.createTestData(_context, userManager);
-                FillDbHelper.createEmails(this);
+                await FillDbHelper.CreateTestData(_context, userManager, this);
             }
 
             stopWatch.Stop();
