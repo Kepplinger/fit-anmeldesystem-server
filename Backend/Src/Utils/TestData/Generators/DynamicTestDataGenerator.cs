@@ -221,7 +221,7 @@ namespace Backend.Src.Utils.TestData
             {
                 for (int i = 0; i < bookingAmount; i++)
                 {
-                    if (k >= i)
+                    if (k * 20 >= i)
                     {
                         //Representatives
                         List<Representative> repre = new List<Representative>();
