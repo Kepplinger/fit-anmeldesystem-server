@@ -28,6 +28,7 @@
     <Folder Include="EmailTemplates\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="27.0.1" />
     <PackageReference Include="itext7" Version="7.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
