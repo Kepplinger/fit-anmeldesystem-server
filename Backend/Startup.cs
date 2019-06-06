@@ -142,7 +142,7 @@ namespace Backend {
         private static async Task InitDb(IServiceProvider provider) {
             try {
                 using (IUnitOfWork uow = new StoreService.Persistence.UnitOfWork()) {
-                    await uow.FillDb(provider);
+                    // await uow.FillDb(provider);
                 }
             } catch (Exception ex) {
                 Console.WriteLine(ex.Message);

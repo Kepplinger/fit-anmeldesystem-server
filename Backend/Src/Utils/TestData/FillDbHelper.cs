@@ -24,12 +24,12 @@ namespace Backend.Utils {
         public static int NUMBER_COMPANY = 100;
         public static int NUMBER_RESOURCES = 10;
 
-        public static int NUMBER_EVENTS = 3;
+        public static int NUMBER_EVENTS = 6;
         public static int NUMBER_AREAS = 3;
         public static int NUMBER_LOCATIONS_FOR_AREA = 30;
 
         public static int NUMBER_RESOURCE_BOOKING_FOR_COMPANY = 3;
-        public static int NUMBER_TAGS = 10;
+        public static int NUMBER_TAGS = 15;
 
         public static List<MemberStatus> memberList = new List<MemberStatus>();
         public static List<Resource> resourceList = new List<Resource>();

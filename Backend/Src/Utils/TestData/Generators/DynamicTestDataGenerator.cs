@@ -110,6 +110,8 @@ namespace Backend.Src.Utils.TestData
                 for (int j = 0; j < amountAreas; j++)
                 {
                     Area area = areaGen.Generate();
+                    // some hack to trick the local server save mechanic
+                    area.Graphic.DataUrl += "&workaround=EVENT_" + e.Id;
                     for (int k = 0; k < locationsForAreas; k++)
                     {
                         Location loc = locationGen.Generate();
@@ -221,20 +223,20 @@ namespace Backend.Src.Utils.TestData
             {
                 for (int i = 0; i < bookingAmount; i++)
                 {
-                    if (k * 20 >= i)
+                    if (k * 20 >= i && i <= 80)
                     {
                         //Representatives
                         List<Representative> repre = new List<Representative>();
                         Representative repr = representativeGen.Generate();
 
                         context.Representatives.Add(repr);
-                        context.SaveChanges();
+                        //context.SaveChanges();
                         repre.Add(repr);
 
                         Presentation p = pressentationGen.Generate();
 
                         context.Presentations.Add(p);
-                        context.SaveChanges();
+                        //context.SaveChanges();
 
                         // Set up Booking
                         Booking booking = bookingGen.Generate();
@@ -248,19 +250,21 @@ namespace Backend.Src.Utils.TestData
 
                         context.Bookings.Add(booking);
                         context.SaveChanges();
+                        Console.WriteLine(i);
 
                         booking.Resources = new List<ResourceBooking>();
                         for (int j = 0; j < resourceAmount; j++)
                         {
                             ResourceBooking rb = resourseBookingGen.Generate();
                             context.ResourceBookings.Add(rb);
-                            context.SaveChanges();
+                            //context.SaveChanges();
 
                             booking.Resources.Add(rb);
                             context.Bookings.Update(booking);
-                            context.SaveChanges();
+                            //context.SaveChanges();
                         }
                     }
+                    context.SaveChanges();
                     // ressourceBookingCreaten
                 }
             }

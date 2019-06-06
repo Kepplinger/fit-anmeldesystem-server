@@ -71,11 +71,10 @@ namespace Backend.Src.Persistence.Facades {
 
                     _unitOfWork.ContactRepository.Update(booking.Contact);
                     _unitOfWork.BookingRepository.Update(booking);
+                    booking.FitPackage = _unitOfWork.PackageRepository.GetById(booking.fk_FitPackage);
                     booking.isComplete = !EmailHelper.HasPendingData(booking);
                     _unitOfWork.Save();
                     transaction.Commit();
-
-                    booking.FitPackage = _unitOfWork.PackageRepository.GetById(booking.fk_FitPackage);
 
                     return booking;
                 } catch (DbUpdateException ex) {
