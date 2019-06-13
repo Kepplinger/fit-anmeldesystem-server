@@ -1,4 +1,5 @@
-﻿using Backend.Core.Contracts;
+﻿using System;
+using Backend.Core.Contracts;
 using Backend.Core.Contracts.Repositories;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,6 @@ namespace Backend.Core.Entities
         public int Id { get; set; }
 
         [Timestamp]
-        public byte[] Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

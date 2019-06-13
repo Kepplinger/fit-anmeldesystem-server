@@ -17,12 +17,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Backend.Controllers {
-
+namespace Backend.Controllers
+{
     [Route("api/[controller]")]
     [Produces("application/json", "application/xml")]
-    public class CompanyController : Controller {
-
+    public class CompanyController : Controller
+    {
         private IUnitOfWork _unitOfWork;
         private CompanyFacade _companyFacade;
         private readonly UserManager<FitUser> _userManager;
@@ -48,9 +48,7 @@ namespace Backend.Controllers {
         [HttpPost]
         [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateCompany([FromBody] Company company) {
-
             if (company != null) {
-
                 if (_unitOfWork.CompanyRepository.Get(c => c.Name == company.Name && c.IsAccepted != -1).Count() > 0) {
                     return new BadRequestObjectResult(new {
                         errorMessage = "Es ist bereits eine Firma mit diesem Namen registriert!",
@@ -92,19 +90,20 @@ namespace Backend.Controllers {
 
                 return new ObjectResult(company);
             }
+
             return new BadRequestResult();
         }
 
         [HttpPut]
         [Consumes("application/json")]
         [Authorize(Policy = "MemberAndWriteableAdmins")]
-        public IActionResult Update([FromBody]Company company) {
+        public IActionResult Update([FromBody] Company company) {
             bool isAdminChange = UserClaimsHelper.IsUserAdmin(User.Identity as ClaimsIdentity);
 
-            Contract.Ensures(Contract.Result<IActionResult>() != null);
             try {
                 return new OkObjectResult(_companyFacade.Update(company, true, isAdminChange));
-            } catch (DbUpdateException ex) {
+            }
+            catch (DbUpdateException ex) {
                 return DbErrorHelper.CatchDbError(ex);
             }
         }
@@ -112,7 +111,8 @@ namespace Backend.Controllers {
         [HttpPut("accept/{compId}")]
         [Authorize(Policy = "WritableAdmin")]
         public IActionResult AcceptCompany(int compId, [FromBody] int status) {
-            Company company = _unitOfWork.CompanyRepository.Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
+            Company company = _unitOfWork.CompanyRepository
+                .Get(filter: p => p.Id == compId, includeProperties: "Contact,Address,Tags,Branches").FirstOrDefault();
             if (company != null) {
                 company.IsAccepted = status;
                 _unitOfWork.CompanyRepository.Update(company);
@@ -124,6 +124,7 @@ namespace Backend.Controllers {
 
                 return new OkObjectResult(company);
             }
+
             return new BadRequestResult();
         }
 
@@ -131,15 +132,18 @@ namespace Backend.Controllers {
         [Authorize(Policy = "WritableAdmin")]
         [Consumes("application/json")]
         public IActionResult AssignCompany(int pendingCompanyId, int existingCompanyId) {
-
-            Company existingCompany = _unitOfWork.CompanyRepository.Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
-            Company pendingCompany = _unitOfWork.CompanyRepository.Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
+            Company existingCompany = _unitOfWork.CompanyRepository
+                .Get(filter: p => p.Id.Equals(existingCompanyId), includeProperties: "Contact").FirstOrDefault();
+            Company pendingCompany = _unitOfWork.CompanyRepository
+                .Get(filter: c => c.Id.Equals(pendingCompanyId), includeProperties: "Contact").FirstOrDefault();
 
             if (existingCompany.Contact.Email.Equals(pendingCompany.Contact.Email)) {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
-            } else {
+            }
+            else {
                 EmailHelper.SendMailByIdentifier("CA", existingCompany, existingCompany.Contact.Email, _unitOfWork);
-                pendingCompany = CopyPropertiesFromExistingToPendingCompanies(pendingCompany, existingCompany);
+                // is this a mistake? probably not necessary  
+                // pendingCompany = CopyPropertiesFromExistingToPendingCompanies(pendingCompany, existingCompany);
                 EmailHelper.SendMailByIdentifier("CA", pendingCompany, pendingCompany.Contact.Email, _unitOfWork);
             }
 
@@ -149,16 +153,16 @@ namespace Backend.Controllers {
             return new OkObjectResult(pendingCompany);
         }
 
-        private Company CopyPropertiesFromExistingToPendingCompanies(Company pending, Company existing)
-        {
-            pending.Name = existing.Name;
-            pending.Branches = existing.Branches;
-            pending.MemberPaymentAmount = existing.MemberPaymentAmount;
-            pending.MemberStatus = existing.MemberStatus;
-            pending.Address = existing.Address;
-            pending.RegistrationToken = existing.RegistrationToken;
-
-            return pending;
-        }
+//        private Company CopyPropertiesFromExistingToPendingCompanies(Company pending, Company existing) {
+//            pending.Name = existing.Name;
+//            pending.Branches = existing.Branches;
+//            pending.Branches.ForEach(b => b.fk_Company = pending.Id);
+//            pending.MemberPaymentAmount = existing.MemberPaymentAmount;
+//            pending.MemberStatus = existing.MemberStatus;
+//            pending.Address = existing.Address;
+//            pending.RegistrationToken = existing.RegistrationToken;
+//
+//            return pending;
+//        }
     }
 }
