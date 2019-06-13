@@ -67,7 +67,6 @@ namespace Backend.Src.Utils.TestData
         public async Task InsertRessources(int amount)
         {
             Console.WriteLine("Look for useable Resources for the FIT ...");
-            context.SaveChanges();
             var ress = new Faker<Resource>()
                 .RuleFor(r => r.Name, f => f.Hacker.Noun())
                 ;//.FinishWith((f, r) => Console.WriteLine(r.Name));
@@ -83,6 +82,19 @@ namespace Backend.Src.Utils.TestData
         public async Task InsertEventAreaLocations(int amountEvents, int amountAreas, int locationsForAreas)
         {
             Console.WriteLine("create Events with there Locations and Areas... ");
+
+            string[] category = new String[] { "A", "B" };
+            var locationGen = new Faker<Location>()
+                .RuleFor(lo => lo.Category, f => f.Random.Char('A', 'B').ToString())
+                .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
+                .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1, 100))
+                .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1, 100));
+
+            var areaGen = new Faker<Area>()
+                .RuleFor(ar => ar.Designation, f => f.Name.FullName())
+                .RuleFor(ar => ar.Locations, f => new List<Location>())
+                .RuleFor(ar => ar.Graphic, f => new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(900, 344)));
+
             for (int i = 0; i < amountEvents; i++)
             {
                 Event e = new Event();
@@ -95,18 +107,7 @@ namespace Backend.Src.Utils.TestData
                 e.RegistrationState.IsCurrent = true;
                 e.Areas = new List<Area>();
                 context.Events.Add(e);
-                context.SaveChanges();
 
-                var locationGen = new Faker<Location>()
-                    .RuleFor(lo => lo.Category, f => "A")
-                    .RuleFor(lo => lo.Number, f => f.Random.Number(1, 100).ToString())
-                    .RuleFor(lo => lo.XCoordinate, f => f.Random.Double(1, 100))
-                    .RuleFor(lo => lo.YCoordinate, f => f.Random.Double(1, 100));
-
-                var areaGen = new Faker<Area>()
-                    .RuleFor(ar => ar.Designation, f => f.Name.FullName())
-                    .RuleFor(ar => ar.Locations, f => new List<Location>())
-                    .RuleFor(ar => ar.Graphic, f => new DataFile(f.Lorem.Word(), f.Image.PicsumUrl(900, 344)));
                 for (int j = 0; j < amountAreas; j++)
                 {
                     Area area = areaGen.Generate();
@@ -221,52 +222,46 @@ namespace Backend.Src.Utils.TestData
             Booking book;
             for (int k = 0; k < eventAmount; k++)
             {
-                for (int i = 0; i < bookingAmount; i++)
+                int random = new Random().Next(3, FillDbHelper.NUMBER_COMPANY);
+                Console.WriteLine(random);
+                for (int i = 0; i < random; i++)
                 {
-                    if (k * 20 >= i && i <= 80)
-                    {
-                        //Representatives
-                        List<Representative> repre = new List<Representative>();
-                        Representative repr = representativeGen.Generate();
+                    //Representatives
+                    List<Representative> repre = new List<Representative>();
+                    Representative repr = representativeGen.Generate();
 
-                        context.Representatives.Add(repr);
-                        //context.SaveChanges();
-                        repre.Add(repr);
+                    context.Representatives.Add(repr);
+                    repre.Add(repr);
 
-                        Presentation p = pressentationGen.Generate();
+                    Presentation p = pressentationGen.Generate();
 
-                        context.Presentations.Add(p);
-                        //context.SaveChanges();
+                    context.Presentations.Add(p);
 
-                        // Set up Booking
-                        Booking booking = bookingGen.Generate();
-                        booking.Representatives = repre;
-                        booking.Presentation = p;
-                        booking.fk_Company = i + 1;
-                        booking.fk_Contact = i + 1;
-                        booking.fk_Event = k + 1;
-                        book = booking;
+                    // Set up Booking
+                    Booking booking = bookingGen.Generate();
+                    booking.Representatives = repre;
+                    booking.Presentation = p;
+                    booking.fk_Company = i + 1;
+                    booking.fk_Contact = i + 1;
+                    booking.fk_Event = k + 1;
+                    book = booking;
 
-
-                        context.Bookings.Add(booking);
-                        context.SaveChanges();
-                        Console.WriteLine(i);
-
-                        booking.Resources = new List<ResourceBooking>();
-                        for (int j = 0; j < resourceAmount; j++)
-                        {
-                            ResourceBooking rb = resourseBookingGen.Generate();
-                            context.ResourceBookings.Add(rb);
-                            //context.SaveChanges();
-
-                            booking.Resources.Add(rb);
-                            context.Bookings.Update(booking);
-                            //context.SaveChanges();
-                        }
-                    }
+                    context.Bookings.Add(booking);
                     context.SaveChanges();
-                    // ressourceBookingCreaten
+
+                    booking.Resources = new List<ResourceBooking>();
+                    for (int j = 0; j < resourceAmount; j++)
+                    {
+                        ResourceBooking rb = resourseBookingGen.Generate();
+                        context.ResourceBookings.Add(rb);
+
+                        booking.Resources.Add(rb);
+                        context.Bookings.Update(booking);
+                    }
                 }
+                context.SaveChanges();
+                // ressourceBookingCreaten
+                
             }
         }
 
@@ -281,9 +276,9 @@ namespace Backend.Src.Utils.TestData
             {
                 Tag tag = tagGen.Generate();
                 context.Tags.Add(tag);
-                context.SaveChanges();
                 FillDbHelper.tags.Add(tag);
             }
+            context.SaveChanges();
         }
     }
 }
