@@ -116,6 +116,13 @@ namespace Backend.Src.Utils.TestData
                     for (int k = 0; k < locationsForAreas; k++)
                     {
                         Location loc = locationGen.Generate();
+                        // If the number has only 1 digit a zero should be added in front of it
+                        // Ex.:  7   ->   07
+                        if (loc.Number.Length == 1)
+                            loc.Number = "0" + loc.Number;
+                        if (loc.Number.Length < 3)
+                            loc.Number = j + loc.Number;
+
                         context.Locations.Add(loc);
                         area.Locations.Add(loc);
                     }
@@ -220,11 +227,22 @@ namespace Backend.Src.Utils.TestData
             var resourseBookingGen = new Faker<ResourceBooking>()
                 .RuleFor(rb => rb.Resource, f => FillDbHelper.resourceList.ElementAt(f.Random.Number(0, FillDbHelper.resourceList.Count - 1)));
             Booking book;
+
+            int topPos;
+
             for (int k = 0; k < eventAmount; k++)
             {
+                // Get the locations(each floor) for this event 
+                // (required to assign a booking to a location)
+                var locations = context.Areas.Where(a => a.fk_Event == k + 1).Select(l => l.Locations).ToArray();
+                int areaSize = locations[0].Count;
+                int floor = 0, location = 0;
+
                 int random = new Random().Next(3, FillDbHelper.NUMBER_COMPANY);
-                Console.WriteLine(random);
-                for (int i = 0; i < random; i++)
+                Console.Write(random + " /");
+
+                topPos = Console.CursorTop;
+                for (int i = 0; i < random; i++, location++)
                 {
                     //Representatives
                     List<Representative> repre = new List<Representative>();
@@ -244,10 +262,22 @@ namespace Backend.Src.Utils.TestData
                     booking.fk_Company = i + 1;
                     booking.fk_Contact = i + 1;
                     booking.fk_Event = k + 1;
+                    //All locations in the current floor are occupied
+                    if (location >= areaSize)
+                    {
+                        //Move to the next floor and start again (from 0)
+                        floor++;
+                        location = 0;
+                    }
+                    booking.Location = locations[floor][location];
                     book = booking;
 
                     context.Bookings.Add(booking);
                     context.SaveChanges();
+
+                    //Just for the output in the console..
+                    Console.SetCursorPosition(5, Console.CursorTop);
+                    Console.Write(i+1);
 
                     booking.Resources = new List<ResourceBooking>();
                     for (int j = 0; j < resourceAmount; j++)
@@ -260,8 +290,8 @@ namespace Backend.Src.Utils.TestData
                     }
                 }
                 context.SaveChanges();
+                Console.WriteLine();
                 // ressourceBookingCreaten
-                
             }
         }
 
