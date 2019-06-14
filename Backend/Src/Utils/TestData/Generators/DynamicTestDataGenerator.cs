@@ -98,9 +98,9 @@ namespace Backend.Src.Utils.TestData
             for (int i = 0; i < amountEvents; i++)
             {
                 Event e = new Event();
-                e.EventDate = DateTime.Now.AddYears(-1 * i).AddDays(1);
+                e.EventDate = DateTime.Now.AddYears(-1 * i).AddDays(2);
                 e.PresentationsLocked = false;
-                e.RegistrationEnd = e.EventDate.AddMonths(-1);
+                e.RegistrationEnd = e.EventDate.AddDays(-1);
                 e.RegistrationStart = e.RegistrationEnd.AddMonths(-3);
                 e.RegistrationState = new RegistrationState();
                 e.RegistrationState.IsLocked = false;
@@ -165,6 +165,11 @@ namespace Backend.Src.Utils.TestData
             {
                 var comp = companyGen.Generate();
                 comp.Name = comp.Name.Substring(0, Math.Min(comp.Name.Length, 30));
+
+                if(i == 0)
+                {
+                    comp.RegistrationToken = "Firm-enTo-ken1";
+                }
 
                 var add = addressGen.Generate();
 
@@ -238,7 +243,7 @@ namespace Backend.Src.Utils.TestData
                 int areaSize = locations[0].Count;
                 int floor = 0, location = 0;
 
-                int random = new Random().Next(3, FillDbHelper.NUMBER_COMPANY);
+                int random = new Random().Next(3, FillDbHelper.NUMBER_LOCATIONS_FOR_AREA*3);
                 Console.Write(random + " /");
 
                 topPos = Console.CursorTop;
