@@ -257,7 +257,10 @@ namespace Backend.Src.Utils.TestData
                     repre.Add(repr);
 
                     Presentation p = pressentationGen.Generate();
-
+                    if (p.IsAccepted == 1)
+                    {
+                        p.RoomNumber = "Room " + i;
+                    }
                     context.Presentations.Add(p);
 
                     // Set up Booking
