@@ -107,6 +107,7 @@ namespace Backend.Src.Utils.TestData
                 e.RegistrationState.IsCurrent = true;
                 e.Areas = new List<Area>();
                 context.Events.Add(e);
+                context.SaveChanges();
 
                 for (int j = 0; j < amountAreas; j++)
                 {
