@@ -43,7 +43,12 @@ namespace Backend.Persistence
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var configuration = builder.Build();
             string connectionString = configuration["ConnectionStrings:ServerConnection"];
-            optionsBuilder.UseSqlServer(connectionString);
+            
+            // WINDOWS
+            // optionsBuilder.UseSqlServer(connectionString);
+            
+            //LINUX
+            optionsBuilder.UseMySql(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -43,20 +43,29 @@ namespace Backend.Utils {
             DynamicTestDataGenerator dynamicDataGenerator = new DynamicTestDataGenerator(context, userManager);
             StaticTestDataGenerator staticDataGenerator = new StaticTestDataGenerator(context, userManager);
 
-            await staticDataGenerator.GenerateAdmin();
-            await staticDataGenerator.GenerateLockPage();
-            await staticDataGenerator.GenerateSmtp();
-            await staticDataGenerator.GenerateMemberStati();
-            await staticDataGenerator.GeneratePackages();
-            await staticDataGenerator.GenerateBranches();
+            try
+            {
+                await staticDataGenerator.GenerateAdmin();
+                await staticDataGenerator.GenerateLockPage();
+                await staticDataGenerator.GenerateSmtp();
+                await staticDataGenerator.GenerateMemberStati();
+                await staticDataGenerator.GeneratePackages();
+                await staticDataGenerator.GenerateBranches();
             
-            await dynamicDataGenerator.GenerateTags(NUMBER_TAGS);
-            await dynamicDataGenerator.InsertEventAreaLocations(NUMBER_EVENTS,NUMBER_AREAS,NUMBER_LOCATIONS_FOR_AREA);
-            await dynamicDataGenerator.InsertCompanies(NUMBER_COMPANY);
-            await dynamicDataGenerator.InsertRessources(NUMBER_RESOURCES);
-            await dynamicDataGenerator.GenerateGraduates(NUMBER_GRADUTE);
-            await dynamicDataGenerator.CreateBookings(NUMBER_EVENTS, NUMBER_COMPANY, NUMBER_RESOURCE_BOOKING_FOR_COMPANY);
+                await dynamicDataGenerator.GenerateTags(NUMBER_TAGS);
+                await dynamicDataGenerator.InsertEventAreaLocations(NUMBER_EVENTS,NUMBER_AREAS,NUMBER_LOCATIONS_FOR_AREA);
+                await dynamicDataGenerator.InsertCompanies(NUMBER_COMPANY);
+                await dynamicDataGenerator.InsertRessources(NUMBER_RESOURCES);
+                await dynamicDataGenerator.GenerateGraduates(NUMBER_GRADUTE);
+                await dynamicDataGenerator.CreateBookings(NUMBER_EVENTS, NUMBER_COMPANY, NUMBER_RESOURCE_BOOKING_FOR_COMPANY);
 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
             EmailTestDataGenerator.CreateEmailsAndVariables(uow);
         }
     }

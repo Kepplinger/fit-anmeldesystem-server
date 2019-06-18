@@ -32,11 +32,12 @@ namespace Backend.Persistence.Repositories
                          .Include(p => p.Logo)
                          .Include(p => p.FitPackage)
                          .Include(p => p.Presentation)
-                         .Include(P => P.Presentation.File)
+                         .Include(p => p.Presentation.File)
                          .Include(p => p.Presentation.Branches).ThenInclude(p => p.Branch)
                          .Include(p => p.Branches).ThenInclude(p => p.Branch)
                          .Include(p => p.Representatives).ThenInclude(p => p.Image)
                          .Include(p => p.Event).ThenInclude(p => p.Areas)
+                         .Include(p => p.Event).ThenInclude(p => p.Areas).ThenInclude(p => p.Graphic)
                          .Include(p => p.Event).ThenInclude(p => p.Areas).ThenInclude(p => p.Locations)
                          .Include(p => p.Event).ThenInclude(p => p.RegistrationState)
                          .Include(p => p.Resources).ThenInclude(p => p.Resource);

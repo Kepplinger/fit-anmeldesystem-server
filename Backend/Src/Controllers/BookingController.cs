@@ -49,7 +49,9 @@ namespace Backend.Controllers {
             } else if (jsonBooking != null) {
                 return this.Insert(jsonBooking);
             } else {
-                return new BadRequestObjectResult(jsonBooking);
+                return new BadRequestObjectResult(new {
+                    errorMessage = "Der Vorgang konnte nicht durchgeführt werden."
+                });
             }
         }
 
