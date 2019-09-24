@@ -45,10 +45,10 @@ namespace Backend.Persistence
             string connectionString = configuration["ConnectionStrings:ServerConnection"];
             
             // WINDOWS
-            // optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString);
             
             //LINUX
-            optionsBuilder.UseMySql(connectionString);
+            // optionsBuilder.UseMySql(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

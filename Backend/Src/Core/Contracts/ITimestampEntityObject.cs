@@ -9,6 +9,8 @@ namespace Backend.Core.Contracts {
         /// Die Version dieses Datenbank-Objektes. Diese Version wird beim Erzeugen (Insert) 
         /// automatisch und mit jeder Änderung neu gesetzt. 
         /// </summary>
-        DateTime Timestamp { get; set; }
+       
+        //DateTime Timestamp { get; set; }
+        byte[] Timestamp { get; set; }
     }
 }
