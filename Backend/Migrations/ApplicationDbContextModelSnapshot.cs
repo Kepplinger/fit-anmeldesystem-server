@@ -32,7 +32,7 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -60,7 +60,7 @@ namespace Backend.Migrations
                     b.Property<string>("StreetNumber")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -82,7 +82,7 @@ namespace Backend.Migrations
 
                     b.Property<int?>("GraphicId");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -138,7 +138,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("Remarks");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -182,7 +182,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -209,7 +209,7 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -239,7 +239,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("TableName");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -268,7 +268,7 @@ namespace Backend.Migrations
                     b.Property<string>("RegistrationToken")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -298,7 +298,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -320,7 +320,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -357,7 +357,7 @@ namespace Backend.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -375,7 +375,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -404,7 +404,7 @@ namespace Backend.Migrations
                     b.Property<string>("Template")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -418,7 +418,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -473,7 +473,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("Price");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -506,7 +506,7 @@ namespace Backend.Migrations
                     b.Property<string>("RegistrationToken")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -536,7 +536,7 @@ namespace Backend.Migrations
                     b.Property<string>("Number")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -566,7 +566,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("RoomNumber");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -585,7 +585,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -631,7 +631,7 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -654,7 +654,7 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -668,7 +668,7 @@ namespace Backend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -692,7 +692,7 @@ namespace Backend.Migrations
 
                     b.Property<bool>("IsArchive");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -714,7 +714,7 @@ namespace Backend.Migrations
                     b.Property<string>("Incoming")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -734,7 +734,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
@@ -759,7 +759,7 @@ namespace Backend.Migrations
 
                     b.Property<int>("Port");
 
-                    b.Property<byte[]>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
